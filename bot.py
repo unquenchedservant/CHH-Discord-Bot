@@ -12,18 +12,27 @@ class chh_bot(discord.Client):
     async def on_message(self, message):
         yes = "\U00002705"
         no = "\U0001F6AB"
+
         server_id = message.guild.id
+
         if not os.path.exists("chh.db"):
             database.create_table()
             database.add_server(server_id, "&")
+
         cmd_prefix = database.get_prefix(server_id)
+
+
         channel_ids = database.get_allowed_channels()
+
         suggestion_prefixs = ["[SUBREDDIT]","[DISCORD]","[CHH]"]
+
         is_mod = False
+
         for r in message.author.roles:
             for p in r.permissions:
                 if p[0] == "administrator" and p[1] == True:
                     is_mod = True
+
         if message.author == self.user:
             return
         elif message.channel.id in channel_ids:
