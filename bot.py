@@ -71,7 +71,37 @@ class chh_bot(discord.Client):
                     else:
                         database.set_prefix(server_id, new_prefix)
 
+            # CLEAR THE CHAT
+            elif message.content.startswith("{}clear".format(cmd_prefix)):
+                msgs = []
+                if len(message.content.split()) > 1:
+                    number = int(message.content.split()[1]) + 1
+                else:
+                    number = 6
+                await message.channel.purge(limit = number)
 
+        # IF USER NOT MOD OR IF CHANNEL ID IS IN MONITORED LIST
+        elif not is_mod or message.channel.id in channel_ids:
+
+            # IF CHANNEL MONITORED
+            if message.channel.id in channel_ids:
+                valid_msg = False
+
+                # CHECK IF USING SUGGESTION PREFIX
+                for prefix in suggestion_prefixs:
+                    if message.content.startswith(prefix):
+                        await message.add_reaction(yes)
+                        await message.add_reaction(no)
+                        valid_msg = True
+
+                # IF NOT USING PREFIX
+                if not valid_msg:
+                    if not is_mod:
+                        send_channel = message.channel
+                        await message.delete() # DELETE THEIR MESSAGE
+                        temp_message = await send_channel.send('%s please use [SUBREDDIT], [DISCORD] or [CHH] for your suggestions' % message.author.mention)
+                        await asyncio.sleep(5)
+                        await temp_message.delete()
 
 
 
