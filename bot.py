@@ -38,45 +38,25 @@ class chh_bot(discord.Client):
 
         if message.author == self.user:
             return
-        elif message.channel.id in channel_ids:
-            valid_msg = False
-            for prefix in suggestion_prefixs:
-                if message.content.startswith(prefix):
-                    await message.add_reaction(yes)
-                    await message.add_reaction(no)
-                    valid_msg = True
-            if not valid_msg:
-                if not is_mod:
-                    send_channel = message.channel
-                    await message.delete()
-                    temp_message = await send_channel.send('%s please use [SUBREDDIT], [DISCORD] or [CHH] for your suggestions' % message.author.mention)
-                    await asyncio.sleep(5)
-                    await temp_message.delete()
-                if is_mod:
-                    if message.content.startswith("{}prefix".format(cmd_prefix)):
-                        new_prefix = message.content.split()[1]
-                        if len(new_prefix) > 2:
-                            temp_message = await message.channel.send('Prefix should be under two characters long')
-                            await asyncio.sleep(3)
-                            await temp_message.delete()
-                        elif new_prefix == "":
-                            temp_message = await message.channel.send('Please include a prefix')
-                            await asyncio.sleep(3)
-                            await temp_message.delete()
-                        else:
-                            database.set_prefix(server_id, new_prefix)
-                    elif message.content.startswith("{}remove".format(cmd_prefix)):
-                        database.remove_channel(message.channel.id)
-                        temp_message = await message.channel.send('removed this channel from monitored channels')
-                        await asyncio.sleep(3)
-                        await temp_message.delete()
-
-        elif is_mod:
+        # START MOD COMMANDS
+        if is_mod:
+            # ADD CHANNEL TO MONITORING
             if message.content.startswith("{}add".format(cmd_prefix)):
                 database.add_channels(message.channel.id)
                 temp_message = await message.channel.send('Added this channel to monitored channels')
+                await message.delete()
                 await asyncio.sleep(3)
                 await temp_message.delete()
+
+            # REMOVE CHANNEL FROM MONITORING
+            elif message.content.startswith("{}remove".format(cmd_prefix)):
+                database.remove_channel(message.channel.id)
+                temp_message = await message.channel.send('No longer monitoring this channel')
+                await message.delete()
+                await asyncio.sleep(3)
+                await temp_message.delete()
+
+            # CHANGE THE PREFIX
             elif message.content.startswith("{}prefix".format(cmd_prefix)):
                 if len(message.content.split()) == 1:
                     temp_message = await message.channel.send('Please include a prefix')
