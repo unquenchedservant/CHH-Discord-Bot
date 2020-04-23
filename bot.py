@@ -81,7 +81,7 @@ class chh_bot(discord.Client):
                 await message.channel.purge(limit = number)
 
         # IF USER NOT MOD OR IF CHANNEL ID IS IN MONITORED LIST
-        elif not is_mod or message.channel.id in channel_ids:
+        if message.channel.id in channel_ids:
 
             # IF CHANNEL MONITORED
             if message.channel.id in channel_ids:
