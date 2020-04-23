@@ -10,7 +10,7 @@ class chh_bot(discord.Client):
         print("Logged on as {0}!".format(self.user))
 
     async def on_message(self, message):
-        yes = "\U0001F4AF"
+        yes = "\U00002705"
         no = "\U0001F6AB"
         server_id = message.guild.id
         if not os.path.exists("chh.db"):
