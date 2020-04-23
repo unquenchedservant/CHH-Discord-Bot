@@ -11,12 +11,10 @@ class chh_bot(discord.Client):
     async def on_message(self, message):
         yes = "\U0001F4AF"
         no = "\U0001F6AB"
+        ids = [702929735038271598, 685566940122447887, 365879579887534082]
         if message.author == self.user:
             return
-        if (message.channel.id == '702929735038271598' or
-            message.channel.id == '685566940122447887' or
-            message.channel.id == '365879579887534082'):
-            await message.channel.send("TESTING")
+        elif message.channel.id in ids:
             if (message.content.startswith("[SUBREDDIT]") or
                 message.content.startswith("[DISCORD]") or
                 message.content.startswith("[CHH]")):
