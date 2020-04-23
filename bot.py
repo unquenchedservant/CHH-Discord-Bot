@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import os, discord, asyncio, sqlite3
 from discord.ext import commands
 from discord.utils import get
