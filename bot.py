@@ -1,5 +1,6 @@
 import os, discord, asyncio, sqlite3
 from discord.ext import commands
+from discord.utils import get
 from dotenv import load_dotenv
 from utilities import database
 load_dotenv()
@@ -9,9 +10,34 @@ class chh_bot(discord.Client):
     async def on_ready(self):
         print("Logged on as {0}!".format(self.user))
 
+    async def on_raw_reaction_add(self, payload):
+        denied = "❌"
+        accepted = "💯"
+        channel_ids = database.get_allowed_channels()
+        if payload.channel_id in channel_ids:
+            is_mod = False
+            user = get(self.get_all_members(), id=payload.user_id)
+            if not user == self.user:
+                channel = get(self.get_all_channels(), id=payload.channel_id)
+                message = await channel.fetch_message(payload.message_id)
+                for r in user.roles:
+                    for p in r.permissions:
+                        if p[0] == "administrator" and p[1] == True:
+                            is_mod = True
+                if is_mod:
+                    if payload.emoji.name == denied:
+                        await message.clear_reactions()
+                        await message.add_reaction(denied)
+                        await channel.send("Sorry {}, your suggestion has been denied. {} will tell you why.".format(message.author.mention, user.mention))
+                    elif payload.emoji.name == accepted:
+                        await message.clear_reactions()
+                        await message.add_reaction(accepted)
+                        await channel.send("Good news, {}, your suggestion has been accepted".format(message.author.mention))
+
     async def on_message(self, message):
         yes = "\U00002705"
         no = "\U0001F6AB"
+
 
         server_id = message.guild.id
 
