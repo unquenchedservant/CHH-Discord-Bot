@@ -35,11 +35,14 @@ def add_server(server_id, prefix):
 def get_prefix(server_id):
     if not os.path.exists("chh.db"):
         create_table()
-        add_server(server_id, "&")
-        return "&"
+        add_server(server_id, "^")
+        return "^"
     conn = sqlite3.connect("chh.db")
     cursor = conn.execute("SELECT prefix FROM server WHERE ID = {}".format(server_id))
     data = cursor.fetchall()
+    if len(data) == 0:
+        add_server(server_id, "^")
+        return "^"
     return data[0][0]
 
 def set_prefix(server_id, prefix):
