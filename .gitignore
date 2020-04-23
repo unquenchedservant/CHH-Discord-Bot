@@ -2,3 +2,5 @@
 .env
 
 chh.db
+
+*.pyc
