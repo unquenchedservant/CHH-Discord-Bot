@@ -21,6 +21,9 @@ class chh_bot(discord.Client):
 
         cmd_prefix = database.get_prefix(server_id)
 
+        if cmd_prefix == "&":
+            database.set_prefix(server_id, "^")
+            cmd_prefix = "^"
 
         channel_ids = database.get_allowed_channels()
 
