@@ -55,6 +55,15 @@ async def prefix(ctx, new_prefix=""):
         embed.add_field(name="\u200B", value="\u200B")
         embed.add_field(name="Change Prefix", value="To change the prefix, use {}prefix <new prefix>".format(database.get_prefix(ctx.guild.id)), inline=True)
         await ctx.channel.send(embed=embed)
+    else:
+        if len(new_prefix) > 2:
+            embed = discord.Embed(title="Invalid Prefix", description="Please make sure that your prefix is at max two characters", colour=0x0099ff)
+            embed.set_author(name="r/CHH Bot", icon_url="https://i.imgur.com/ZNdCFKg.png")
+            embed.add_field(name="Change Prefix", value="To change the prefix, use {}prefix <new prefix>".format(database.get_prefix(ctx.guild.id)), inline=True)
+            await ctx.channel.send(embed=embed)
+        else:
+            database.set_prefix(ctx.guild.id, new_prefix)
+            await ctx.channel.send("Successfully updated prefix for server")
 
 token = os.getenv('DISCORD_TOKEN')
 bot.run(token)
