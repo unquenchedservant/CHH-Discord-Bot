@@ -1,10 +1,10 @@
 #!/usr/bin/python3
-import os, discord, asyncio, sqlite3, logging
+import os, discord, asyncio, sqlite3, logging, spotipy
 from discord.ext import commands
+from discord.ext.commands import has_permissions, CheckFailure
 from discord.utils import get
 from dotenv import load_dotenv
 from utilities import database
-import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 
 load_dotenv()
@@ -14,165 +14,209 @@ handler = logging.FileHandler(filename="chh_bot.log", encoding='utf-8', mode='w'
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
 
-class chh_bot(discord.Client):
 
-    async def on_ready(self):
-        database.create_table()
-        print("Logged on as {0}!".format(self.user))
+default_prefix = "^"
+async def determine_prefix(bot, message):
+    guild = message.guild
+    if guild:
+        return database.get_prefix(guild.id)
+    else:
+        return default_prefix
 
-    async def on_raw_reaction_add(self, payload):
-        denied = "❌"
-        accepted = "💯"
-        channel_ids = database.get_allowed_channels()
-        if payload.channel_id in channel_ids:
-            is_mod = False
-            user = get(self.get_all_members(), id=payload.user_id)
-            if not user == self.user:
-                channel = get(self.get_all_channels(), id=payload.channel_id)
-                message = await channel.fetch_message(payload.message_id)
-                for r in user.roles:
-                    for p in r.permissions:
-                        if p[0] == "administrator" and p[1] == True:
-                            is_mod = True
-                if is_mod:
-                    if payload.emoji.name == denied:
-                        await channel.send("Sorry {}, your suggestion has been denied. {} will tell you why.".format(message.author.mention, user.mention))
-                    elif payload.emoji.name == accepted:
-                        await channel.send("Good news, {}, your suggestion has been accepted".format(message.author.mention))
+description = '''This bot monitors the suggestion channel and also adds some process_commands that are specific to the r/chh discord server'''
+bot = commands.Bot(command_prefix=determine_prefix, description=description)
 
-    async def on_message(self, message):
-        yes = "\U00002705"
-        no = "\U0001F6AB"
+def check_is_mod(user):
+    is_mod = False
+    for r in user.roles:
+        for p in r.permissions:
+            if p[0] == "administrator" and p[1] == True:
+                is_mod = True
+    return is_mod
+
+@bot.event
+async def on_raw_reaction_add(payload):
+    yes = "💯"
+    no = "❌"
+    user = get(bot.get_all_members(), id=payload.user_id)
+    if not payload.user_id == bot.user.id:
+        channel = get(bot.get_all_channels(), id=payload.channel_id)
+        message = await channel.fetch_message(payload.message_id)
+        if payload.channel_id in database.get_suggestion_channels() and check_is_mod(user):
+            if payload.emoji.name == no:
+                await message.clear_reactions()
+                await message.add_reaction(no)
+                await channel.send("Sorry {}, your suggestion has been denied. {} will tell you why.".format(message.author.mention, user.mention))
+            elif payload.emoji.name == yes:
+                await message.clear_reactions()
+                await message.add_reaction(yes)
+                await channel.send("Good news, {}, your suggestion has been accepted".format(message.author.mention))
 
 
-        server_id = message.guild.id
-        database.add_server(server_id, "^")
 
-        if not os.path.exists("chh.db"):
-            database.create_table()
-            database.add_server(server_id, "&")
+@bot.event
+async def on_ready():
+    print('logged in as')
+    print(bot.user.name)
+    print(bot.user.id)
+    print('----')
 
-        cmd_prefix = database.get_prefix(server_id)
-        channel_ids = database.get_allowed_channels()
-        recommended_channel_ids = database.get_allowed_recommended_channels()
+@bot.event
+async def on_message(message):
+    yes = "\U00002705"
+    no = "\U0001F6AB"
+    suggestion_prefixes = ["[SUBREDDIT]","[DISCORD]","[CHH_BOT]","[CHH]"]
+    is_mod = check_is_mod(message.author)
+    was_suggestion = False
+    if message.channel.id in database.get_suggestion_channels() and not message.content.startswith(database.get_prefix(message.guild.id)):
+        valid_msg = False
+        content = message.content
+        content = content.upper()
+        for pfx in suggestion_prefixes:
+            if content.startswith(pfx):
+                await message.add_reaction(yes)
+                await message.add_reaction(no)
+                valid_msg = True
+            if not valid_msg and not is_mod:
+                temp_message = await message.channel.send("%s please use [SUBREDDIT], [DISCORD], [CHH_BOT] or [CHH] before your suggestion" % message.author.mention)
+                await asyncio.sleep(8)
+                await message.delete()
+                await temp_message.delete()
 
-        suggestion_prefixs = ["[SUBREDDIT]","[DISCORD]","[CHH]"]
+    else:
+        await bot.process_commands(message)
 
-        is_mod = False
+@bot.command(usage="<number of messages to purge>", description="Clear the previous X messages on this channel")
+@has_permissions(administrator=True)
+async def clear(ctx, amount: int):
+    msgs = []
+    await ctx.channel.purge(limit=amount+1)
 
-        for r in message.author.roles:
-            for p in r.permissions:
-                if p[0] == "administrator" and p[1] == True:
-                    is_mod = True
-
-        if message.author == self.user:
-            return
-
-        # START MOD COMMANDS
+@bot.command(hidden=True, aliases=["set_prefix"], usage="<wanted_prefix>", description="Set a max 2-character prefix for this bot on this server")
+@has_permissions(administrator=True)
+async def prefix(ctx, new_prefix=""):
+    if new_prefix == "":
+        embed = discord.Embed(title="Prefix", description="Get or change the server prefix", colour=0x0099ff)
+        embed.set_author(name="r/CHH Bot", icon_url="https://i.imgur.com/ZNdCFKg.png")
+        embed.add_field(name="Current prefix", value="{}".format(database.get_prefix(ctx.guild.id)))
+        embed.add_field(name="\u200B", value="\u200B")
+        embed.add_field(name="\u200B", value="\u200B")
+        embed.add_field(name="Change Prefix", value="To change the prefix, use {}prefix <new prefix>".format(database.get_prefix(ctx.guild.id)), inline=True)
+        await ctx.channel.send(embed=embed)
+    else:
+        if len(new_prefix) > 2:
+            embed = discord.Embed(title="Invalid Prefix", description="Please make sure that your prefix is at max two characters", colour=0x0099ff)
+            embed.set_author(name="r/CHH Bot", icon_url="https://i.imgur.com/ZNdCFKg.png")
+            embed.add_field(name="Change Prefix", value="To change the prefix, use {}prefix <new prefix>".format(database.get_prefix(ctx.guild.id)), inline=True)
+            await ctx.channel.send(embed=embed)
         else:
-            if is_mod:
-                # ADD CHANNEL TO MONITORING
-                if message.content.startswith("{}add".format(cmd_prefix)):
-                    directive = message.content.replace("{}add".format(cmd_prefix), "")
-                    directive = directive.replace(" ", "")
-                    if directive  == "recommended":
-                        database.add_recommended_channel(message.channel.id)
-                        temp_message = await message.channel.send('Added this channel to monitored channels')
-                        await message.delete()
-                        await asyncio.sleep(3)
-                        await temp_message.delete()
-                    elif directive == "suggestion":
-                        database.add_channels(message.channel.id)
-                        temp_message = await message.channel.send('Added this channel to monitored channels')
-                        await message.delete()
-                        await asyncio.sleep(3)
-                        await temp_message.delete()
-                    else:
-                        await message.channel.send("Unknown command, use '{0}add recommended' or '{0}add suggestion' ".format(cmd_prefix))
+            database.set_prefix(ctx.guild.id, new_prefix)
+            await ctx.channel.send("Successfully updated prefix for server")
+
+@bot.command(hidden=True, aliases=["add"], usage="<suggestion|recommendations>", brief="Add a tracked channel", description="Start tracking a channel for suggestions or recommendations")
+@has_permissions(administrator=True)
+async def track(ctx, track_type=""):
+
+    if track_type == "suggestions":
+        success = database.add_suggestion_channel(ctx.channel.id)
+        if success:
+            temp_message = await ctx.channel.send("Now tracking this channel for suggestions")
+        else:
+            temp_message = await ctx.channel.send("Already tracking this channel for suggestions")
+        await asyncio.sleep(3)
+        await ctx.message.delete()
+        await temp_message.delete()
+
+    elif track_type == "recommendations":
+        success = database.add_recommendation_channel(ctx.channel.id)
+        if success:
+            temp_message = await ctx.channel.send("Now tracking this channel for recommendations")
+        else:
+            temp_message = await ctx.channel.send("Already tracking this channel for suggestions")
+        await asyncio.sleep(3)
+        await ctx.message.delete()
+        await temp_message.delete()
+    else:
+        embed = discord.Embed(title="Error Adding Tracking", description="Please specify one of the following", colour=0x0099ff)
+        embed.set_author(name="r/CHH Bot", icon_url="https://i.imgur.com/ZNdCFKg.png")
+        embed.add_field(name="suggestions", value="tracks a suggestion channel")
+        embed.add_field(name="\u200b", value="\u200B")
+        embed.add_field(name="\u200b", value="\u200B")
+        embed.add_field(name="recommendations", value="tracks a recommendation channel")
+        await ctx.channel.send(embed=embed)
+
+@bot.command(hidden=True, usage="<suggestions|recommendations>", brief="Remove a tracked channel", description="Remove a channel from being tracked for suggestions/recommendations")
+@has_permissions(administrator=True)
+async def remove(ctx, track_type=""):
+    if track_type == "suggestions":
+        success = database.remove_suggestion_channel(ctx.channel.id)
+        if success:
+            temp_message = await ctx.channel.send("No longer tracking this channel for suggestions")
+        else:
+            temp_message = await ctx.channel.send("Was not tracking this channel for suggestions")
+        await asyncio.sleep(3)
+        await ctx.message.delete()
+        await temp_message.delete()
+    elif track_type == "recommendations":
+        success = database.remove_recommendation_channel(ctx.channel.id)
+        if success:
+            temp_message = await ctx.channel.send("No longer tracking this channel for recommendations")
+        else:
+            temp_message = await ctx.channel.send("Was not tracking this channel for recommendations")
+        await asyncio.sleep(3)
+        await ctx.message.delete()
+        await temp_message.delete()
+    else:
+        embed = discord.Embed(title="Error Removing Tracking", description="Please specify one of the following", colour=0x0099ff)
+        embed.set_author(name="r/CHH Bot", icon_url="https://i.imgur.com/ZNdCFKg.png")
+        embed.add_field(name="suggestions", value="removes tracking for a suggestion channel")
+        embed.add_field(name="\u200b", value="\u200B")
+        embed.add_field(name="\u200b", value="\u200B")
+        embed.add_field(name="recommendations", value="removes tracking for a recommendation channel")
+        await ctx.channel.send(embed=embed)
+
+"""Recommend an artist
+
+Keyword arguments:
+<artist name> -- the artist name you are searching
+"""
+@bot.command(usage="<artist name>", brief="Recommend music!", description="Recommend an artist to the given channel")
+async def recommend(ctx, *args):
+    allowed_channels = database.get_recommended_channels()
+    search_term = ' '.join(args)
+    if ctx.channel.id in allowed_channels:
+        if search_term == "":
+            embed = discord.Embed(title="Error Finding Artist", description="Please enter an artist name to search", colour=0x0099ff)
+            embed.set_author(name="r/CHH Bot", icon_url="https://i.imgur.com/ZNdCFKg.png")
+            embed.add_field(name="Usage", value="{}recommend <artist name>".format(database.get_prefix(ctx.guild.id)))
+        else:
+            SPOTIPY_ID = os.getenv('SPOTIPY_ID')
+            SPOTIPY_SECRET = os.getenv('SPOTIPY_SECRET')
+            sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(client_id=SPOTIPY_ID, client_secret=SPOTIPY_SECRET))
+            results = sp.search(q=search_term, limit=5, type='artist')
+            items=results['artists']['items']
+            if len(items) > 0:
+                artist = items[0]
+                artist_name = artist['name']
+                artist_url = artist['external_urls']['spotify']
+                artist_image = artist['images'][0]['url']
+                artist_uri = artist['uri']
+                top_tracks = sp.artist_top_tracks(artist_uri)
+                top_line = ""
+                for track in top_tracks['tracks'][:5]:
+                    top_line = top_line + track['name'] + "\n"
+                related_artist = sp.artist_related_artists(artist_uri)
+                related_line = ""
+                for artist in related_artist['artists'][:5]:
+                    related_line = related_line + artist['name'] + "\n"
+                embed = discord.Embed(title=artist_name, description="result for spotify search of {}".format(search_term), url=artist_url)
+                embed.set_thumbnail(url=artist_image)
+                embed.add_field(name="Top Tracks", value=top_line)
+                embed.add_field(name="\u200b", value="\u200B")
+                embed.add_field(name="Related Artists", value=related_line)
+                await ctx.channel.send(embed=embed)
+                await ctx.channel.send(artist_url)
 
 
-                # REMOVE CHANNEL FROM MONITORING
-                elif message.content.startswith("{}remove".format(cmd_prefix)):
-                    directive = message.content.replace("{}remove".format(cmd_prefix), "")
-                    directive = directive.replace(" ", "")
-                    if directive  == "recommended":
-                        database.remove_recommended_channel(message.channel.id)
-                        temp_message = await message.channel.send('No longer monitoring this channel')
-                        await message.delete()
-                        await asyncio.sleep(3)
-                        await temp_message.delete()
-                    elif directive == "suggestion":
-                        database.remove_channel(message.channel.id)
-                        temp_message = await message.channel.send('No longer monitoring this channel')
-                        await message.delete()
-                        await asyncio.sleep(3)
-                        await temp_message.delete()
-                    else:
-                        await message.channel.send("Unknown command, use '{0}remove recommended' or '{0}remove suggestion' ".format(cmd_prefix))
-
-                # CHANGE THE PREFIX
-                elif message.content.startswith("{}prefix".format(cmd_prefix)):
-                    if len(message.content.split()) == 1:
-                        temp_message = await message.channel.send('Please include a prefix')
-                        await asyncio.sleep(3)
-                        await temp_message.delete()
-                    else:
-                        new_prefix = message.content.split()[1]
-                        if len(new_prefix) > 2:
-                            temp_message = await message.channel.send('Prefix should be under two characters long')
-                            await asyncio.sleep(3)
-                            await temp_message.delete()
-                        else:
-                            database.set_prefix(server_id, new_prefix)
-
-                # CLEAR THE CHAT
-                elif message.content.startswith("{}clear".format(cmd_prefix)):
-                    msgs = []
-                    if len(message.content.split()) > 1:
-                        number = int(message.content.split()[1]) + 1
-                    else:
-                        number = 6
-                    await message.channel.purge(limit = number)
-
-            # IF USER NOT MOD OR IF CHANNEL ID IS IN MONITORED LIST
-            if not message.content.startswith(cmd_prefix):
-                if message.channel.id in channel_ids:
-                    valid_msg = False
-
-                    # CHECK IF USING SUGGESTION PREFIX
-                    for prefix in suggestion_prefixs:
-                        if message.content.startswith(prefix):
-                            await message.add_reaction(yes)
-                            await message.add_reaction(no)
-                            valid_msg = True
-
-                    # IF NOT USING PREFIX
-                    if not valid_msg:
-                        if not is_mod:
-                            send_channel = message.channel
-                            await message.delete() # DELETE THEIR MESSAGE
-                            temp_message = await send_channel.send('%s please use [SUBREDDIT], [DISCORD] or [CHH] for your suggestions' % message.author.mention)
-                            await asyncio.sleep(5)
-                            await temp_message.delete()
-            elif message.channel.id in recommended_channel_ids:
-                if message.content.startswith("{}recommend".format(cmd_prefix)):
-                    search_string = message.content.replace("{}recommend".format(cmd_prefix), "")
-                    search_string = search_string.replace(" ", "")
-                    if search_string == "":
-                        await message.channel.send("%s Please specify an artist name to recommend" % message.author.mention)
-                    else:
-                        SPOTIPY_ID = os.getenv('SPOTIPY_ID')
-                        SPOTIPY_SECRET = os.getenv('SPOTIPY_SECRET')
-                        sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(client_id=SPOTIPY_ID, client_secret=SPOTIPY_SECRET))
-                        results = sp.search(q=search_string, limit=5, type='artist')
-                        items = results['artists']['items']
-                        if len(items) > 0:
-                            artist = items[0]
-                            await message.channel.send(artist['external_urls']['spotify'])
-
-
-
-
-client = chh_bot()
-TOKEN=os.getenv('DISCORD_TOKEN')
-client.run(TOKEN)
+token = os.getenv('DISCORD_TOKEN')
+bot.run(token)
