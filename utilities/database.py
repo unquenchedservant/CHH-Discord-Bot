@@ -1,12 +1,13 @@
 import sqlite3, os
 
 
-def add_channels(channel_id):
+def add_suggestion_channel(channel_id):
     conn = sqlite3.connect("chh.db")
     conn.execute("INSERT INTO allowed (ID) VALUES ({})".format(channel_id))
     conn.commit()
     conn.close()
 
+def add_recommendation_channel(channel_id):
 def remove_channel(channel_id):
     conn = sqlite3.connect("chh.db")
     conn.execute("DELETE FROM allowed WHERE ID = {}".format(channel_id))
