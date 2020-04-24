@@ -6,3 +6,5 @@ chh.db
 *.pyc
 
 .env.save
+
+env/
