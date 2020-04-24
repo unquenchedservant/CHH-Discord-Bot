@@ -26,6 +26,34 @@ async def determine_prefix(bot, message):
 description = '''This bot monitors the suggestion channel and also adds some process_commands that are specific to the r/chh discord server'''
 bot = commands.Bot(command_prefix=determine_prefix, description=description)
 
+def check_is_mod(user):
+    is_mod = False
+    for r in user.roles:
+        for p in r.permissions:
+            if p[0] == "administrator" and p[1] == True:
+                is_mod = True
+    return is_mod
+
+@bot.event
+async def on_raw_reaction_add(payload):
+    yes = "💯"
+    no = "❌"
+    user = get(bot.get_all_members(), id=payload.user_id)
+    if not payload.user_id == bot.user.id:
+        channel = get(bot.get_all_channels(), id=payload.channel_id)
+        message = await channel.fetch_message(payload.message_id)
+        if payload.channel_id in database.get_suggestion_channels() and check_is_mod(user):
+            if payload.emoji.name == no:
+                await message.clear_reactions()
+                await message.add_reaction(no)
+                await channel.send("Sorry {}, your suggestion has been denied. {} will tell you why.".format(message.author.mention, user.mention))
+            elif payload.emoji.name == yes:
+                await message.clear_reactions()
+                await message.add_reaction(yes)
+                await channel.send("Good news, {}, your suggestion has been accepted".format(message.author.mention))
+
+
+
 @bot.event
 async def on_ready():
     print('logged in as')
@@ -35,16 +63,36 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
+    yes = "\U00002705"
+    no = "\U0001F6AB"
+    suggestion_prefixes = ["[SUBREDDIT]","[DISCORD]","[CHH_BOT]","[CHH]"]
+    is_mod = check_is_mod(message.author)
+    was_suggestion = False
+    if message.channel.id in database.get_suggestion_channels() and not message.content.startswith(database.get_prefix(message.guild.id)):
+        valid_msg = False
+        content = message.content
+        content = content.upper()
+        for pfx in suggestion_prefixes:
+            if content.startswith(pfx):
+                await message.add_reaction(yes)
+                await message.add_reaction(no)
+                valid_msg = True
+            if not valid_msg and not is_mod:
+                temp_message = await message.channel.send("%s please use [SUBREDDIT], [DISCORD], [CHH_BOT] or [CHH] before your suggestion" % message.author.mention)
+                await asyncio.sleep(8)
+                await message.delete()
+                await temp_message.delete()
 
-    await bot.process_commands(message)
+    else:
+        await bot.process_commands(message)
 
-@bot.command()
+@bot.command(usage="<number of messages to purge>", description="Clear the previous X messages on this channel")
 @has_permissions(administrator=True)
 async def clear(ctx, amount: int):
     msgs = []
     await ctx.channel.purge(limit=amount+1)
 
-@bot.command()
+@bot.command(hidden=True, aliases=["set_prefix"], usage="<wanted_prefix>", description="Set a max 2-character prefix for this bot on this server")
 @has_permissions(administrator=True)
 async def prefix(ctx, new_prefix=""):
     if new_prefix == "":
