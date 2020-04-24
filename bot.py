@@ -86,7 +86,7 @@ async def on_message(message):
     else:
         await bot.process_commands(message)
 
-@bot.command(usage="<number of messages to purge>", description="Clear the previous X messages on this channel")
+@bot.command(hidden=True, usage="<number of messages to purge>", description="Clear the previous X messages on this channel")
 @has_permissions(administrator=True)
 async def clear(ctx, amount: int):
     msgs = []
