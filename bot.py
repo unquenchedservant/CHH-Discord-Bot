@@ -98,7 +98,7 @@ class chh_bot(discord.Client):
                 directive = directive.replace(" ", "")
                 if directive  == "recommended":
                     database.remove_recommended_channel(message.channel.id)
-                    temp_message = await message.channel.send('Added this channel to monitored channels')
+                    temp_message = await message.channel.send('No longer monitoring this channel')
                     await message.delete()
                     await asyncio.sleep(3)
                     await temp_message.delete()
@@ -136,9 +136,7 @@ class chh_bot(discord.Client):
                 await message.channel.purge(limit = number)
 
         # IF USER NOT MOD OR IF CHANNEL ID IS IN MONITORED LIST
-        if message.channel.id in channel_ids:
-
-            # IF CHANNEL MONITORED
+        if not message.content.startswith(cmd_prefix):
             if message.channel.id in channel_ids:
                 valid_msg = False
 
