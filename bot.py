@@ -37,6 +37,10 @@ async def on_message(message):
 
     await bot.process_commands(message)
 
+@bot.command()
+async def clear(ctx, amount: int):
+    msgs = []
+    await ctx.channel.purge(limit=amount+1)
 
 
 
