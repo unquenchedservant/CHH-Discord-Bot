@@ -113,7 +113,7 @@ async def prefix(ctx, new_prefix=""):
             database.set_prefix(ctx.guild.id, new_prefix)
             await ctx.channel.send("Successfully updated prefix for server")
 
-@bot.command()
+@bot.command(hidden=True, aliases=["add"], usage="<suggestion|recommendations>", brief="Add a tracked channel", description="Start tracking a channel for suggestions or recommendations")
 @has_permissions(administrator=True)
 async def track(ctx, track_type=""):
 
@@ -145,7 +145,7 @@ async def track(ctx, track_type=""):
         embed.add_field(name="recommendations", value="tracks a recommendation channel")
         await ctx.channel.send(embed=embed)
 
-@bot.command()
+@bot.command(hidden=True, usage="<suggestions|recommendations>", brief="Remove a tracked channel", description="Remove a channel from being tracked for suggestions/recommendations")
 @has_permissions(administrator=True)
 async def remove(ctx, track_type=""):
     if track_type == "suggestions":
@@ -162,7 +162,7 @@ async def remove(ctx, track_type=""):
         if success:
             temp_message = await ctx.channel.send("No longer tracking this channel for recommendations")
         else:
-            temp_message = await ctx.channel.send("Was not tracking this channel for suggestions")
+            temp_message = await ctx.channel.send("Was not tracking this channel for recommendations")
         await asyncio.sleep(3)
         await ctx.message.delete()
         await temp_message.delete()
@@ -175,7 +175,12 @@ async def remove(ctx, track_type=""):
         embed.add_field(name="recommendations", value="removes tracking for a recommendation channel")
         await ctx.channel.send(embed=embed)
 
-@bot.command()
+"""Recommend an artist
+
+Keyword arguments:
+<artist name> -- the artist name you are searching
+"""
+@bot.command(usage="<artist name>", brief="Recommend music!", description="Recommend an artist to the given channel")
 async def recommend(ctx, *args):
     allowed_channels = database.get_recommended_channels()
     search_term = ' '.join(args)
