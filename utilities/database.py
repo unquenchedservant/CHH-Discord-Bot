@@ -76,18 +76,17 @@ def remove_recommendation_channel(channel_id):
         conn.close()
         return True
 
-def get_allowed_channels():
+def get_suggestion_channels():
     conn = sqlite3.connect("chh.db")
+    conn.execute('''CREATE TABLE IF NOT EXISTS allowed
+                    (ID INT PRIMARY KEY NOT NULL)''')
+    conn.commit()
     cursor = conn.execute("SELECT * FROM allowed").fetchall()
     ids = []
     for row in cursor:
         ids.append(row[0])
     conn.close()
     return ids
-
-
-
-
 
 def get_recommended_channels():
     conn = sqlite3.connect("chh.db")
