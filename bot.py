@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import os, discord, asyncio, sqlite3, logging, spotipy
 from discord.ext import commands
+from discord.ext.commands import has_permissions, CheckFailure
 from discord.utils import get
 from dotenv import load_dotenv
 from utilities import database
@@ -38,6 +39,7 @@ async def on_message(message):
     await bot.process_commands(message)
 
 @bot.command()
+@has_permissions(administrator=True)
 async def clear(ctx, amount: int):
     msgs = []
     await ctx.channel.purge(limit=amount+1)
