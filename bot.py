@@ -45,6 +45,7 @@ async def clear(ctx, amount: int):
     await ctx.channel.purge(limit=amount+1)
 
 @bot.command()
+@has_permissions(administrator=True)
 async def prefix(ctx, new_prefix=""):
     if new_prefix == "":
         prefix_msg = discord.Embed(title="Prefix", description="Get or change the server prefix", colour=0x0099ff)
