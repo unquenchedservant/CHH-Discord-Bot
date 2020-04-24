@@ -193,29 +193,37 @@ async def recommend(ctx, *args):
             SPOTIPY_ID = os.getenv('SPOTIPY_ID')
             SPOTIPY_SECRET = os.getenv('SPOTIPY_SECRET')
             sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(client_id=SPOTIPY_ID, client_secret=SPOTIPY_SECRET))
-            results = sp.search(q=search_term, limit=5, type='artist')
-            items=results['artists']['items']
-            if len(items) > 0:
-                artist = items[0]
-                artist_name = artist['name']
-                artist_url = artist['external_urls']['spotify']
-                artist_image = artist['images'][0]['url']
-                artist_uri = artist['uri']
-                top_tracks = sp.artist_top_tracks(artist_uri)
-                top_line = ""
-                for track in top_tracks['tracks'][:5]:
-                    top_line = top_line + track['name'] + "\n"
-                related_artist = sp.artist_related_artists(artist_uri)
-                related_line = ""
-                for artist in related_artist['artists'][:5]:
-                    related_line = related_line + artist['name'] + "\n"
-                embed = discord.Embed(title=artist_name, description="result for spotify search of {}".format(search_term), url=artist_url)
-                embed.set_thumbnail(url=artist_image)
-                embed.add_field(name="Top Tracks", value=top_line)
-                embed.add_field(name="\u200b", value="\u200B")
-                embed.add_field(name="Related Artists", value=related_line)
-                await ctx.channel.send(embed=embed)
-                await ctx.channel.send(artist_url)
+            results = sp.search(q=search_term, limit=10, type='artist')
+            best_choice = None
+            for item in results['artists']['items']:
+                if item['name'].upper() == search_term.upper():
+                    best_choice = item
+                    break
+            if not best_choice:
+                items=results['artists']['items']
+                if len(items) > 0:
+                    artist = items[0]
+            else:
+                artist = best_choice
+            artist_name = artist['name']
+            artist_url = artist['external_urls']['spotify']
+            artist_image = artist['images'][0]['url']
+            artist_uri = artist['uri']
+            top_tracks = sp.artist_top_tracks(artist_uri)
+            top_line = ""
+            for track in top_tracks['tracks'][:5]:
+                top_line = top_line + track['name'] + "\n"
+            related_artist = sp.artist_related_artists(artist_uri)
+            related_line = ""
+            for artist in related_artist['artists'][:5]:
+                related_line = related_line + artist['name'] + "\n"
+            embed = discord.Embed(title=artist_name, description="result for spotify search of {}".format(search_term), url=artist_url)
+            embed.set_thumbnail(url=artist_image)
+            embed.add_field(name="Top Tracks", value=top_line)
+            embed.add_field(name="\u200b", value="\u200B")
+            embed.add_field(name="Related Artists", value=related_line)
+            await ctx.channel.send(embed=embed)
+            await ctx.channel.send(artist_url)
 
 
 token = os.getenv('DISCORD_TOKEN')
