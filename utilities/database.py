@@ -6,22 +6,36 @@ def add_suggestion_channel(channel_id):
     conn.execute('''CREATE TABLE IF NOT EXISTS allowed
                     (ID INT PRIMARY KEY NOT NULL)''')
     conn.commit()
-    conn.execute("INSERT INTO allowed (ID) VALUES ({})".format(channel_id))
-    conn.commit()
-    conn.close()
+    cursor = conn.execute("SELECT * FROM allowed WHERE ID={}".format(channel_id))
+    data = cursor.fetchall()
+    if len(data) == 0:
+        conn.execute("INSERT INTO allowed (ID) VALUES ({})".format(channel_id))
+        conn.commit()
+        conn.close()
+        return True
+    else:
+        return False
 
 def add_recommendation_channel(channel_id):
     conn = sqlite3.connect("chh.db")
     conn.execute('''CREATE TABLE IF NOT EXISTS allowed_recommended
                     (ID INT PRIMARY KEY NOT NULL)''')
     conn.commit()
+    cursor = conn.execute("SELECT * FROM allowed_recommended WHERE ID={}".format(channel_id))
+    data = cursor.fetchall()
+    if len(data) == 0:
+        conn.execute("INSERT INTO allowed_recommended (ID) VALUES ({})".format(channel_id))
+        conn.commit()
+        conn.close()
+        return True
+    else:
+        return False
+
 def remove_channel(channel_id):
     conn = sqlite3.connect("chh.db")
     conn.execute("DELETE FROM allowed WHERE ID = {}".format(channel_id))
     conn.commit()
     conn.close()
-
-
 
 def get_allowed_channels():
     conn = sqlite3.connect("chh.db")
@@ -32,14 +46,7 @@ def get_allowed_channels():
     conn.close()
     return ids
 
-def add_recommended_channel(channel_id):
-    conn = sqlite3.connect("chh.db")
-    conn.execute('''CREATE TABLE IF NOT EXISTS allowed_recommended
-                    (ID INT PRIMARY KEY NOT NULL)''')
-    conn.commit()
-    conn.execute("INSERT INTO allowed_recommended (ID) VALUES ({})".format(channel_id))
-    conn.commit()
-    conn.close()
+
 
 def remove_recommended_channel(channel_id):
     conn = sqlite3.connect("chh.db")
