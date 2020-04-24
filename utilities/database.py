@@ -89,7 +89,7 @@ def get_allowed_channels():
 
 
 
-def get_allowed_recommended_channels():
+def get_recommended_channels():
     conn = sqlite3.connect("chh.db")
     conn.execute('''CREATE TABLE IF NOT EXISTS allowed_recommended
                     (ID INT PRIMARY KEY NOT NULL)''')

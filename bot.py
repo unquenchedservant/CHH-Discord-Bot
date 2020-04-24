@@ -126,5 +126,44 @@ async def remove(ctx, track_type=""):
         embed.add_field(name="\u200b", value="\u200B")
         embed.add_field(name="recommendations", value="removes tracking for a recommendation channel")
         await ctx.channel.send(embed=embed)
+
+@bot.command()
+async def recommend(ctx, *args):
+    allowed_channels = database.get_recommended_channels()
+    search_term = ' '.join(args)
+    if ctx.channel.id in allowed_channels:
+        if search_term == "":
+            embed = discord.Embed(title="Error Finding Artist", description="Please enter an artist name to search", colour=0x0099ff)
+            embed.set_author(name="r/CHH Bot", icon_url="https://i.imgur.com/ZNdCFKg.png")
+            embed.add_field(name="Usage", value="{}recommend <artist name>".format(database.get_prefix(ctx.guild.id)))
+        else:
+            SPOTIPY_ID = os.getenv('SPOTIPY_ID')
+            SPOTIPY_SECRET = os.getenv('SPOTIPY_SECRET')
+            sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(client_id=SPOTIPY_ID, client_secret=SPOTIPY_SECRET))
+            results = sp.search(q=search_term, limit=5, type='artist')
+            items=results['artists']['items']
+            if len(items) > 0:
+                artist = items[0]
+                artist_name = artist['name']
+                artist_url = artist['external_urls']['spotify']
+                artist_image = artist['images'][0]['url']
+                artist_uri = artist['uri']
+                top_tracks = sp.artist_top_tracks(artist_uri)
+                top_line = ""
+                for track in top_tracks['tracks'][:5]:
+                    top_line = top_line + track['name'] + "\n"
+                related_artist = sp.artist_related_artists(artist_uri)
+                related_line = ""
+                for artist in related_artist['artists'][:5]:
+                    related_line = related_line + artist['name'] + "\n"
+                embed = discord.Embed(title=artist_name, description="result for spotify search of {}".format(search_term), url=artist_url)
+                embed.set_thumbnail(url=artist_image)
+                embed.add_field(name="Top Tracks", value=top_line)
+                embed.add_field(name="\u200b", value="\u200B")
+                embed.add_field(name="Related Artists", value=related_line)
+                await ctx.channel.send(embed=embed)
+                await ctx.channel.send(artist_url)
+
+
 token = os.getenv('DISCORD_TOKEN')
 bot.run(token)
