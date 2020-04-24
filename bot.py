@@ -156,7 +156,9 @@ class chh_bot(discord.Client):
                     if search_string == "":
                         await message.channel.send("%s Please specify an artist name to recommend" % message.author.mention)
                     else:
-                        sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
+                        SPOTIPY_ID = os.getenv('SPOTIPY_ID')
+                        SPOTIPY_SECRET = OS.getenv('SPOTIPY_SECRET')
+                        sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(client_id=SPOTIPY_ID, client_secret=SPOTIPY_SECRET))
                         results = sp.search(q=search_string, limit=5, type='artist')
                         items = results['artists']['items']
                         if len(items) > 0:
