@@ -1,5 +1,12 @@
 import sqlite3, os
 
+'''
+ADD TRACKING UTILITY FUNCTIONS
+
+add_suggestion_channel - adds tracking for suggestions to the given channel_id
+
+add_recommendation_channel - adds tracking for recommendations to the given channel_id
+'''
 
 def add_suggestion_channel(channel_id):
     conn = sqlite3.connect("chh.db")
@@ -31,11 +38,43 @@ def add_recommendation_channel(channel_id):
     else:
         return False
 
-def remove_channel(channel_id):
+
+'''
+REMOVE TRACKING UTILITY FUNCTIONS
+
+remove_suggestion_channel - removes tracking for suggestions from the channel with given ID
+
+remove_recommendation_channel - removes tracking for recommendations from the channel with given id
+'''
+def remove_suggestion_channel(channel_id):
     conn = sqlite3.connect("chh.db")
-    conn.execute("DELETE FROM allowed WHERE ID = {}".format(channel_id))
+    conn.execute('''CREATE TABLE IF NOT EXISTS allowed
+                    (ID INT PRIMARY KEY NOT NULL)''')
     conn.commit()
-    conn.close()
+    cursor = conn.execute("SELECT * FROM allowed WHERE ID={}".format(channel_id))
+    data = cursor.fetchall()
+    if len(data) == 0:
+        return False
+    else:
+        conn.execute("DELETE FROM allowed WHERE ID = {}".format(channel_id))
+        conn.commit()
+        conn.close()
+        return True
+
+def remove_recommendation_channel(channel_id):
+    conn = sqlite3.connect("chh.db")
+    conn.execute('''CREATE TABLE IF NOT EXISTS allowed_recommended
+                    (ID INT PRIMARY KEY NOT NULL)''')
+    conn.commit()
+    cursor = conn.execute("SELECT * FROM allowed_recommended WHERE ID={}".format(channel_id))
+    data = cursor.fetchall()
+    if len(data) == 0:
+        return False
+    else:
+        conn.execute("DELETE FROM allowed_recommended WHERE ID = {}".format(channel_id))
+        conn.commit()
+        conn.close()
+        return True
 
 def get_allowed_channels():
     conn = sqlite3.connect("chh.db")
@@ -48,11 +87,7 @@ def get_allowed_channels():
 
 
 
-def remove_recommended_channel(channel_id):
-    conn = sqlite3.connect("chh.db")
-    conn.execute("DELETE FROM allowed_recommended WHERE ID = {}".format(channel_id))
-    conn.commit()
-    conn.close()
+
 
 def get_allowed_recommended_channels():
     conn = sqlite3.connect("chh.db")
