@@ -56,8 +56,9 @@ class chh_bot(discord.Client):
             cmd_prefix = "^"
 
         channel_ids = database.get_allowed_channels()
+        print(channel_ids)
         recommended_channel_ids = database.get_allowed_recommended_channels()
-
+        print(recommended_channel_ids)
         suggestion_prefixs = ["[SUBREDDIT]","[DISCORD]","[CHH]"]
 
         is_mod = False
