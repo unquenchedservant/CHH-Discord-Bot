@@ -48,13 +48,13 @@ async def clear(ctx, amount: int):
 @has_permissions(administrator=True)
 async def prefix(ctx, new_prefix=""):
     if new_prefix == "":
-        prefix_msg = discord.Embed(title="Prefix", description="Get or change the server prefix", colour=0x0099ff)
-        prefix_msg.set_author(name="r/CHH Bot", icon_url="https://i.imgur.com/ZNdCFKg.png")
-        prefix_msg.add_field(name="Current prefix", value="{}".format(database.get_prefix(ctx.guild.id)))
-        prefix_msg.add_field(name="\u200B", value="\u200B")
-        prefix_msg.add_field(name="\u200B", value="\u200B")
-        prefix_msg.add_field(name="Change Prefix", value="To change the prefix, use {}prefix <new prefix>".format(database.get_prefix(ctx.guild.id)), inline=True)
-        await ctx.channel.send(embed=prefix_msg)
+        embed = discord.Embed(title="Prefix", description="Get or change the server prefix", colour=0x0099ff)
+        embed.set_author(name="r/CHH Bot", icon_url="https://i.imgur.com/ZNdCFKg.png")
+        embed.add_field(name="Current prefix", value="{}".format(database.get_prefix(ctx.guild.id)))
+        embed.add_field(name="\u200B", value="\u200B")
+        embed.add_field(name="\u200B", value="\u200B")
+        embed.add_field(name="Change Prefix", value="To change the prefix, use {}prefix <new prefix>".format(database.get_prefix(ctx.guild.id)), inline=True)
+        await ctx.channel.send(embed=embed)
 
 token = os.getenv('DISCORD_TOKEN')
 bot.run(token)
