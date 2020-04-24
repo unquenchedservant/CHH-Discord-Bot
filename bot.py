@@ -83,7 +83,7 @@ async def track(ctx, track_type=""):
             temp_message = await ctx.channel.send("Now tracking this channel for recommendations")
         else:
             temp_message = await ctx.channel.send("Already tracking this channel for suggestions")
-        await asycio.sleep(3)
+        await asyncio.sleep(3)
         await ctx.message.delete()
         await temp_message.delete()
     else:
