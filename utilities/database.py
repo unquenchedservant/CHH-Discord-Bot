@@ -2,8 +2,6 @@ import sqlite3, os
 
 
 def add_channels(channel_id):
-    if not os.path.exists("chh.db"):
-        create_table()
     conn = sqlite3.connect("chh.db")
     conn.execute("INSERT INTO allowed (ID) VALUES ({})".format(channel_id))
     conn.commit()
@@ -18,9 +16,6 @@ def remove_channel(channel_id):
 
 
 def get_allowed_channels():
-    if not os.path.exists("chh.db"):
-        create_table()
-        return []
     conn = sqlite3.connect("chh.db")
     cursor = conn.execute("SELECT * FROM allowed").fetchall()
     ids = []
@@ -45,9 +40,6 @@ def remove_recommended_channel(channel_id):
     conn.close()
 
 def get_allowed_recommended_channels():
-    if not os.path.exists("chh.db"):
-        create_table()
-        return []
     conn = sqlite3.connect("chh.db")
     conn.execute('''CREATE TABLE IF NOT EXISTS allowed_recommended
                     (ID INT PRIMARY KEY NOT NULL)''')
