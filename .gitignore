@@ -8,3 +8,5 @@ chh.db
 .env.save
 
 env/
+
+*.log
