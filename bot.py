@@ -12,6 +12,7 @@ load_dotenv()
 class chh_bot(discord.Client):
 
     async def on_ready(self):
+        database.create_table()
         print("Logged on as {0}!".format(self.user))
 
     async def on_raw_reaction_add(self, payload):
@@ -44,6 +45,7 @@ class chh_bot(discord.Client):
 
 
         server_id = message.guild.id
+        database.add_server(server_id, "^")
 
         if not os.path.exists("chh.db"):
             database.create_table()
@@ -51,14 +53,9 @@ class chh_bot(discord.Client):
 
         cmd_prefix = database.get_prefix(server_id)
 
-        if cmd_prefix == "&":
-            database.set_prefix(server_id, "^")
-            cmd_prefix = "^"
-
         channel_ids = database.get_allowed_channels()
-        print(channel_ids)
         recommended_channel_ids = database.get_allowed_recommended_channels()
-        print(recommended_channel_ids)
+
         suggestion_prefixs = ["[SUBREDDIT]","[DISCORD]","[CHH]"]
 
         is_mod = False
@@ -155,20 +152,20 @@ class chh_bot(discord.Client):
                         temp_message = await send_channel.send('%s please use [SUBREDDIT], [DISCORD] or [CHH] for your suggestions' % message.author.mention)
                         await asyncio.sleep(5)
                         await temp_message.delete()
-
-        if message.channel.id in recommended_channel_ids:
-            if message.content.startswith("{}recommend".format(cmd_prefix)):
-                search_string = message.content.replace("{}recommend".format(cmd_prefix), "")
-                search_string = search_string.replace(" ", "")
-                if search_string == "":
-                    await message.channel.send("%s Please specify an artist name to recommend")
-                else:
-                    sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
-                    results = sp.search(q=search_string, limit=1, type='artist')
-                    items = results['artists']['items']
-                    if len(items) > 0:
-                        artist = items[0]
-                        await message.channel.send(artist['external_urls']['spotify'])
+        elif message.content.startswith(cmd_prefix):
+            if message.channel.id in recommended_channel_ids:
+                if message.content.startswith("{}recommend".format(cmd_prefix)):
+                    search_string = message.content.replace("{}recommend".format(cmd_prefix), "")
+                    search_string = search_string.replace(" ", "")
+                    if search_string == "":
+                        await message.channel.send("%s Please specify an artist name to recommend")
+                    else:
+                        sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
+                        results = sp.search(q=search_string, limit=1, type='artist')
+                        items = results['artists']['items']
+                        if len(items) > 0:
+                            artist = items[0]
+                            await message.channel.send(artist['external_urls']['spotify'])
 
 
 

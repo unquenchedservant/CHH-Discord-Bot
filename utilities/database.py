@@ -53,9 +53,17 @@ def get_allowed_recommended_channels():
 
 def add_server(server_id, prefix):
     conn = sqlite3.connect("chh.db")
-    conn.execute("INSERT INTO server (ID, PREFIX) VALUES ({}, '{}')".format(server_id, prefix))
-    conn.commit()
-    conn.close()
+    cursor = conn.execute("SELECT ID FROM server")
+    data = cursor.fetchall()
+    found = False
+    for row in data:
+        if row[0] == server_id:
+            found = True
+            break
+    if not found:
+        conn.execute("INSERT INTO server (ID, PREFIX) VALUES ({}, '{}')".format(server_id, prefix))
+        conn.commit()
+        conn.close()
 
 def get_prefix(server_id):
     if not os.path.exists("chh.db"):
