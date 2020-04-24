@@ -68,6 +68,7 @@ async def prefix(ctx, new_prefix=""):
 @bot.command()
 @has_permissions(administrator=True)
 async def track(ctx, track_type=""):
+
     if track_type == "suggestions":
         success = database.add_suggestion_channel(ctx.channel.id)
         if success:
@@ -77,6 +78,7 @@ async def track(ctx, track_type=""):
         await asyncio.sleep(3)
         await ctx.message.delete()
         await temp_message.delete()
+
     elif track_type == "recommendations":
         success = database.add_recommendation_channel(ctx.channel.id)
         if success:
@@ -93,6 +95,36 @@ async def track(ctx, track_type=""):
         embed.add_field(name="\u200b", value="\u200B")
         embed.add_field(name="\u200b", value="\u200B")
         embed.add_field(name="recommendations", value="tracks a recommendation channel")
+        await ctx.channel.send(embed=embed)
+
+@bot.command()
+@has_permissions(administrator=True)
+async def remove(ctx, track_type=""):
+    if track_type == "suggestions":
+        success = database.remove_suggestion_channel(ctx.channel.id)
+        if success:
+            temp_message = await ctx.channel.send("No longer tracking this channel for suggestions")
+        else:
+            temp_message = await ctx.channel.send("Was not tracking this channel for suggestions")
+        await asyncio.sleep(3)
+        await ctx.message.delete()
+        await temp_message.delete()
+    elif track_type == "recommendations":
+        success = database.remove_recommendation_channel(ctx.channel.id)
+        if success:
+            temp_message = await ctx.channel.send("No longer tracking this channel for recommendations")
+        else:
+            temp_message = await ctx.channel.send("Was not tracking this channel for suggestions")
+        await asyncio.sleep(3)
+        await ctx.message.delete()
+        await temp_message.delete()
+    else:
+        embed = discord.Embed(title="Error Removing Tracking", description="Please specify one of the following", colour=0x0099ff)
+        embed.set_author(name="r/CHH Bot", icon_url="https://i.imgur.com/ZNdCFKg.png")
+        embed.add_field(name="suggestions", value="removes tracking for a suggestion channel")
+        embed.add_field(name="\u200b", value="\u200B")
+        embed.add_field(name="\u200b", value="\u200B")
+        embed.add_field(name="recommendations", value="removes tracking for a recommendation channel")
         await ctx.channel.send(embed=embed)
 token = os.getenv('DISCORD_TOKEN')
 bot.run(token)
