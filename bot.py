@@ -48,7 +48,6 @@ class chh_bot(discord.Client):
             database.add_server(server_id, "&")
 
         cmd_prefix = database.get_prefix(server_id)
-
         channel_ids = database.get_allowed_channels()
         recommended_channel_ids = database.get_allowed_recommended_channels()
 
@@ -63,6 +62,7 @@ class chh_bot(discord.Client):
 
         if message.author == self.user:
             return
+
         # START MOD COMMANDS
         else:
             if is_mod:
