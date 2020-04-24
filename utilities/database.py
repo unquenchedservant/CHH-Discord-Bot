@@ -14,12 +14,45 @@ def remove_channel(channel_id):
     conn.execute("DELETE FROM allowed WHERE ID = {}".format(channel_id))
     conn.commit()
     conn.close()
+
+
+
 def get_allowed_channels():
     if not os.path.exists("chh.db"):
         create_table()
         return []
     conn = sqlite3.connect("chh.db")
     cursor = conn.execute("SELECT * FROM allowed").fetchall()
+    ids = []
+    for row in cursor:
+        ids.append(row[0])
+    conn.close()
+    return ids
+
+def add_recommended_channel(channel_id):
+    conn = sqlite3.connect("chh.db")
+    conn.execute('''CREATE TABLE IF NOT EXISTS allowed_recommended
+                    (ID INT PRIMARY KEY NOT NULL)''')
+    conn.commit()
+    conn.execute("INSERT INTO allowed_recommended (ID) VALUES ({})".format(channel_id))
+    conn.commit()
+    conn.close()
+
+def remove_recommended_channel(channel_id):
+    conn = sqlite3.connect("chh.db")
+    conn.execute("DELETE FROM allowed_recommended WHERE ID = {}".format(channel_id))
+    conn.commit()
+    conn.close()
+
+def get_allowed_recommended_channels():
+    if not os.path.exists("chh.db"):
+        create_table()
+        return []
+    conn = sqlite3.connect("chh.db")
+    conn.execute('''CREATE TABLE IF NOT EXISTS allowed_recommended
+                    (ID INT PRIMARY KEY NOT NULL)''')
+    conn.commit()
+    cursor = conn.execute("SELECT * FROM allowed_recommended").fetchall()
     ids = []
     for row in cursor:
         ids.append(row[0])
@@ -38,6 +71,10 @@ def get_prefix(server_id):
         add_server(server_id, "^")
         return "^"
     conn = sqlite3.connect("chh.db")
+    cursor = conn.execute("SELECT ID FROM server")
+    data = cursor.fetchall()
+    if not data[0][0] == server_id:
+        add_server(server_id, "^")
     cursor = conn.execute("SELECT prefix FROM server WHERE ID = {}".format(server_id))
     data = cursor.fetchall()
     if len(data) == 0:
@@ -57,6 +94,8 @@ def create_table():
                     (ID INT PRIMARY KEY NOT NULL,
                     PREFIX CHAR(2) NOT NULL)''')
     conn.execute('''CREATE TABLE IF NOT EXISTS allowed
+                    (ID INT PRIMARY KEY NOT NULL)''')
+    conn.execute('''CREATE TABLE IF NOT EXISTS allowed_recommended
                     (ID INT PRIMARY KEY NOT NULL)''')
     conn.commit()
     conn.close()

@@ -4,6 +4,9 @@ from discord.ext import commands
 from discord.utils import get
 from dotenv import load_dotenv
 from utilities import database
+import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
+
 load_dotenv()
 
 class chh_bot(discord.Client):
@@ -53,6 +56,7 @@ class chh_bot(discord.Client):
             cmd_prefix = "^"
 
         channel_ids = database.get_allowed_channels()
+        recommended_channel_ids = database.get_allowed_recommended_channels()
 
         suggestion_prefixs = ["[SUBREDDIT]","[DISCORD]","[CHH]"]
 
@@ -69,19 +73,42 @@ class chh_bot(discord.Client):
         if is_mod:
             # ADD CHANNEL TO MONITORING
             if message.content.startswith("{}add".format(cmd_prefix)):
-                database.add_channels(message.channel.id)
-                temp_message = await message.channel.send('Added this channel to monitored channels')
-                await message.delete()
-                await asyncio.sleep(3)
-                await temp_message.delete()
+                directive = message.content.replace("{}add".format(cmd_prefix), "")
+                directive = directive.replace(" ", "")
+                if directive  == "recommended":
+                    database.add_recommended_channel(message.channel.id)
+                    temp_message = await message.channel.send('Added this channel to monitored channels')
+                    await message.delete()
+                    await asyncio.sleep(3)
+                    await temp_message.delete()
+                elif directive == "suggestion":
+                    database.add_channels(message.channel.id)
+                    temp_message = await message.channel.send('Added this channel to monitored channels')
+                    await message.delete()
+                    await asyncio.sleep(3)
+                    await temp_message.delete()
+                else:
+                    await message.channel.send("Unknown command, use '{0}add recommended' or '{0}add suggestion' ".format(cmd_prefix))
+
 
             # REMOVE CHANNEL FROM MONITORING
             elif message.content.startswith("{}remove".format(cmd_prefix)):
-                database.remove_channel(message.channel.id)
-                temp_message = await message.channel.send('No longer monitoring this channel')
-                await message.delete()
-                await asyncio.sleep(3)
-                await temp_message.delete()
+                directive = message.content.replace("{}remove".format(cmd_prefix), "")
+                directive = directive.replace(" ", "")
+                if directive  == "recommended":
+                    database.remove_recommended_channel(message.channel.id)
+                    temp_message = await message.channel.send('Added this channel to monitored channels')
+                    await message.delete()
+                    await asyncio.sleep(3)
+                    await temp_message.delete()
+                elif directive == "suggestion":
+                    database.remove_channel(message.channel.id)
+                    temp_message = await message.channel.send('No longer monitoring this channel')
+                    await message.delete()
+                    await asyncio.sleep(3)
+                    await temp_message.delete()
+                else:
+                    await message.channel.send("Unknown command, use '{0}remove recommended' or '{0}remove suggestion' ".format(cmd_prefix))
 
             # CHANGE THE PREFIX
             elif message.content.startswith("{}prefix".format(cmd_prefix)):
@@ -129,6 +156,21 @@ class chh_bot(discord.Client):
                         temp_message = await send_channel.send('%s please use [SUBREDDIT], [DISCORD] or [CHH] for your suggestions' % message.author.mention)
                         await asyncio.sleep(5)
                         await temp_message.delete()
+
+        if message.channel.id in recommended_channel_ids:
+            if message.content.startswith("{}recommend".format(cmd_prefix)):
+                search_string = message.content.replace("{}recommend".format(cmd_prefix), "")
+                search_string = search_string.replace(" ", "")
+                if search_string == "":
+                    await message.channel.send("%s Please specify an artist name to recommend")
+                else:
+                    sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
+                    results = sp.search(q=search_string, limit=1, type='artist')
+                    items = results['artists']['items']
+                    if len(items) > 0:
+                        artist = items[0]
+                        await message.channel.send(artist['external_urls']['spotify'])
+
 
 
 
