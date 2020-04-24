@@ -3,11 +3,18 @@ import sqlite3, os
 
 def add_suggestion_channel(channel_id):
     conn = sqlite3.connect("chh.db")
+    conn.execute('''CREATE TABLE IF NOT EXISTS allowed
+                    (ID INT PRIMARY KEY NOT NULL)''')
+    conn.commit()
     conn.execute("INSERT INTO allowed (ID) VALUES ({})".format(channel_id))
     conn.commit()
     conn.close()
 
 def add_recommendation_channel(channel_id):
+    conn = sqlite3.connect("chh.db")
+    conn.execute('''CREATE TABLE IF NOT EXISTS allowed_recommended
+                    (ID INT PRIMARY KEY NOT NULL)''')
+    conn.commit()
 def remove_channel(channel_id):
     conn = sqlite3.connect("chh.db")
     conn.execute("DELETE FROM allowed WHERE ID = {}".format(channel_id))
