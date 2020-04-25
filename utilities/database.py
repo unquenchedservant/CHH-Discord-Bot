@@ -100,6 +100,68 @@ def get_recommended_channels():
     conn.close()
     return ids
 
+def add_reaction_message(message_id, second_msg_id, user_id, search_string):
+    conn = sqlite3.connect("chh.db")
+    conn.execute('''CREATE TABLE IF NOT EXISTS reactions
+                   (ID INT PRIMARY KEY NOT NULL,
+                   SECONDMSG INT NOT NULL,
+                   USERID INT NOT NULL,
+                   SEARCHNUM INT NOT NULL,
+                   SEARCH text NOT NULL)''')
+    conn.commit()
+    conn.execute("INSERT INTO reactions (ID, SECONDMSG, USERID, SEARCH, SEARCHNUM) VALUES ({}, {}, {}, '{}', 1)".format(message_id, second_msg_id, user_id, search_string))
+    conn.commit()
+    conn.close()
+
+def get_reaction_user_id(message_id):
+    conn = sqlite3.connect("chh.db")
+    cursor = conn.execute("SELECT USERID FROM reactions WHERE ID={}".format(message_id))
+    data = cursor.fetchall()
+    if len(data) > 0:
+        conn.close()
+        return data[0][0]
+
+def get_reaction_message_id():
+    conn = sqlite3.connect("chh.db")
+    cursor = conn.execute("SELECT ID FROM reactions")
+    data = cursor.fetchall()
+    ids = []
+    for row in data:
+        ids.append(row[0])
+    conn.close()
+    return ids
+
+def get_reaction_message(message_id):
+    conn = sqlite3.connect("chh.db")
+    cursor = conn.execute("SELECT * FROM reactions WHERE ID={}".format(message_id))
+    data = cursor.fetchall()
+    if len(data) > 0:
+        conn.close()
+        return data[0]
+
+def update_reaction_page(message_id, page_num):
+    conn = sqlite3.connect("chh.db")
+    conn.execute("UPDATE reactions SET SEARCHNUM={} WHERE ID={}".format(page_num, message_id))
+    conn.commit()
+    conn.close()
+
+def get_reaction_page(message_id):
+    conn = sqlite3.connect("chh.db")
+    cursor = conn.execute("SELECT SEARCHNUM FROM reactions WHERE ID={}".format(message_id))
+    data = cursor.fetchall()
+    if len(data) > 0:
+        conn.close()
+        return data[0][0]
+
+
+def get_reaction_search(message_id):
+    conn = sqlite3.connect("chh.db")
+    cursor = conn.execute("SELECT USERID FROM reactions WHERE ID={}".format(message_id))
+    data = cursor.fetchall()
+    if len(data) > 0:
+        conn.close()
+        return data[0][0]
+
 def add_server(server_id, prefix):
     conn = sqlite3.connect("chh.db")
     cursor = conn.execute("SELECT ID FROM server")
@@ -146,5 +208,12 @@ def create_table():
                     (ID INT PRIMARY KEY NOT NULL)''')
     conn.execute('''CREATE TABLE IF NOT EXISTS allowed_recommended
                     (ID INT PRIMARY KEY NOT NULL)''')
+    conn.execute('''CREATE TABLE IF NOT EXISTS reactions
+                   (ID INT PRIMARY KEY NOT NULL,
+                   SECONDMSG INT NOT NULL,
+                   USERID INT NOT NULL,
+                   SEARCHNUM INT NOT NULL,
+                   SEARCH text NOT NULL)''')
+
     conn.commit()
     conn.close()
