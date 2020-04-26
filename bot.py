@@ -39,24 +39,31 @@ async def on_reaction_add(reaction, user):
     if not user.id == bot.user.id:
         message_id = reaction.message.id
         check_ids = database.get_reaction_message_id()
-        if message_id in check_ids and reaction.emoji == "⏭":
+        if message_id in check_ids and (reaction.emoji == "⏭" or reaction.emoji == "⏮"):
             data = database.get_reaction_message(message_id)
             primary_id = data[0]
             second_id = data[1]
             user_id = data[2]
             page = data[3]
+            if reaction.emoji == "⏭":
+                page += 1
+            elif reaction.emoji == "⏮":
+                page -= 1
             search_string = data[4]
             if not user.id == user_id:
                 await reaction.message.clear_reactions()
+                if not page == 1:
+                    await reaction.message.add_reaction("⏮")
                 if not page == 10:
                     await reaction.message.add_reaction("⏭")
+            else:
                 SPOTIPY_ID = os.getenv('SPOTIPY_ID')
                 SPOTIPY_SECRET = os.getenv('SPOTIPY_SECRET')
                 sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(client_id=SPOTIPY_ID, client_secret=SPOTIPY_SECRET))
                 results = sp.search(q=search_string, limit=10, type='artist')
                 items=results['artists']['items']
                 if len(items) > 0:
-                    artist = items[page]
+                    artist = items[page - 1]
                     artist_name = artist['name']
                     artist_url = artist['external_urls']['spotify']
                     artist_image = artist['images'][0]['url']
@@ -78,8 +85,11 @@ async def on_reaction_add(reaction, user):
                     await second_message.edit(embed=embed)
                     await reaction.message.edit(content=artist_url)
                     await reaction.message.clear_reactions()
-                    await reaction.message.add_reaction("⏭")
-                    database.update_reaction_page(reaction.message.id, page+1)
+                    if not page == 1:
+                        await reaction.message.add_reaction("⏮")
+                    if not page == 10:
+                        await reaction.message.add_reaction("⏭")
+                    database.update_reaction_page(reaction.message.id, page)
 @bot.event
 async def on_raw_reaction_add(payload):
     yes = "💯"
