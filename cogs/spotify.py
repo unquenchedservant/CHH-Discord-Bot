@@ -10,7 +10,6 @@ class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.spotify= spotipy.Spotify(client_credentials_manager=get_env.spotify_credentials())
-        self.allowed_channels = database.get_recommended_channels()
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
@@ -113,7 +112,7 @@ class Music(commands.Cog):
     @recommend.command(name="artist")
     async def _artist(self, ctx, *args):
         search_term = ' '.join(args)
-        if ctx.channel.id in self.allowed_channels:
+        if ctx.channel.id in database.get_recommended_channels():
             if not search_term == "":
                 results = self.spotify.search(q=search_term, limit=10, type='artist')
                 items = results['artists']['items']
@@ -145,7 +144,7 @@ class Music(commands.Cog):
     @recommend.command(pass_context=True, name="album")
     async def _album(self, ctx, *args):
         search_term = ' '.join(args)
-        if ctx.channel.id in self.allowed_channels:
+        if ctx.channel.id in database.get_recommended_channels():
             if not search_term == "":
                 results = self.spotify.search(q=search_term, limit=10, type='album')
                 items = results['albums']['items']
