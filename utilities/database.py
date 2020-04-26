@@ -100,16 +100,17 @@ def get_recommended_channels():
     conn.close()
     return ids
 
-def add_reaction_message(message_id, second_msg_id, user_id, search_string):
+def add_reaction_message(message_id, second_msg_id, user_id, search_string, search_type):
     conn = sqlite3.connect("chh.db")
     conn.execute('''CREATE TABLE IF NOT EXISTS reactions
                    (ID INT PRIMARY KEY NOT NULL,
                    SECONDMSG INT NOT NULL,
                    USERID INT NOT NULL,
                    SEARCHNUM INT NOT NULL,
-                   SEARCH text NOT NULL)''')
+                   SEARCH text NOT NULL,
+                   TYPE text NOT NULL)''')
     conn.commit()
-    conn.execute("INSERT INTO reactions (ID, SECONDMSG, USERID, SEARCH, SEARCHNUM) VALUES ({}, {}, {}, '{}', 1)".format(message_id, second_msg_id, user_id, search_string))
+    conn.execute("INSERT INTO reactions (ID, SECONDMSG, USERID, SEARCH, SEARCHNUM, TYPE) VALUES ({}, {}, {}, '{}', 1, '{}')".format(message_id, second_msg_id, user_id, search_string, search_type))
     conn.commit()
     conn.close()
 
@@ -145,22 +146,6 @@ def update_reaction_page(message_id, page_num):
     conn.commit()
     conn.close()
 
-def get_reaction_page(message_id):
-    conn = sqlite3.connect("chh.db")
-    cursor = conn.execute("SELECT SEARCHNUM FROM reactions WHERE ID={}".format(message_id))
-    data = cursor.fetchall()
-    if len(data) > 0:
-        conn.close()
-        return data[0][0]
-
-
-def get_reaction_search(message_id):
-    conn = sqlite3.connect("chh.db")
-    cursor = conn.execute("SELECT USERID FROM reactions WHERE ID={}".format(message_id))
-    data = cursor.fetchall()
-    if len(data) > 0:
-        conn.close()
-        return data[0][0]
 
 def add_server(server_id, prefix):
     conn = sqlite3.connect("chh.db")
@@ -179,12 +164,14 @@ def add_server(server_id, prefix):
 def get_prefix(server_id):
     if not os.path.exists("chh.db"):
         create_table()
-        add_server(server_id, "^")
-        return "^"
     conn = sqlite3.connect("chh.db")
+    conn.execute('''CREATE TABLE IF NOT EXISTS server
+                    (ID INT PRIMARY KEY NOT NULL,
+                    PREFIX CHAR(2) NOT NULL)''')
+    conn.commit()
     cursor = conn.execute("SELECT ID FROM server")
     data = cursor.fetchall()
-    if not data[0][0] == server_id:
+    if len(data) == 0:
         add_server(server_id, "^")
     cursor = conn.execute("SELECT prefix FROM server WHERE ID = {}".format(server_id))
     data = cursor.fetchall()
@@ -213,7 +200,8 @@ def create_table():
                    SECONDMSG INT NOT NULL,
                    USERID INT NOT NULL,
                    SEARCHNUM INT NOT NULL,
-                   SEARCH text NOT NULL)''')
+                   SEARCH text NOT NULL,
+                   TYPE text NOT NULL)''')
 
     conn.commit()
     conn.close()
