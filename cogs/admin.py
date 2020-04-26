@@ -2,7 +2,7 @@ import os, discord, asyncio
 from discord.ext import commands
 from discord.ext.commands import has_permissions, group
 from utilities import database, get_env
-class Admin(commands.Cog, command_attrs=dict(case_insensitive=True)):
+class Admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -13,7 +13,7 @@ class Admin(commands.Cog, command_attrs=dict(case_insensitive=True)):
         suggestions
         recommendations
     """
-    @group(case_insensitive=True, aliases=["add", "start"], usage="<suggestion|recommendations>", brief="Add a tracked channel", description="Start listening to a channel for suggestions or recommendations")
+    @commands.group(invoke_without_command=True, pass_context=True, aliases=["add", "start"], usage="<suggestion|recommendations>", brief="Add a tracked channel", description="Start listening to a channel for suggestions or recommendations")
     @has_permissions(administrator=True)
     async def track(self, ctx):
         if ctx.invoked_subcommand is None:
@@ -25,8 +25,9 @@ class Admin(commands.Cog, command_attrs=dict(case_insensitive=True)):
             embed.add_field(name="recommendations", value="tracks a recommendation channel")
             await ctx.channel.send(embed=embed)
 
-    @track.command(aliases=["suggest", "sug", "suggestion", "s"], description="Start listening to this channel for suggestions")
-    async def suggestions(self, ctx):
+    @track.command(pass_context=True, aliases=["suggest", "sug", "suggestion", "s"],name="suggestions", description="Start listening to this channel for suggestions")
+    @has_permissions(administrator=True)
+    async def _suggestions(self, ctx):
         success = database.add_suggestion_channel(ctx.channel.id)
         if success:
             temp_message = await ctx.channel.send("Started listening to this channel for suggestions")
@@ -36,8 +37,9 @@ class Admin(commands.Cog, command_attrs=dict(case_insensitive=True)):
         await ctx.message.delete()
         await temp_message.delete()
 
-    @track.command(aliases=["recommendation", "recommend", "rec", "r"], description="Start listening to this channel for recommendations")
-    async def recommendations(self, ctx):
+    @track.command(aliases=["recommendation", "recommend", "rec", "r"],name="recommendations", description="Start listening to this channel for recommendations")
+    @has_permissions(administrator=True)
+    async def _recommendations(self, ctx):
         success = database.add_recommendation_channel(ctx.channel.id)
         if success:
             temp_message = await ctx.channel.send("Started listening to this channel for recommendations")
@@ -106,7 +108,7 @@ class Admin(commands.Cog, command_attrs=dict(case_insensitive=True)):
                 self.bot.clear()
         else:
             await ctx.channel.send("Hey wait a second, you aren't my owner")
-    
+
     @commands.command(aliases=["purge"], usage="<number of messages to purge>", brief="clear X amount of messages in channel", description="Clear the previous X messages on this channel")
     @has_permissions(administrator=True)
     async def clear(self, ctx, amount: int):

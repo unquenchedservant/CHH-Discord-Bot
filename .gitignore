@@ -10,3 +10,5 @@ chh.db
 env/
 
 *.log
+
+test.py
