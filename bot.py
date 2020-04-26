@@ -46,7 +46,10 @@ async def on_reaction_add(reaction, user):
             user_id = data[2]
             page = data[3]
             search_string = data[4]
-            if user.id == user_id:
+            if not user.id == user_id:
+                await reaction.message.clear_reactions()
+                if not page == 10:
+                    await reaction.message.add_reaction("⏭")
                 SPOTIPY_ID = os.getenv('SPOTIPY_ID')
                 SPOTIPY_SECRET = os.getenv('SPOTIPY_SECRET')
                 sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(client_id=SPOTIPY_ID, client_secret=SPOTIPY_SECRET))
