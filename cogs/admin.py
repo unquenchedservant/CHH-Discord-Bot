@@ -13,9 +13,9 @@ class Admin(commands.Cog):
         suggestions
         recommendations
     """
-    @commands.group(invoke_without_command=True, pass_context=True, aliases=["add", "start"], usage="<suggestion|recommendations>", brief="Add a tracked channel", description="Start listening to a channel for suggestions or recommendations")
+    @commands.group(invoke_without_command=True, pass_context=True, aliases=["start"], usage="<suggestion|recommendations>", brief="Add a tracked channel", description="Start listening to a channel for suggestions or recommendations")
     @has_permissions(administrator=True)
-    async def track(self, ctx):
+    async def add(self, ctx):
         if ctx.invoked_subcommand is None:
             embed = discord.Embed(title="Error Adding Tracking", description="Please specify one of the following", colour=0x0099ff)
             embed.set_author(name="r/CHH Bot", icon_url="https://i.imgur.com/ZNdCFKg.png")
@@ -25,7 +25,7 @@ class Admin(commands.Cog):
             embed.add_field(name="recommendations", value="tracks a recommendation channel")
             await ctx.channel.send(embed=embed)
 
-    @track.command(pass_context=True, aliases=["suggest", "sug", "suggestion", "s"],name="suggestions", description="Start listening to this channel for suggestions")
+    @add.command(pass_context=True, aliases=["suggest", "sug", "suggestion", "s"],name="suggestions", description="Start listening to this channel for suggestions")
     @has_permissions(administrator=True)
     async def _suggestions(self, ctx):
         success = database.add_suggestion_channel(ctx.channel.id)
@@ -37,7 +37,7 @@ class Admin(commands.Cog):
         await ctx.message.delete()
         await temp_message.delete()
 
-    @track.command(aliases=["recommendation", "recommend", "rec", "r"],name="recommendations", description="Start listening to this channel for recommendations")
+    @add.command(aliases=["recommendation", "recommend", "rec", "r"],name="recommendations", description="Start listening to this channel for recommendations")
     @has_permissions(administrator=True)
     async def _recommendations(self, ctx):
         success = database.add_recommendation_channel(ctx.channel.id)
