@@ -20,7 +20,7 @@ async def determine_prefix(bot, message):
 extensions = ['cogs.admin', 'cogs.suggestions', 'cogs.spotify']
 
 description = '''This bot monitors the suggestion channel and also adds some process_commands that are specific to the r/chh discord server'''
-bot = commands.Bot(command_prefix=determine_prefix, description=description)
+bot = commands.Bot(command_prefix=determine_prefix, description=description, case_insensitive=True)
 
 if __name__ == '__main__':
     for extension in extensions:
