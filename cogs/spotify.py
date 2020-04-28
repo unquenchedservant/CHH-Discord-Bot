@@ -25,13 +25,26 @@ class Music(commands.Cog):
         return line
 
     async def get_spotify(self, search, items, cur_page, user, search_type):
+        best_match_index = -1
+        x = 0
+        for term in items:
+            if term['name'].lower() == search.lower():
+                best_match_index = x
+            x += 1
+        if best_match_index > -1:
+            temp_store = items[0]
+            items[0] = items[best_match_index]
+            items[best_match_index] = temp_store
         item         = items[cur_page - 1]
         max_page     = len(items)
         title        = item['name']
         url          = item['external_urls']['spotify']
 
         if not search_type == "track":
-            image = item['images'][0]['url']
+            try:
+                image = item['images'][0]['url']
+            except IndexError:
+                image = None
 
         if not search_type == "artist":
             artist = item['artists'][0]['name']
@@ -67,7 +80,8 @@ class Music(commands.Cog):
 
     async def get_embed(self, title, search, url, image, h1, h2, info1, info2, user, cur_page, max_page):
         embed = discord.Embed(title=title, description="Result for Spotify search of {}".format(search), url=url)
-        embed.set_thumbnail(url=image)
+        if image:
+            embed.set_thumbnail(url=image)
         embed.add_field(name=h1, value=info1)
         embed.add_field(name="\u200b", value="\u200B")
         embed.add_field(name=h2, value=info2)
@@ -127,7 +141,7 @@ class Music(commands.Cog):
     async def _album(self, ctx, *args):
         await self.get_messages(ctx, args, 'album')
 
-    @commands.command(name="song", brief="Recommend a song", description="Display a song from spotify. Include the artist name for a better match.")
+    @commands.command(name="song", aliases=["track"], brief="Recommend a song", description="Display a song from spotify. Include the artist name for a better match.")
     async def _song(self, ctx, *args):
         await self.get_messages(ctx, args, 'track')
 
