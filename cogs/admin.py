@@ -125,6 +125,11 @@ class Admin(commands.Cog):
         def check(message):
             return message.author == ctx.message.author
         msg = await self.bot.wait_for('message', check=check)
+        msg_content = msg.content
+        msg_content = msg_content.replace("```", "'''")
+        save_msg = "Current Welcome Raw Text:\n```\n{}\n```".format(msg_content)
+        saved_msg = await ctx.channel.send(save_msg)
+        await saved_msg.pin()
         channel_id = database.get_welcome_channel_id(ctx.guild.id)
         if not channel_id:
             temp = await ctx.channel.send("Please set a welcome channel")
