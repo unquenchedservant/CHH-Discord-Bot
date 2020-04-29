@@ -6,6 +6,17 @@ class Admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.command(pass_context=True, aliases=["refresh"], usage="<admin|spotify|suggestions>")
+    @has_permissions(administrator=True)
+    async def reload(self, ctx, exten):
+        if exten.lower() == "admin":
+            self.bot.reload_extension('cogs.admin')
+        elif exten.lower() == "spotify":
+            self.bot.reload_extension('cogs.spotify')
+        elif exten.lower() == "suggestions":
+            self.bot.reload_extension('cogs.suggestions')
+        await asyncio.sleep(1)
+        await ctx.message.delete()
     """
     Track/Add/Start Command Group
 
@@ -24,6 +35,18 @@ class Admin(commands.Cog):
             embed.add_field(name="\u200b", value="\u200B")
             embed.add_field(name="recommendations", value="tracks a recommendation channel")
             await ctx.channel.send(embed=embed)
+
+    @add.command(pass_context=True, name="welcome", aliases=["main", "rules"], description="Sets this channel as being the welcome channel", brief="Set a welcome channel")
+    @has_permissions(administrator=True)
+    async def _welcome(self, ctx):
+        updated = database.set_welcome_channel(ctx.channel.id, ctx.guild.id)
+        if updated:
+            temp_message = await ctx.channel.send("Changed welcome channel to this channel")
+        else:
+            temp_message = await ctx.channel.send("Added this channel as the welcome channel")
+        await asyncio.sleep(3)
+        await ctx.message.delete()
+        await temp_message.delete()
 
     @add.command(pass_context=True, aliases=["suggest", "sug", "suggestion", "s"],name="suggestions", description="Start listening to this channel for suggestions")
     @has_permissions(administrator=True)
@@ -89,6 +112,53 @@ class Admin(commands.Cog):
         await asyncio.sleep(3)
         await ctx.message.delete()
         await temp_message.delete()
+
+    @commands.group(invoke_without_command=True, pass_context=True, usage="welcome")
+    @has_permissions(administrator=True)
+    async def set(self, ctx):
+        pass
+
+    @set.command(pass_context=True, brief="Sets the welcome message")
+    @has_permissions(administrator=True)
+    async def welcome(self, ctx):
+        initial = await ctx.channel.send("Please send the message you want to display in the welcome channel")
+        def check(message):
+            return message.author == ctx.message.author
+        msg = await self.bot.wait_for('message', check=check)
+        channel_id = database.get_welcome_channel_id(ctx.guild.id)
+        if not channel_id:
+            temp = await ctx.channel.send("Please set a welcome channel")
+            await asyncio.sleep(3)
+            await msg.delete()
+            await temp.delete()
+            await initial.delete()
+            await ctx.message.delete()
+        else:
+            welcome_channel = self.bot.get_channel(channel_id)
+            msg_id = database.get_welcome_msg_id(ctx.guild.id)
+            if not msg_id:
+                temp = await ctx.channel.send("No welcome message found, creating it now")
+                welcome_msg = await welcome_channel.send(msg.content)
+                database.set_welcome_msg_id(welcome_msg.id, ctx.guild.id)
+                await asyncio.sleep(3)
+                await msg.delete()
+                await temp.delete()
+                await initial.delete()
+                await ctx.message.delete()
+            else:
+                try:
+                    original = await welcome_channel.fetch_message(msg_id)
+                    await original.edit(content=msg.content)
+                except:
+                    new_msg = await welcome_channel.send(msg.content)
+                    database.set_welcome_msg_id(new_msg.id, ctx.guild.id)
+                temp = await ctx.channel.send("Updated welcome message")
+                await asyncio.sleep(3)
+                await msg.delete()
+                await temp.delete()
+                await initial.delete()
+                await ctx.message.delete()
+
 
     """
     Other Commands

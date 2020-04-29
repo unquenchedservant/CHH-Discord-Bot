@@ -38,6 +38,57 @@ def add_recommendation_channel(channel_id):
     else:
         return False
 
+def set_welcome_channel(channel_id, server_id):
+    conn = sqlite3.connect("chh.db")
+    updated = False
+    try:
+        conn.execute("UPDATE server SET welcome_id={} WHERE ID={}".format(channel_id, server_id))
+        conn.commit()
+        updated = True
+    except:
+        conn.execute("ALTER TABLE server ADD COLUMN welcome_id int")
+        conn.commit()
+        conn.execute("UPDATE server SET welcome_id={} WHERE ID={}".format(channel_id, server_id))
+        conn.commit()
+        updated = False
+    return updated
+
+def get_welcome_msg_id(server_id):
+    conn = sqlite3.connect("chh.db")
+    updated = False
+    try:
+        cursor = conn.execute("SELECT welcome_msg_id FROM server WHERE ID={}".format(server_id))
+        updated=True
+    except:
+        conn.execute("ALTER TABLE server ADD COLUMN welcome_msg_id int")
+        conn.commit()
+        cursor = conn.execute("SELECT welcome_msg_id FROM server WHERE ID={}".format(server_id))
+    data = cursor.fetchall()
+    if len(data) > 0:
+        return data[0][0]
+    else:
+        return False
+
+def get_welcome_channel_id(server_id):
+    conn = sqlite3.connect("chh.db")
+    updated = False
+    try:
+        cursor = conn.execute("SELECT welcome_id FROM server WHERE ID={}".format(server_id))
+        updated = True
+    except:
+        conn.execute("ALTER TABLE server ADD COLUMN welcome_id int")
+        conn.commit()
+        cursor = conn.execute("SELECT welcome_id FROM server WHERE ID={}".format(server_id))
+    data = cursor.fetchall()
+    if len(data) > 0:
+        return data[0][0]
+    else:
+        return False
+
+def set_welcome_msg_id(msg_id, server_id):
+    conn = sqlite3.connect("chh.db")
+    conn.execute("UPDATE server SET welcome_msg_id={} WHERE ID={}".format(msg_id, server_id))
+    conn.commit()
 
 '''
 REMOVE TRACKING UTILITY FUNCTIONS
