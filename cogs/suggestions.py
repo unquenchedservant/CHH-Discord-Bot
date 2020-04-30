@@ -23,7 +23,7 @@ class Suggestions(commands.Cog):
         if not payload.user_id == self.bot.user.id:
             channel = get(self.bot.get_all_channels(), id=payload.channel_id)
             message = await channel.fetch_message(payload.message_id)
-            if payload.channel_id in database.get_suggestion_channels() and message.author.guild_permissions.administrator:
+            if payload.channel_id in database.get_suggestion_channels() and payload.member.guild_permissions.administrator:
                 if payload.emoji.name == no:
                     await message.clear_reactions()
                     await message.add_reaction(no)
