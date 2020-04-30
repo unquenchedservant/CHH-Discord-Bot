@@ -68,20 +68,12 @@ class Music(commands.Cog):
             info1 = item['album']['name']
             h2    = "Release Year"
             info2 = item['album']['release_date'].split("-")[0]
-            h3    = "Track Number"
-            info3 = item['track_number']
-
         embed        = await self.get_embed(title, search, url, image, h1, h2, info1, info2, user, cur_page, max_page)
-
-        if search_type == "track":
-            embed.add_field(name=h3, value=info3)
 
         return [embed, url]
 
     async def get_embed(self, title, search, url, image, h1, h2, info1, info2, user, cur_page, max_page):
-        embed = discord.Embed(title=title, description="Result for Spotify search of {}".format(search), url=url)
-        if image:
-            embed.set_thumbnail(url=image)
+        embed = discord.Embed(title=title, url=url)
         embed.add_field(name=h1, value=info1)
         embed.add_field(name="\u200b", value="\u200B")
         embed.add_field(name=h2, value=info2)
@@ -165,7 +157,8 @@ class Music(commands.Cog):
                     if not len(items) == 1:
                         await primary_msg.add_reaction("⏭")
 
-                    database.add_reaction_message(primary_msg.id, second_msg.id, ctx.message.author.id, search, search_type)
+                    second_id = second_msg.id
+                    database.add_reaction_message(primary_msg.id, second_id, ctx.message.author.id, search, search_type)
 
 def setup(bot):
     bot.add_cog(Music(bot))
