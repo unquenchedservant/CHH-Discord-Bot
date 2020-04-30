@@ -52,7 +52,7 @@ class Suggestions(commands.Cog):
                         valid_msg = True
                 if not valid_msg and not is_mod:
                     temp_message = await message.channel.send("%s please use [SUBREDDIT], [DISCORD], [CHH_BOT] or [CHH] before your suggestion" % message.author.mention)
-                    await asyncio.sleep(8)
+                    await asyncio.sleep(3)
                     await message.delete()
                     await temp_message.delete()
 
