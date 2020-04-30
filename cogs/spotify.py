@@ -109,6 +109,8 @@ class Music(commands.Cog):
                             temp = search.split(" && ")
                             search = temp[0]
                             owner = temp[1]
+                        else:
+                            owner = None
                     results = self.spotify.search(q=search, limit=50, type=search_type)
                     items   = results["{}s".format(search_type)]['items']
                     second_message = await reaction.message.channel.fetch_message(sec_id)
@@ -161,6 +163,8 @@ class Music(commands.Cog):
                     temp = search.split(" && ")
                     search = temp[0]
                     owner = temp[1]
+                else:
+                    owner = None
                 results = self.spotify.search(q=search, limit=50, type=search_type)
                 items = results['{}s'.format(search_type)]['items']
                 if len(items) > 0:
