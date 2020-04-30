@@ -25,11 +25,9 @@ class Suggestions(commands.Cog):
             message = await channel.fetch_message(payload.message_id)
             if payload.channel_id in database.get_suggestion_channels() and payload.member.guild_permissions.administrator:
                 if payload.emoji.name == no:
-                    await message.clear_reactions()
                     await message.add_reaction(no)
                     await channel.send("Sorry {}, your suggestion has been denied. {} will tell you why.".format(message.author.mention, user.mention))
                 elif payload.emoji.name == yes:
-                    await message.clear_reactions()
                     await message.add_reaction(yes)
                     await channel.send("Good news, {}, your suggestion has been accepted".format(message.author.mention))
 

@@ -24,12 +24,16 @@ class Music(commands.Cog):
             line = "No {}".format(no_line)
         return line
 
-    async def get_spotify(self, search, items, cur_page, user, search_type):
+    async def get_spotify(self, search, items, cur_page, user, search_type, owner=None):
         best_match_index = -1
         x = 0
         for term in items:
-            if term['name'].lower() == search.lower():
-                best_match_index = x
+            if search_type == "playlist" and not owner == None:
+                if owner in term['owner']['display_name']:
+                    best_match_index = x
+            else:
+                if term['name'].lower() == search.lower():
+                    best_match_index = x
             x += 1
         if best_match_index > -1:
             temp_store = items[0]
@@ -40,13 +44,7 @@ class Music(commands.Cog):
         title        = item['name']
         url          = item['external_urls']['spotify']
 
-        if not search_type == "track":
-            try:
-                image = item['images'][0]['url']
-            except IndexError:
-                image = None
-
-        if not search_type == "artist":
+        if not (search_type == "artist" or search_type == "playlist"):
             artist = item['artists'][0]['name']
             title  = "{} - {}".format(title, artist)
 
@@ -63,21 +61,28 @@ class Music(commands.Cog):
             info2 = item["total_tracks"]
 
         if search_type == "track":
-            image = item['album']['images'][0]['url']
             h1    = "Album"
             info1 = item['album']['name']
             h2    = "Release Year"
             info2 = item['album']['release_date'].split("-")[0]
-        embed        = await self.get_embed(title, search, url, image, h1, h2, info1, info2, user, cur_page, max_page)
+
+        if search_type == "playlist":
+            h1    = "Creator"
+            info1 = item['owner']['display_name']
+            h2    = "Tracks"
+            info2 = item['tracks']['total']
+
+        embed        = await self.get_embed(title, search_type, url, h1, h2, info1, info2, user, cur_page, max_page)
 
         return [embed, url]
 
-    async def get_embed(self, title, search, url, image, h1, h2, info1, info2, user, cur_page, max_page):
+    async def get_embed(self, title, search_type, url, h1, h2, info1, info2, user, cur_page, max_page):
         embed = discord.Embed(title=title, url=url)
+        embed.set_author(name="Search ran by {}.".format(user.name), icon_url=user.avatar_url)
         embed.add_field(name=h1, value=info1)
         embed.add_field(name="\u200b", value="\u200B")
         embed.add_field(name=h2, value=info2)
-        embed.set_footer(text="Search ran by {}. | Page {} of {}".format(user, cur_page, max_page))
+        embed.set_footer(text="{}s | Page {} of {}".format(search_type, cur_page, max_page))
         return embed
 
     @commands.Cog.listener()
@@ -99,19 +104,26 @@ class Music(commands.Cog):
                     if not page == 50:
                         await reaction.message.add_reaction("⏭")
                 else:
+                    if search_type == "playlist":
+                        if " && " in search:
+                            temp = search.split(" && ")
+                            search = temp[0]
+                            owner = temp[1]
                     results = self.spotify.search(q=search, limit=50, type=search_type)
                     items   = results["{}s".format(search_type)]['items']
                     second_message = await reaction.message.channel.fetch_message(sec_id)
                     if len(items) > 0:
                         if search_type == "artist":
-                            embed, url = await self.get_spotify(search, items, page, user.name, 'artist')
+                            embed, url = await self.get_spotify(search, items, page, user, 'artist')
 
                         elif search_type == "album":
-                            embed, url = await self.get_spotify(search, items, page, user.name, 'album')
+                            embed, url = await self.get_spotify(search, items, page, user, 'album')
 
                         elif search_type == "track":
-                            embed, url = await self.get_spotify(search, items, page, user.name, 'track')
+                            embed, url = await self.get_spotify(search, items, page, user, 'track')
 
+                        elif search_type == "playlist":
+                            embed, url = await self.get_spotify(search, items, page, user, 'playlist', owner)
                         await second_message.edit(embed=embed)
                         await reaction.message.edit(content=url)
 
@@ -125,32 +137,41 @@ class Music(commands.Cog):
 
                         database.update_reaction_page(reaction.message.id, page)
 
-    @commands.command(name="artist", brief="Recommend an artist", description="Get the top 10 on spotify of an artist")
+    @commands.command(name="artist", aliases=["art", "ar", "band"], brief="Recommend an artist", description="Get the top 10 on spotify of an artist")
     async def _artist(self, ctx, *args):
         await self.get_messages(ctx, args, 'artist')
 
-    @commands.command(name="album", brief="Recommend an album", description="Display an album from spotify. Include the artist name for a better match")
+    @commands.command(name="album", aliases=["al"], brief="Recommend an album", description="Display an album from spotify. Include the artist name for a better match")
     async def _album(self, ctx, *args):
         await self.get_messages(ctx, args, 'album')
 
-    @commands.command(name="song", aliases=["track"], brief="Recommend a song", description="Display a song from spotify. Include the artist name for a better match.")
+    @commands.command(name="song", aliases=["track", "s"], brief="Recommend a song", description="Display a song from spotify. Include the artist name for a better match.")
     async def _song(self, ctx, *args):
         await self.get_messages(ctx, args, 'track')
+
+    @commands.command(name="playlist", aliases=["playlists", "p"], brief="Recommend a playlist. Use ' && ' to include a Spotify user name", description="Display a playlist from spotify. Include ' &&  playlistcreatorusername' for a better match.")
+    async def _playlist(self, ctx, *args):
+        await self.get_messages(ctx, args, 'playlist')
 
     async def get_messages(self, ctx, args, search_type):
         search = ' '.join(args)
         if ctx.channel.id in database.get_recommended_channels():
             if not search == "":
+                if " && " in search:
+                    temp = search.split(" && ")
+                    search = temp[0]
+                    owner = temp[1]
                 results = self.spotify.search(q=search, limit=50, type=search_type)
                 items = results['{}s'.format(search_type)]['items']
                 if len(items) > 0:
                     if search_type == "artist":
-                        embed, url = await self.get_spotify(search, items, 1, ctx.message.author.name, 'artist')
+                        embed, url = await self.get_spotify(search, items, 1, ctx.message.author, 'artist')
                     elif search_type == "album":
-                        embed, url = await self.get_spotify(search, items, 1, ctx.message.author.name, 'album')
+                        embed, url = await self.get_spotify(search, items, 1, ctx.message.author, 'album')
                     elif search_type == "track":
-                        embed, url  = await self.get_spotify(search, items, 1, ctx.message.author.name, 'track')
-
+                        embed, url  = await self.get_spotify(search, items, 1, ctx.message.author, 'track')
+                    elif search_type == "playlist":
+                        embed, url  = await self.get_spotify(search, items, 1, ctx.message.author, 'playlist', owner)
                     second_msg = await ctx.channel.send(embed=embed)
                     primary_msg = await ctx.channel.send(url)
 
