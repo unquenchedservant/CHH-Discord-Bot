@@ -154,6 +154,8 @@ class Music(commands.Cog):
                     second_msg = await ctx.channel.send(embed=embed)
                     primary_msg = await ctx.channel.send(url)
 
+                    await ctx.message.delete()
+
                     if not len(items) == 1:
                         await primary_msg.add_reaction("⏭")
 
