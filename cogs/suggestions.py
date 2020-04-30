@@ -50,11 +50,11 @@ class Suggestions(commands.Cog):
                         await message.add_reaction(yes)
                         await message.add_reaction(no)
                         valid_msg = True
-                    if not valid_msg and not is_mod:
-                        temp_message = await message.channel.send("%s please use [SUBREDDIT], [DISCORD], [CHH_BOT] or [CHH] before your suggestion" % message.author.mention)
-                        await asyncio.sleep(8)
-                        await message.delete()
-                        await temp_message.delete()
+                if not valid_msg and not is_mod:
+                    temp_message = await message.channel.send("%s please use [SUBREDDIT], [DISCORD], [CHH_BOT] or [CHH] before your suggestion" % message.author.mention)
+                    await asyncio.sleep(8)
+                    await message.delete()
+                    await temp_message.delete()
 
 
 def setup(bot):
