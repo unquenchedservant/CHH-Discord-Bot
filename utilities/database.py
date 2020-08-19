@@ -8,6 +8,47 @@ add_suggestion_channel - adds tracking for suggestions to the given channel_id
 add_recommendation_channel - adds tracking for recommendations to the given channel_id
 '''
 
+def check_listening_party_channels(name):
+    conn = sqlite3.connect("chh.db")
+    conn.execute('''CREATE TABLE IF NOT EXISTS listening
+                    (NAME TEXT NOT NULL,
+                     TEXTID INT NOT NULL,
+                     VOICEID INT NOT NULL)''')
+    conn.commit()
+    cursor = conn.execute("SELECT * FROM listening WHERE NAME='{}'".format(name))
+    data = cursor.fetchall()
+    if len(data) == 0:
+        return True
+    else:
+        return False
+def add_listening_party_channels(name, text_id, voice_id):
+    conn = sqlite3.connect("chh.db")
+    conn.execute("INSERT INTO listening (NAME, TEXTID, VOICEID) VALUES ('{}',{},{})".format(name, text_id, voice_id))
+    conn.commit()
+    conn.close()
+def get_listening_party_text(name):
+    conn = sqlite3.connect("chh.db")
+    cursor = conn.execute("SELECT TEXTID FROM listening WHERE NAME='{}'".format(name))
+    data = cursor.fetchall()
+    conn.close()
+    if len(data) == 0:
+        return None
+    else:
+        return data[0][0]
+def get_listening_party_voice(name):
+    conn = sqlite3.connect("chh.db")
+    cursor = conn.execute("SELECT VOICEID FROM listening WHERE NAME='{}'".format(name))
+    data = cursor.fetchall()
+    conn.close()
+    if len(data) == 0:
+        return None
+    else:
+        return data[0][0]
+def delete_listening_party(name):
+    conn = sqlite3.connect("chh.db")
+    conn.execute("DELETE FROM listening WHERE NAME='{}'".format(name))
+    conn.commit()
+    conn.close()
 def add_suggestion_channel(channel_id):
     conn = sqlite3.connect("chh.db")
     conn.execute('''CREATE TABLE IF NOT EXISTS allowed
@@ -22,7 +63,24 @@ def add_suggestion_channel(channel_id):
         return True
     else:
         return False
+def update_howard_shore(number):
+    conn = sqlite3.connect("chh.db")
+    conn.execute("CREATE TABLE IF NOT EXISTS howard (TOTAL INT PRIMARY KEY NOT NULL)")
+    conn.commit()
+    conn.execute("UPDATE howard SET TOTAL={}".format(number))
+    conn.commit()
 
+def get_howard_shore():
+    conn = sqlite3.connect("chh.db")
+    try:
+        cursor = conn.execute("SELECT TOTAL FROM howard")
+        data = cursor.fetchall()
+        return data[0][0]
+    except:
+        conn.execute("CREATE TABLE IF NOT EXISTS howard (TOTAL INT PRIMARY KEY NOT NULL)")
+        conn.commit()
+        conn.execute("UPDATE howard SET TOTAL=0")
+        return 0
 def add_recommendation_channel(channel_id):
     conn = sqlite3.connect("chh.db")
     conn.execute('''CREATE TABLE IF NOT EXISTS allowed_recommended

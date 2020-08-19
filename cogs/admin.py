@@ -17,6 +17,100 @@ class Admin(commands.Cog):
             self.bot.reload_extension('cogs.suggestions')
         await asyncio.sleep(1)
         await ctx.message.delete()
+
+    @commands.group(invoke_without_command=True, pass_context=True, name="listeningparty", aliases=["lp", "listening", "party"], usage="<channel>")
+    @has_permissions(administrator=True)
+    async def listeningparty(self, ctx, *args):
+        pass
+    @listeningparty.command(pass_context=True, name="create", description="Create a listening party, creates a voice chat and text chat")
+    @has_permissions(administrator=True)
+    async def create_(self, ctx, *name):
+        name = ' '.join(name)
+        if len(name.split(" ")) > 1:
+            await ctx.send("Please keep name to one word")
+        elif name == None or name == "":
+            await ctx.send("Please enter a name for the listening party")
+        else:
+            check = database.check_listening_party_channels(name)
+            if check:
+                guild = ctx.guild
+                name = name.lower()
+                new_cat = await guild.create_category_channel("{} LISTENING PARTY".format(name.upper()), position=0)
+                text_channel = await guild.create_text_channel("{}-listening-discussion".format(name), category=new_cat)
+                await text_channel.set_permissions(guild.default_role, send_messages=False)
+                voice_channel = await guild.create_voice_channel("{}-listening-party".format(name), category=new_cat)
+                await voice_channel.set_permissions(guild.default_role, speak=False)
+                await voice_channel.set_permissions(guild.default_role, connect=False)
+                voice_id = voice_channel.id
+                text_id = text_channel.id
+                print(text_id)
+                print(voice_id)
+                database.add_listening_party_channels(name, int(text_id), int(voice_id))
+            else:
+                await ctx.send("Listening party by that name exists already")
+    @listeningparty.command(pass_context=True, name="pre", description="Pre-Listening party, voice chat allowed")
+    @has_permissions(administrator=True)
+    async def pre(self, ctx, name):
+        print(name)
+        voice_id = database.get_listening_party_voice(name)
+        text_id  = database.get_listening_party_text(name)
+        if voice_id == None or text_id == None:
+            ctx.send("No listening party with that name")
+        else:
+            vc = self.bot.get_channel(voice_id)
+            tc = self.bot.get_channel(text_id)
+            await vc.set_permissions(ctx.guild.default_role, speak=True)
+            await vc.set_permissions(ctx.guild.default_role, connect=True)
+            await tc.set_permissions(ctx.guild.default_role, send_messages=True)
+
+    @listeningparty.command(pass_context=True, name="start", description="Start at midnight, voice chat not allowed except for groovy")
+    @has_permissions(administrator=True)
+    async def start_(self, ctx, name):
+        print(name)
+        voice_id = database.get_listening_party_voice(name)
+        text_id  = database.get_listening_party_text(name)
+        if voice_id == None or text_id == None:
+            ctx.send("No listening party with that name")
+        else:
+            vc = self.bot.get_channel(voice_id)
+            tc = self.bot.get_channel(text_id)
+            await vc.set_permissions(ctx.guild.default_role, speak=False)
+
+    @listeningparty.command(pass_context=True, name="post", description="Open discussion back up at the end of the album")
+    @has_permissions(administrator=True)
+    async def post_(self, ctx, name):
+        print(name)
+        voice_id = database.get_listening_party_voice(name)
+        text_id  = database.get_listening_party_text(name)
+        if voice_id == None or text_id == None:
+            ctx.send("No listening party with that name")
+        else:
+            vc = self.bot.get_channel(voice_id)
+            tc = self.bot.get_channel(text_id)
+            await vc.set_permissions(ctx.guild.default_role, speak=True)
+
+    @listeningparty.command(pass_context=True, name="end", aliases=['delete', 'stop'], description="End the listening party, moving channel to archive and not allowing connections")
+    @has_permissions(administrator=True)
+    async def end_(self, ctx, name):
+        print(name)
+        voice_id = database.get_listening_party_voice(name)
+        text_id  = database.get_listening_party_text(name)
+        if voice_id == None or text_id == None:
+            await ctx.send("No listening party with that name")
+        else:
+            vc = self.bot.get_channel(voice_id)
+            tc = self.bot.get_channel(text_id)
+            await tc.set_permissions(ctx.guild.default_role, send_messages=False)
+            for x in ctx.guild.categories:
+                if x.name == "ARCHIVED CHANNELS":
+                    archive_cat = x
+                if x.name == "{} LISTENING PARTY".format(name.upper()):
+                    lp_cat = x
+            await vc.delete()
+            await tc.edit(category=archive_cat)
+            await lp_cat.delete()
+            database.delete_listening_party(name)
+
     """
     Track/Add/Start Command Group
 
