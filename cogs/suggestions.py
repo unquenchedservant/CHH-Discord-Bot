@@ -84,7 +84,7 @@ class Suggestions(commands.Cog):
                             if result:
                                 stick_found = True
                                 break
-                    if stick_found or message.content == "<:STICK:743597072598433924>":
+                    if stick_found or message.content == "<:STICK:743597072598433924>" or message.content.lower() == "thtick":
                         await message.delete()
                         st_channel = discord.utils.get(message.guild.channels, name="stick")
                         await message.channel.send("<#" + str(st_channel.id) + ">")
