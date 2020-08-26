@@ -80,7 +80,7 @@ class Suggestions(commands.Cog):
                     if len(check_stick) < 10:
                         check_array = [''.join(p) for p in permutations(check_stick)]
                         for item in check_array:
-                            result = re.match(r'^[s$S\*]\s*[\*Tt]\s*[\[\]\*1\|¡i\/\\\!Il]\s*[?\]\[\{\}\*(Cc]\s*[?\*kK]\W*$', item)
+                            result = re.match(r'^[sŚ$S\*]\s*[\*Tt]\s*[\[\]\*1\|¡i\/\\\!Il]\s*?[\]\[\{\}\*(Cc]\s*?[\*kK]\W*$', item)
                             if result:
                                 stick_found = True
                                 break
