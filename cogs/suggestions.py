@@ -36,7 +36,7 @@ class Suggestions(commands.Cog):
     async def on_message(self, message):
         yes = "✅"
         no = "❌"
-        if not message.author.id == self.bot.user.id:
+        if not message.author.id == self.bot.user.id and not message.author.bot:
             stick_guilds = [613464665661636648,365879579887534080]
             stick_channels = [747899054712946759, 742919732478607460]
             if message.guild.id in stick_guilds and not message.channel.id in stick_channels:
@@ -89,7 +89,6 @@ class Suggestions(commands.Cog):
                     stick_found = False
                     if len(check_stick) < 10:
                         check_array = [''.join(p) for p in permutations(check_stick)]
-
                         for item in check_array:
                             result = re.match(r'^[sŚ$S\*]\s*[\*Tt]\s*[\[\]\*1\|¡i\/\\\!Il]\s*[\]\[\{\}\*(Cc]\s*[\*kK]\W*$', item)
                             if result:
@@ -98,8 +97,7 @@ class Suggestions(commands.Cog):
                     if stick_found or message.content == "<:STICK:743597072598433924>" or message.content.lower() == "thtick":
                         await message.delete()
                         await message.channel.send("https://cdn.discordapp.com/emojis/746124789835497613.gif?v=1")
-                    else:
-                        print("not stick")
+
             suggestion_prefixes = ["[SUBREDDIT]","[DISCORD]","[CHH_BOT]","[CHH]"]
             is_mod = message.author.guild_permissions.administrator
             was_suggestion = False
