@@ -86,8 +86,6 @@ class Suggestions(commands.Cog):
                                 break
                     if stick_found or message.content == "<:STICK:743597072598433924>" or message.content.lower() == "thtick":
                         await message.delete()
-                        st_channel = discord.utils.get(message.guild.channels, name="stick")
-                        await message.channel.send("<#" + str(st_channel.id) + ">")
                         await message.channel.send("https://cdn.discordapp.com/emojis/746124789835497613.gif?v=1")
                     else:
                         print("not stick")
