@@ -43,6 +43,16 @@ class Suggestions(commands.Cog):
                 check_stick = message.content
                 if not check_stick == "<:STICK:743597072598433924>":
                     check_stick = check_stick.lower()
+                    if not "c" in check_stick:
+                        check_stick = check_stick + "c"
+                    if not "k" in check_stick:
+                        check_stick = check_stick + "k"
+                    if not "i" in check_stick:
+                        check_stick = check_stick + "i"
+                    if not "t" in check_stick:
+                        check_stick = check_stick + "t"
+                    if not "s" in check_stick:
+                        check_stick = check_stick + "s"
                     _RE_COMBINE_WHITESPACE = re.compile(r"\s+")
                     check_stick = _RE_COMBINE_WHITESPACE.sub(" ", check_stick).strip()
                     _RE_REMOVE_PUNCTUATION = re.compile(r"(?![\$\!])\W{P}")
@@ -79,6 +89,7 @@ class Suggestions(commands.Cog):
                     stick_found = False
                     if len(check_stick) < 10:
                         check_array = [''.join(p) for p in permutations(check_stick)]
+
                         for item in check_array:
                             result = re.match(r'^[sŚ$S\*]\s*[\*Tt]\s*[\[\]\*1\|¡i\/\\\!Il]\s*[\]\[\{\}\*(Cc]\s*[\*kK]\W*$', item)
                             if result:
