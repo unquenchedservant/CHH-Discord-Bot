@@ -43,15 +43,15 @@ class Suggestions(commands.Cog):
                 check_stick = message.content
                 if not check_stick == "<:STICK:743597072598433924>":
                     check_stick = check_stick.lower()
-                    if not "c" in check_stick:
+                    if not "c" in check_stick and len(check_stick)<=4 and check_stick == "stik":
                         check_stick = check_stick + "c"
-                    if not "k" in check_stick:
+                    if not "k" in check_stick and len(check_stick)<=4 and check_stick == "stic":
                         check_stick = check_stick + "k"
-                    if not "i" in check_stick:
+                    if not "i" in check_stick and len(check_stick)<=4 and check_stick == "stck":
                         check_stick = check_stick + "i"
-                    if not "t" in check_stick:
+                    if not "t" in check_stick and len(check_stick)<=4 and check_stick == "sick":
                         check_stick = check_stick + "t"
-                    if not "s" in check_stick:
+                    if not "s" in check_stick and len(check_stick)<=4 and check_stick == "tick":
                         check_stick = check_stick + "s"
                     _RE_COMBINE_WHITESPACE = re.compile(r"\s+")
                     check_stick = _RE_COMBINE_WHITESPACE.sub(" ", check_stick).strip()
