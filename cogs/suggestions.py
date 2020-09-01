@@ -37,67 +37,6 @@ class Suggestions(commands.Cog):
         yes = "✅"
         no = "❌"
         if not message.author.id == self.bot.user.id and not message.author.bot:
-            stick_guilds = [613464665661636648,365879579887534080]
-            stick_channels = [747899054712946759, 742919732478607460]
-            if message.guild.id in stick_guilds and not message.channel.id in stick_channels:
-                check_stick = message.content
-                if not check_stick == "<:STICK:743597072598433924>":
-                    check_stick = check_stick.lower()
-                    if not "c" in check_stick and len(check_stick)<=4 and check_stick == "stik":
-                        check_stick = check_stick + "c"
-                    if not "k" in check_stick and len(check_stick)<=4 and check_stick == "stic":
-                        check_stick = check_stick + "k"
-                    if not "i" in check_stick and len(check_stick)<=4 and check_stick == "stck":
-                        check_stick = check_stick + "i"
-                    if not "t" in check_stick and len(check_stick)<=4 and check_stick == "sick":
-                        check_stick = check_stick + "t"
-                    if not "s" in check_stick and len(check_stick)<=4 and check_stick == "tick":
-                        check_stick = check_stick + "s"
-                    _RE_COMBINE_WHITESPACE = re.compile(r"\s+")
-                    check_stick = _RE_COMBINE_WHITESPACE.sub(" ", check_stick).strip()
-                    _RE_REMOVE_PUNCTUATION = re.compile(r"(?![\$\!])\W{P}")
-                    check_stick = _RE_REMOVE_PUNCTUATION.sub("", check_stick)
-                    if check_stick.count("$") > 1:
-                        x = check_stick.count("$") - 1
-                        check_stick = check_stick.replace("$", "", 1)
-                    if check_stick.count("$") >= 1 and check_stick.count("s") >= 1:
-                        check_stick = check_stick.replace("$", "")
-                    if check_stick.count("s") > 1:
-                        x = check_stick.count("s") - 1
-                        check_stick = check_stick.replace("s", "", 1)
-                    if check_stick.count("t") > 1:
-                        x = check_stick.count("t") - 1
-                        check_stick = check_stick.replace("t", "", 1)
-                    if check_stick.count("i") > 1:
-                        x = check_stick.count("i") - 1
-                        check_stick = check_stick.replace("i", "", x)
-                    if check_stick.count("!") > 1:
-                        x = check_stick.count("!") - 1
-                        check_stick = check_stick.replace("!", "", x)
-                    if check_stick.count("!") >= 1 and check_stick.count("i") >= 1:
-                        check_stick = check_stick.replace("!", "")
-                    if check_stick.count("c") > 1:
-                        x = check_stick.count("c") - 1
-                        check_stick = check_stick.replace("c", "", x)
-                    if check_stick.count("k") > 1:
-                        x = check_stick.count("k") - 1
-                        check_stick = check_stick.replace("k", "", x)
-                if check_stick.count(" ") > 4:
-                    print(check_stick)
-                else:
-                    check_stick = check_stick.replace(" ", "")
-                    stick_found = False
-                    if len(check_stick) < 10:
-                        check_array = [''.join(p) for p in permutations(check_stick)]
-                        for item in check_array:
-                            result = re.match(r'^[sŚ$S\*]\s*[\*Tt]\s*[\[\]\*1\|¡i\/\\\!Il]\s*[\]\[\{\}\*(Cc]\s*[\*kK]\W*$', item)
-                            if result:
-                                stick_found = True
-                                break
-                    if stick_found or message.content == "<:STICK:743597072598433924>" or message.content.lower() == "thtick":
-                        await message.delete()
-                        await message.channel.send("https://cdn.discordapp.com/emojis/746124789835497613.gif?v=1")
-
             suggestion_prefixes = ["[SUBREDDIT]","[DISCORD]","[CHH_BOT]","[CHH]"]
             is_mod = message.author.guild_permissions.administrator
             was_suggestion = False
