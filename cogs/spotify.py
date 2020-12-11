@@ -26,15 +26,24 @@ class Music(commands.Cog):
 
     async def get_spotify(self, search, items, cur_page, user, search_type, owner=None):
         best_match_index = -1
+        potential_match = -1
+        found_exact = False
         x = 0
         for term in items:
             if search_type == "playlist" and not owner == None:
-                if owner in term['owner']['display_name']:
-                    best_match_index = x
+                if term['name'] == search:
+                    if owner == term['owner']['display_name']:
+                        best_match_index = x
+                        found_exact = True
+                    else:
+                        potential_match = x
             else:
                 if term['name'].lower() == search.lower():
                     best_match_index = x
+                    found_exact = True
             x += 1
+        if found_exact == False:
+            best_match_index = potential_match
         if best_match_index > -1:
             temp_store = items[0]
             items[0] = items[best_match_index]
