@@ -36,6 +36,8 @@ class Suggestions(commands.Cog):
     async def on_message(self, message):
         yes = "✅"
         no = "❌"
+        if message.author.id == 774051603661586463:
+            await message.channel.send("I'M TOO TIRED AND GOTTA POOP SO BAD")
         if not message.author.id == self.bot.user.id and not message.author.bot:
             suggestion_prefixes = ["[SUBREDDIT]","[DISCORD]","[CHH_BOT]","[CHH]"]
             is_mod = message.author.guild_permissions.administrator
