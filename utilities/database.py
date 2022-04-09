@@ -1,316 +1,35 @@
-import sqlite3, os
-
-'''
-ADD TRACKING UTILITY FUNCTIONS
-
-add_suggestion_channel - adds tracking for suggestions to the given channel_id
-
-add_recommendation_channel - adds tracking for recommendations to the given channel_id
-'''
-
-def check_listening_party_channels(name):
+import sqlite3
+def lookUpGuildReport(guildid):
     conn = sqlite3.connect("chh.db")
-    conn.execute('''CREATE TABLE IF NOT EXISTS listening
-                    (NAME TEXT NOT NULL,
-                     TEXTID INT NOT NULL,
-                     VOICEID INT NOT NULL)''')
+    conn.execute('''CREATE TABLE IF NOT EXISTS reportchannel
+                (GUILDID INT NOT NULL,
+                CHANNELID INT NOT NULL)''')
     conn.commit()
-    cursor = conn.execute("SELECT * FROM listening WHERE NAME='{}'".format(name))
+    cursor = conn.execute("SELECT * FROM reportchannel WHERE GUILDID={}".format(guildid))
     data = cursor.fetchall()
     if len(data) == 0:
-        return True
-    else:
+        conn.close()
         return False
-def add_listening_party_channels(name, text_id, voice_id):
-    conn = sqlite3.connect("chh.db")
-    conn.execute("INSERT INTO listening (NAME, TEXTID, VOICEID) VALUES ('{}',{},{})".format(name, text_id, voice_id))
-    conn.commit()
-    conn.close()
-def get_listening_party_text(name):
-    conn = sqlite3.connect("chh.db")
-    cursor = conn.execute("SELECT TEXTID FROM listening WHERE NAME='{}'".format(name))
-    data = cursor.fetchall()
-    conn.close()
-    if len(data) == 0:
-        return None
     else:
-        return data[0][0]
-def get_listening_party_voice(name):
-    conn = sqlite3.connect("chh.db")
-    cursor = conn.execute("SELECT VOICEID FROM listening WHERE NAME='{}'".format(name))
-    data = cursor.fetchall()
-    conn.close()
-    if len(data) == 0:
-        return None
-    else:
-        return data[0][0]
-def delete_listening_party(name):
-    conn = sqlite3.connect("chh.db")
-    conn.execute("DELETE FROM listening WHERE NAME='{}'".format(name))
-    conn.commit()
-    conn.close()
-def add_suggestion_channel(channel_id):
-    conn = sqlite3.connect("chh.db")
-    conn.execute('''CREATE TABLE IF NOT EXISTS allowed
-                    (ID INT PRIMARY KEY NOT NULL)''')
-    conn.commit()
-    cursor = conn.execute("SELECT * FROM allowed WHERE ID={}".format(channel_id))
-    data = cursor.fetchall()
-    if len(data) == 0:
-        conn.execute("INSERT INTO allowed (ID) VALUES ({})".format(channel_id))
-        conn.commit()
         conn.close()
         return True
-    else:
-        return False
-def update_howard_shore(number):
+def removeGuildReport(guildid):
     conn = sqlite3.connect("chh.db")
-    conn.execute("CREATE TABLE IF NOT EXISTS howard (TOTAL INT PRIMARY KEY NOT NULL)")
-    conn.commit()
-    conn.execute("UPDATE howard SET TOTAL={}".format(number))
-    conn.commit()
-
-def get_howard_shore():
-    conn = sqlite3.connect("chh.db")
-    try:
-        cursor = conn.execute("SELECT TOTAL FROM howard")
-        data = cursor.fetchall()
-        return data[0][0]
-    except:
-        conn.execute("CREATE TABLE IF NOT EXISTS howard (TOTAL INT PRIMARY KEY NOT NULL)")
-        conn.commit()
-        conn.execute("UPDATE howard SET TOTAL=0")
-        return 0
-def add_recommendation_channel(channel_id):
-    conn = sqlite3.connect("chh.db")
-    conn.execute('''CREATE TABLE IF NOT EXISTS allowed_recommended
-                    (ID INT PRIMARY KEY NOT NULL)''')
-    conn.commit()
-    cursor = conn.execute("SELECT * FROM allowed_recommended WHERE ID={}".format(channel_id))
-    data = cursor.fetchall()
-    if len(data) == 0:
-        conn.execute("INSERT INTO allowed_recommended (ID) VALUES ({})".format(channel_id))
-        conn.commit()
-        conn.close()
-        return True
-    else:
-        return False
-
-def set_welcome_channel(channel_id, server_id):
-    conn = sqlite3.connect("chh.db")
-    updated = False
-    try:
-        conn.execute("UPDATE server SET welcome_id={} WHERE ID={}".format(channel_id, server_id))
-        conn.commit()
-        updated = True
-    except:
-        conn.execute("ALTER TABLE server ADD COLUMN welcome_id int")
-        conn.commit()
-        conn.execute("UPDATE server SET welcome_id={} WHERE ID={}".format(channel_id, server_id))
-        conn.commit()
-        updated = False
-    return updated
-
-def get_welcome_msg_id(server_id):
-    conn = sqlite3.connect("chh.db")
-    updated = False
-    try:
-        cursor = conn.execute("SELECT welcome_msg_id FROM server WHERE ID={}".format(server_id))
-        updated=True
-    except:
-        conn.execute("ALTER TABLE server ADD COLUMN welcome_msg_id int")
-        conn.commit()
-        cursor = conn.execute("SELECT welcome_msg_id FROM server WHERE ID={}".format(server_id))
-    data = cursor.fetchall()
-    if len(data) > 0:
-        return data[0][0]
-    else:
-        return False
-
-def get_welcome_channel_id(server_id):
-    conn = sqlite3.connect("chh.db")
-    updated = False
-    try:
-        cursor = conn.execute("SELECT welcome_id FROM server WHERE ID={}".format(server_id))
-        updated = True
-    except:
-        conn.execute("ALTER TABLE server ADD COLUMN welcome_id int")
-        conn.commit()
-        cursor = conn.execute("SELECT welcome_id FROM server WHERE ID={}".format(server_id))
-    data = cursor.fetchall()
-    if len(data) > 0:
-        return data[0][0]
-    else:
-        return False
-
-def set_welcome_msg_id(msg_id, server_id):
-    conn = sqlite3.connect("chh.db")
-    conn.execute("UPDATE server SET welcome_msg_id={} WHERE ID={}".format(msg_id, server_id))
-    conn.commit()
-
-'''
-REMOVE TRACKING UTILITY FUNCTIONS
-
-remove_suggestion_channel - removes tracking for suggestions from the channel with given ID
-
-remove_recommendation_channel - removes tracking for recommendations from the channel with given id
-'''
-def remove_suggestion_channel(channel_id):
-    conn = sqlite3.connect("chh.db")
-    conn.execute('''CREATE TABLE IF NOT EXISTS allowed
-                    (ID INT PRIMARY KEY NOT NULL)''')
-    conn.commit()
-    cursor = conn.execute("SELECT * FROM allowed WHERE ID={}".format(channel_id))
-    data = cursor.fetchall()
-    if len(data) == 0:
-        return False
-    else:
-        conn.execute("DELETE FROM allowed WHERE ID = {}".format(channel_id))
-        conn.commit()
-        conn.close()
-        return True
-
-def remove_recommendation_channel(channel_id):
-    conn = sqlite3.connect("chh.db")
-    conn.execute('''CREATE TABLE IF NOT EXISTS allowed_recommended
-                    (ID INT PRIMARY KEY NOT NULL)''')
-    conn.commit()
-    cursor = conn.execute("SELECT * FROM allowed_recommended WHERE ID={}".format(channel_id))
-    data = cursor.fetchall()
-    if len(data) == 0:
-        return False
-    else:
-        conn.execute("DELETE FROM allowed_recommended WHERE ID = {}".format(channel_id))
-        conn.commit()
-        conn.close()
-        return True
-
-def get_suggestion_channels():
-    conn = sqlite3.connect("chh.db")
-    conn.execute('''CREATE TABLE IF NOT EXISTS allowed
-                    (ID INT PRIMARY KEY NOT NULL)''')
-    conn.commit()
-    cursor = conn.execute("SELECT * FROM allowed").fetchall()
-    ids = []
-    for row in cursor:
-        ids.append(row[0])
-    conn.close()
-    return ids
-
-def get_recommended_channels():
-    conn = sqlite3.connect("chh.db")
-    conn.execute('''CREATE TABLE IF NOT EXISTS allowed_recommended
-                    (ID INT PRIMARY KEY NOT NULL)''')
-    conn.commit()
-    cursor = conn.execute("SELECT * FROM allowed_recommended").fetchall()
-    ids = []
-    for row in cursor:
-        ids.append(row[0])
-    conn.close()
-    return ids
-
-def add_reaction_message(message_id, second_msg_id, user_id, search_string, search_type):
-    conn = sqlite3.connect("chh.db")
-    conn.execute('''CREATE TABLE IF NOT EXISTS reactions
-                   (ID INT PRIMARY KEY NOT NULL,
-                   SECONDMSG INT NOT NULL,
-                   USERID INT NOT NULL,
-                   SEARCHNUM INT NOT NULL,
-                   SEARCH text NOT NULL,
-                   TYPE text NOT NULL)''')
-    conn.commit()
-    conn.execute("INSERT INTO reactions (ID, SECONDMSG, USERID, SEARCH, SEARCHNUM, TYPE) VALUES ({}, {}, {}, '{}', 1, '{}')".format(message_id, second_msg_id, user_id, search_string, search_type))
+    conn.execute("DELETE FROM reportchannel WHERE GUILDID={}".format(guildid))
     conn.commit()
     conn.close()
-
-def get_reaction_user_id(message_id):
+def setGuildReport(guildid, channelid):
     conn = sqlite3.connect("chh.db")
-    cursor = conn.execute("SELECT USERID FROM reactions WHERE ID={}".format(message_id))
-    data = cursor.fetchall()
-    if len(data) > 0:
-        conn.close()
-        return data[0][0]
-
-def get_reaction_message_id():
-    conn = sqlite3.connect("chh.db")
-    cursor = conn.execute("SELECT ID FROM reactions")
-    data = cursor.fetchall()
-    ids = []
-    for row in data:
-        ids.append(row[0])
-    conn.close()
-    return ids
-
-def get_reaction_message(message_id):
-    conn = sqlite3.connect("chh.db")
-    cursor = conn.execute("SELECT * FROM reactions WHERE ID={}".format(message_id))
-    data = cursor.fetchall()
-    if len(data) > 0:
-        conn.close()
-        return data[0]
-
-def update_reaction_page(message_id, page_num):
-    conn = sqlite3.connect("chh.db")
-    conn.execute("UPDATE reactions SET SEARCHNUM={} WHERE ID={}".format(page_num, message_id))
+    conn.execute("INSERT INTO reportchannel (GUILDID, CHANNELID) VALUES ({},{})".format(guildid, channelid))
     conn.commit()
     conn.close()
-
-
-def add_server(server_id, prefix):
+def updateGuildReport(guildid, channelid):
     conn = sqlite3.connect("chh.db")
-    cursor = conn.execute("SELECT ID FROM server")
-    data = cursor.fetchall()
-    found = False
-    for row in data:
-        if row[0] == server_id:
-            found = True
-            break
-    if not found:
-        conn.execute("INSERT INTO server (ID, PREFIX) VALUES ({}, '{}')".format(server_id, prefix))
-        conn.commit()
-        conn.close()
-
-def get_prefix(server_id):
-    if not os.path.exists("chh.db"):
-        create_table()
-    conn = sqlite3.connect("chh.db")
-    conn.execute('''CREATE TABLE IF NOT EXISTS server
-                    (ID INT PRIMARY KEY NOT NULL,
-                    PREFIX CHAR(2) NOT NULL)''')
-    conn.commit()
-    cursor = conn.execute("SELECT ID FROM server")
-    data = cursor.fetchall()
-    if len(data) == 0:
-        add_server(server_id, "^")
-    cursor = conn.execute("SELECT prefix FROM server WHERE ID = {}".format(server_id))
-    data = cursor.fetchall()
-    if len(data) == 0:
-        add_server(server_id, "^")
-        return "^"
-    return data[0][0]
-
-def set_prefix(server_id, prefix):
-    conn = sqlite3.connect("chh.db")
-    conn.execute("UPDATE server SET prefix = '{}' WHERE ID = {}".format(prefix, server_id))
+    conn.execute("UPDATE reportchannel SET CHANNELID={} WHERE GUILDID={}".format(channelid, guildid))
     conn.commit()
     conn.close()
-
-def create_table():
+def getGuildReport(guildid):
     conn = sqlite3.connect("chh.db")
-    conn.execute('''CREATE TABLE IF NOT EXISTS server
-                    (ID INT PRIMARY KEY NOT NULL,
-                    PREFIX CHAR(2) NOT NULL)''')
-    conn.execute('''CREATE TABLE IF NOT EXISTS allowed
-                    (ID INT PRIMARY KEY NOT NULL)''')
-    conn.execute('''CREATE TABLE IF NOT EXISTS allowed_recommended
-                    (ID INT PRIMARY KEY NOT NULL)''')
-    conn.execute('''CREATE TABLE IF NOT EXISTS reactions
-                   (ID INT PRIMARY KEY NOT NULL,
-                   SECONDMSG INT NOT NULL,
-                   USERID INT NOT NULL,
-                   SEARCHNUM INT NOT NULL,
-                   SEARCH text NOT NULL,
-                   TYPE text NOT NULL)''')
-
-    conn.commit()
-    conn.close()
+    cursor = conn.execute("SELECT CHANNELID FROM reportchannel WHERE GUILDID={}".format(guildid))
+    data = cursor.fetchone()
+    return data[0]
