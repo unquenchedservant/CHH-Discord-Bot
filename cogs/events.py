@@ -7,3 +7,6 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     async def on_member_remove(self, member):
         print(member.roles)
+
+def setup(bot):
+    bot.add_cog(Events(bot))
