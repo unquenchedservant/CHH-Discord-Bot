@@ -38,5 +38,5 @@ if __name__ == '__main__':
     for extension in extensions:
         bot.load_extension(extension)
 
-token = get_env.discord_dev()
+token = get_env.discord_token()
 bot.run(token, bot=True, reconnect=True)
