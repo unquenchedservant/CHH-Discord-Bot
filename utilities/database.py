@@ -15,9 +15,28 @@ def toggleRoleMemory(guildid):
             newEnabled = 1
         if data[0][1] == 1:
             newEnabled = 0
-    conn.execute("UPDATE roleMemoryEnabled SET ENABLED={} WHERE GUILDID={}".format(newEnabled, guildid))
-    conn.commit()
+        conn.execute("UPDATE roleMemoryEnabled SET ENABLED={} WHERE GUILDID={}".format(newEnabled, guildid))
+        conn.commit()
+    else:
+        conn.execute("INSERT INTO roleMemoryEnabled (GUILDID, ENABLED) VALUES ({},{})".format(guildid, 1))
+        conn.commit()
     conn.close()
+
+def getRoleMemoryState(guildid):
+    conn = sqlite3.connect("chh.db")
+    conn.execute('''CREATE TABLE IF NOT EXISTS roleMemoryEnabled
+                    (GUILDID INT NOT NULL,
+                    ENABLED INT NOT NULL)''')
+    conn.commit()
+    cursor = conn.execute("SELECT * FROM roleMemoryEnabled WHERE GUILDID={}".format(guildid))
+    data = cursor.fetchall()
+    if len(data) == 0:
+        return False
+    else:
+        if data[0][1] == 1:
+            return True
+        else:
+            return False
 
 def addRole(uid, rid):
     #uid = user id
@@ -53,7 +72,7 @@ def getRoles(uid):
     for item in data:
         roles.append(item[1])
     return roles
-    
+
 #report based functions
 def lookUpGuildReport(guildid):
     conn = sqlite3.connect("chh.db")

@@ -20,17 +20,19 @@ async def on_ready():
 
 @bot.event
 async def on_member_join(member):
-    rolesToAdd = database.getRoles(member.id)
-    for roleID in rolesToAdd:
-        role = get(member.guild.roles, id=roleID)
-        await member.add_roles(role, atomic=True)
+    if database.getRoleMemoryState(member.guild.id):
+        rolesToAdd = database.getRoles(member.id)
+        for roleID in rolesToAdd:
+            role = get(member.guild.roles, id=roleID)
+            await member.add_roles(role, atomic=True)
     database.removeRoles(member.id)
     
 @bot.event
 async def on_member_remove(member):
-    for role in member.roles:
-        if not role.name == "@everyone":
-            database.addRole(member.id, role.id)
+    if database.getRoleMemoryState(member.guild.id):
+        for role in member.roles:
+            if not role.name == "@everyone":
+                database.addRole(member.id, role.id)
 
 if __name__ == '__main__':
     for extension in extensions:
