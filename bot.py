@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+## possible that's only needed for linux.
 import discord
 from discord.ext import commands
 from discord.utils import get
