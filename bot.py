@@ -1,15 +1,6 @@
 #!/usr/bin/python3
-import discord
-import logging
-import os
-import sqlite3
-import random
-from discord import activity
 from discord.ext import commands
 from discord.utils import get
-import sys
-from datetime import date
-import asyncio
 from utilities import get_env
 
 bot = commands.Bot(command_prefix="^", description="A quick bot with random stuff for the CHH discord", case_insensitive=True)
