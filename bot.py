@@ -7,7 +7,7 @@ bot = commands.Bot(command_prefix="^", description="A quick bot with random stuf
 
 
 
-extensions=['cogs.admin', 'cogs.reports', 'cogs.aprilfools']
+extensions=['cogs.admin', 'cogs.reports', 'cogs.aprilfools', 'cogs.events']
 
 @bot.event
 async def on_ready():
