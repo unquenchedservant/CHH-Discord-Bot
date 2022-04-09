@@ -1,17 +1,9 @@
-import os, spotipy
+import os
 from dotenv import load_dotenv
-from spotipy.oauth2 import SpotifyClientCredentials
 
 load_dotenv()
 
 def discord_token():
     return os.getenv('DISCORD_TOKEN')
-
 def discord_dev():
     return os.getenv('DISCORD_DEV')
-
-def owner_id():
-    return os.getenv('OWNER_ID')
-
-def spotify_credentials():
-    return SpotifyClientCredentials(client_id=os.getenv("SPOTIPY_ID"), client_secret=os.getenv("SPOTIPY_SECRET"))
