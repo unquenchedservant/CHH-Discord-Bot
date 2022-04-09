@@ -1,38 +1,30 @@
 #!/usr/bin/python3
-import discord, logging
+import discord
+import logging
+import os
+import sqlite3
+import random
+from discord import activity
 from discord.ext import commands
-from utilities import database, get_env
+from discord.utils import get
+import sys
+from datetime import date
+import asyncio
+from utilities import get_env
 
-logger = logging.getLogger('discord')
-logger.setLevel(logging.DEBUG)
-handler = logging.FileHandler(filename="chh_bot.log", encoding='utf-8', mode='w')
-handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
-logger.addHandler(handler)
+bot = commands.Bot(command_prefix="^", description="A quick bot with random stuff for the CHH discord", case_insensitive=True)
 
-default_prefix = "^"
-async def determine_prefix(bot, message):
-    guild = message.guild
-    if guild:
-        return database.get_prefix(guild.id)
-    else:
-        return default_prefix
 
-extensions = ['cogs.admin', 'cogs.suggestions', 'cogs.spotify']
 
-description = '''This bot monitors the suggestion channel and also adds some process_commands that are specific to the r/chh discord server'''
-bot = commands.Bot(command_prefix=determine_prefix, description=description, case_insensitive=True)
+extensions=['cogs.admin', 'cogs.reports', 'cogs.aprilfools']
+
+@bot.event
+async def on_ready():
+    print('We have logged in as {0.user}'.format(bot))
 
 if __name__ == '__main__':
     for extension in extensions:
         bot.load_extension(extension)
-
-@bot.event
-async def on_ready():
-    print('logged in as')
-    print(bot.user.name)
-    print(bot.user.id)
-    print('----')
-
 
 token = get_env.discord_token()
 bot.run(token, bot=True, reconnect=True)
