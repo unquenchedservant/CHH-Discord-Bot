@@ -16,6 +16,7 @@ class AprilFools(commands.Cog):
                 allowed = [3,8]
                 if random.randint(1,10) in allowed:
                     await message.add_reaction(star)
+                    
     def aprilFools(self, message):
         if date.today().strftime("%m/%d") == "04/01": #april fools day
             return True

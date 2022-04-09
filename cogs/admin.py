@@ -27,5 +27,10 @@ class Admin(commands.Cog):
         if database.lookUpGuildReport(guild.id):
             database.removeGuildReport(guild.id)
             await ctx.send("Removed the report channel for this server")
+
+    @commands.command(pass_context=True)
+    @has_permissions(administrator=True)
+    async def toggleRoleMemory(self, ctx):
+        database.toggleRoleMemory(ctx.guild.id)
 def setup(bot):
     bot.add_cog(Admin(bot))
