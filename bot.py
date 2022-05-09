@@ -8,11 +8,11 @@ from utilities import get_env, database
 intents = discord.Intents.all()
 intents.members = True
 
-bot = commands.Bot(command_prefix="^", description="A quick bot with random stuff for the CHH discord", case_insensitive=True, intents=intents)
+bot = discord.Bot(debug_guilds=[365879579887534080], owner_id=236394260553924608,intents=intents)
 
 
 
-extensions=['cogs.admin', 'cogs.reports', 'cogs.aprilfools', 'cogs.events']
+extensions=['cogs.admin']
 
 @bot.event
 async def on_ready():
@@ -38,5 +38,6 @@ if __name__ == '__main__':
     for extension in extensions:
         bot.load_extension(extension)
 
-token = get_env.discord_token()
-bot.run(token, bot=True, reconnect=True)
+#token = get_env.discord_token()
+token = get_env.discord_dev()
+bot.run(token)
