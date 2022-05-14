@@ -1,5 +1,22 @@
 import sqlite3
 
+def setBirthday(userid, month, day):
+    conn = sqlite3.connect("chh.db")
+    conn.execute('''CREATE TABLE IF NOT EXISTS birthdays
+                    (USERID INT NOT NULL,
+                    MONTH INT NOT NULL,
+                    DAY INT NOT NULL)''')
+    conn.commit()
+    cursor = conn.execute("SELECT * FROM birthdays WHERE USERID={}".format(userid))
+    data = cursor.fetchall()
+    if len(data) == 0:
+        sql = "INSERT INTO birthdays (USERID, MONTH, DAY) VALUES ({},{},{})".format(userid, month, day)
+    else:
+        sql = "UPDATE birthdays SET MONTH={}, DAY={} WHERE USERID={}".format(month, day, userid) 
+    conn.execute(sql)
+    conn.commit()
+    conn.close()
+
 #role memory functions
 def checkRoleMemory(guildid):
     conn = sqlite3.connect("chh.db")
