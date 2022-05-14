@@ -18,6 +18,17 @@ def setBirthday(userid, month, day):
     conn.commit()
     conn.close()
 
+def removeBirthday(userid):
+    conn = sqlite3.connect("chh.db")
+    conn.execute('''CREATE TABLE IF NOT EXISTS birthdays
+                    (USERID INT NOT NULL,
+                    MONTH INT NOT NULL,
+                    DAY INT NOT NULL)''')
+    conn.commit()
+    conn.execute('''DELETE FROM birthdays WHERE USERID={}'''.format(userid))
+    conn.commit()
+    conn.close()
+
 def getBirthday(userid):
     conn = sqlite3.connect("chh.db")
     conn.execute('''CREATE TABLE IF NOT EXISTS birthdays

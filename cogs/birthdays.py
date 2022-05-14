@@ -36,6 +36,10 @@ class Birthdays(commands.Cog):
         else:
             await ctx.respond("Your birthday is set to {}/{}".format(birthday[0], birthday[1]), ephemeral=True)
 
+    @slash_command(guild_ids=GUILD_ID)
+    async def removebirthday(self, ctx: discord.ApplicationContext):
+        database.removeBirthday(ctx.author.id)
+        await ctx.respond("Your birthday has been removed successfully", ephemeral=True)
 
 def setup(bot):
     bot.add_cog(Birthdays(bot))
