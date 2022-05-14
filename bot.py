@@ -12,7 +12,7 @@ bot = discord.Bot(debug_guilds=[365879579887534080], owner_id=236394260553924608
 
 
 
-extensions=['cogs.admin']
+extensions=['cogs.admin', 'cogs.aprilfools']
 
 @bot.event
 async def on_ready():
