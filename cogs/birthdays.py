@@ -52,7 +52,9 @@ class Birthdays(commands.Cog):
         msg = "We've got a birthday! Make sure to wish the following people a happy birthday:\n\n"
         for id in birthday_ids:
             msg = msg + "<@" + str(id) + ">\n"
-        channel = self.bot.get_channel(471397293229342781)
+        channel_id = 613469111682334762 
+        #channel_id = 471397293229342781
+        channel = self.bot.get_channel(channel_id)
         await channel.send(msg)
 def setup(bot):
     bot.add_cog(Birthdays(bot))
