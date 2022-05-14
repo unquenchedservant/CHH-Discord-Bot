@@ -1,16 +1,18 @@
+from ctypes import util
 import discord
 from discord.commands import (slash_command)
 from discord.commands import Option
 from discord.ext import commands
 from utilities import database
-
+import utilities
 ERROR_MSG = "You need to be a mod or admin to use this command"
+GUILD_ID=utilities.get_guild_ids(False)
 class Admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         
     
-    @slash_command(default_permission=False)
+    @slash_command(guild_ids=GUILD_ID, default_permission=False)
     async def togglerolememory(self, ctx: discord.ApplicationContext):
         if ctx.author.guild_permissions.administrator:
             status = database.checkRoleMemory(ctx.guild.id)
@@ -24,7 +26,7 @@ class Admin(commands.Cog):
         else:
             await ctx.respond(ERROR_MSG, ephemeral=True)
     
-    @slash_command(default_permission=False)
+    @slash_command(guild_ids=GUILD_ID, default_permission=False)
     async def checkrolememory(self, ctx: discord.ApplicationContext):
         if ctx.author.guild_permissions.administrator:
             status = database.checkRoleMemory(ctx.guild.id)
