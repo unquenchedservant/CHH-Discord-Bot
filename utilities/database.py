@@ -1,4 +1,5 @@
 import sqlite3
+#birthday functions
 
 def setBirthday(userid, month, day):
     conn = sqlite3.connect("chh.db")
@@ -17,6 +18,22 @@ def setBirthday(userid, month, day):
     conn.commit()
     conn.close()
 
+def getBirthday(userid):
+    conn = sqlite3.connect("chh.db")
+    conn.execute('''CREATE TABLE IF NOT EXISTS birthdays
+                    (USERID INT NOT NULL,
+                    MONTH INT NOT NULL,
+                    DAY INT NOT NULL)''')
+    conn.commit()
+    cursor = conn.execute ("SELECT * FROM birthdays WHERE USERID={}".format(userid))
+    data = cursor.fetchall()
+    conn.close()
+    if len(data) == 0:
+        return [0, 0]
+    else:
+        month=data[0][1]
+        day=data[0][2]
+        return [month, day]
 #role memory functions
 def checkRoleMemory(guildid):
     conn = sqlite3.connect("chh.db")

@@ -7,7 +7,6 @@ from utilities import database
 import utilities
 
 ERROR_MSG = "You need to be a mod or admin to use this command"
-
 GUILD_ID=utilities.get_guild_ids(False)
 
 class Birthdays(commands.Cog):
@@ -29,7 +28,14 @@ class Birthdays(commands.Cog):
             database.setBirthday(ctx.author.id, month, day) 
             await ctx.respond("Your birthday has been set successfully", ephemeral=True)
 
-    
+    @slash_command(guild_ids=GUILD_ID)
+    async def getbirthday(self, ctx: discord.ApplicationContext):
+        birthday = database.getBirthday(ctx.author.id)
+        if birthday == [0, 0]:
+            await ctx.respond("You do not have a birthday set, use `/setbirthday` to do so", ephemeral=True)
+        else:
+            await ctx.respond("Your birthday is set to {}/{}".format(birthday[0], birthday[1]), ephemeral=True)
+
 
 def setup(bot):
     bot.add_cog(Birthdays(bot))
