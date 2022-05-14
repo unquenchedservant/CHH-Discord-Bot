@@ -1,6 +1,24 @@
 import sqlite3
 #birthday functions
 
+def checkBirthday(current_month, current_day):
+    conn = sqlite3.connect("chh.db")
+    conn.execute('''CREATE TABLE IF NOT EXISTS birthdays
+                    (USERID INT NOT NULL,
+                    MONTH INT NOT NULL,
+                    DAY INT NOT NULL)''')
+    conn.commit()
+    cursor = conn.execute("SELECT USERID FROM birthdays WHERE MONTH={} AND DAY={}".format(current_month, current_day))
+    data = cursor.fetchall()
+    if len(data) == 0:
+        return []
+    else:
+        birthday_ids = []
+        for item in data:
+            birthday_ids.append(item[0])
+        return birthday_ids
+        
+
 def setBirthday(userid, month, day):
     conn = sqlite3.connect("chh.db")
     conn.execute('''CREATE TABLE IF NOT EXISTS birthdays

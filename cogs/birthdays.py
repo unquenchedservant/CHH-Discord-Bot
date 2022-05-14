@@ -5,6 +5,8 @@ from discord import option
 from discord.ext import commands
 from utilities import database
 import utilities
+from datetime import time, timezone, datetime
+from discord.ext import tasks
 
 ERROR_MSG = "You need to be a mod or admin to use this command"
 GUILD_ID=utilities.get_guild_ids(False)
@@ -12,6 +14,7 @@ GUILD_ID=utilities.get_guild_ids(False)
 class Birthdays(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.daily_birthday_task.start()
 
     @slash_command(guild_ids=GUILD_ID)    
     async def setbirthday(
@@ -41,5 +44,15 @@ class Birthdays(commands.Cog):
         database.removeBirthday(ctx.author.id)
         await ctx.respond("Your birthday has been removed successfully", ephemeral=True)
 
+    @tasks.loop(time=time(13, 0, tzinfo=timezone.utc))
+    async def daily_birthday_task(self):
+        current_month = datetime.now().month
+        current_day = datetime.now().day
+        birthday_ids = database.checkBirthday(current_month, current_day)
+        msg = "We've got a birthday! Make sure to wish the following people a happy birthday:\n\n"
+        for id in birthday_ids:
+            msg = msg + "<@" + str(id) + ">\n"
+        channel = self.bot.get_channel(471397293229342781)
+        await channel.send(msg)
 def setup(bot):
     bot.add_cog(Birthdays(bot))
