@@ -1,6 +1,20 @@
 import sqlite3
 
 #role memory functions
+def checkRoleMemory(guildid):
+    conn = sqlite3.connect("chh.db")
+    conn.execute('''CREATE TABLE IF NOT EXISTS roleMemoryEnabled
+                    (GUILDID INT NOT NULL,
+                    ENABLED INT NOT NULL)''')
+    conn.commit()
+    cursor = conn.execute("SELECT * FROM roleMemoryEnabled WHERE GUILDID={}".format(guildid))
+    data = cursor.fetchall()
+    status = 1
+    if not len(data) == 0:
+        return data[0][1]
+    else:
+        return 0
+        
 def toggleRoleMemory(guildid):
     conn = sqlite3.connect("chh.db")
     conn.execute('''CREATE TABLE IF NOT EXISTS roleMemoryEnabled
