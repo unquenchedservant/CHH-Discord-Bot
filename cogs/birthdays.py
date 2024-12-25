@@ -15,6 +15,7 @@ class Birthdays(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.daily_birthday_task.start()
+        self.special_events.start()
 
     @slash_command(guild_ids=GUILD_ID)    
     async def setbirthday(
@@ -56,5 +57,26 @@ class Birthdays(commands.Cog):
         #channel_id = 471397293229342781
         channel = self.bot.get_channel(channel_id)
         await channel.send(msg)
+
+    @tasks.loop(time=time(5,0,tzinfo=timezone.utc))
+    async def special_events(self):
+        current_month = datetime.now().month
+        current_day = datetime.now().day
+        msg = ""
+        send = False
+        if current_month == 3 and current_day == 14:
+            msg = "Happy Pi Day! Make sure to eat some pie today!"
+            send = True
+        elif current_month == 12 and current_day == 25:
+            msg = "Merry Christmas, CHH Fam! Make sure you blast The Gift today, or else!"
+            send = True
+        elif current_month == 4 and current_day == 20:
+            msg = "He is Risen indeed! Happy Easter, CHH Fam!"
+            send = True
+        channel_id = 613469111682334762 
+        #channel_id = 471397293229342781
+        channel = self.bot.get_channel(channel_id)
+        if send:
+            await channel.send(msg)
 def setup(bot):
     bot.add_cog(Birthdays(bot))
