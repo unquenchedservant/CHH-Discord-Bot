@@ -30,8 +30,14 @@ class Admin(commands.Cog):
             elif not msg: 
                 await ctx.respond("Please enter a holiday message", ephemeral=True)
             else:
-                database.addHoliday(month, day, msg)
-                await ctx.respond("Successfully saved a new holiday on {}-{} with the msg: {}".format(month,day, msg))
+                updated = database.addHoliday(month, day, msg)
+                month = utilities.zero_leading(month)
+                day = utilities.zero_leading(day)
+                if updated:
+                    response_msg = "Successfully updated holiday message on {}/{} with the message: {}".format(month,day,msg)
+                else:
+                    response_msg = "Successfully saved a new holiday on {}/{} with the message: {}".format(month,day,msg)
+                await ctx.respond(response_msg)
         else:
             await ctx.respond(ERROR_MSG, ephemeral=True)
 
@@ -50,6 +56,8 @@ class Admin(commands.Cog):
                 if msg == 0:
                     await ctx.respond("There is no holiday on that day", ephemeral=True)
                 else:
+                    month = utilities.zero_leading(month)
+                    day = utilities.zero_leading(day)
                     await ctx.respond("The message for {}/{} is : {}".format(month, day, msg), ephemeral=True)
             msg = database.checkHoliday(month, day)
         else:
@@ -65,12 +73,10 @@ class Admin(commands.Cog):
             else:
                 for item in holidays:
                     month, day, message = item
-                    if month < 10:
-                        month = "0{}".format(month)
-                    if day < 10:
-                        day = "0{}".format(day)
+                    month = utilities.zero_leading(month)
+                    day = utilities.zero_leading(day)
                     msg = msg + "{}/{} - {}\n\n".format(month,day,message)
-            await ctx.respond(msg, ephemeral=True)
+            await ctx.respond(msg)
         else:
             await ctx.respond(ERROR_MSG, ephemeral=True)
 
@@ -87,7 +93,9 @@ class Admin(commands.Cog):
             else:
                 status = database.removeHoliday(month,day)
                 if status == 1:
-                    await ctx.respond("Holiday removed", ephemeral=True)
+                    month = utilities.zero_leading(month)
+                    day = utilities.zero_leading(day)
+                    await ctx.respond("Holiday on {}/{} removed".format(month, day), ephemeral=True)
                 elif status == 0:
                     await ctx.respond("Holiday not removed, may not exist", ephemeral=True)
         else:
