@@ -10,7 +10,7 @@ def checkHolidayTable(conn):
     conn.execute('''CREATE TABLE IF NOT EXISTS holidays
                      (MONTH INT NOT NULL,
                      DAY INT NOT NULL,
-                     MSG VARCHAR(500) NOT NULL)''')
+                     MSG VARCHAR(2000) NOT NULL)''')
     conn.commit()
 
 def addHoliday(month, day, msg):
