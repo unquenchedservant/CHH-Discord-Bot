@@ -9,7 +9,12 @@ from datetime import time, timezone, datetime
 from discord.ext import tasks
 
 ERROR_MSG = "You need to be a mod or admin to use this command"
-GUILD_ID=utilities.get_guild_ids(False)
+GUILD_ID=utilities.get_guild_ids(utilities.get_is_dev())
+
+if utilities.get_is_dev():
+    BROADCAST_CHANNEL = 471397276468903936
+else:
+    BROADCAST_CHANNEL = 613469111682334762
 
 class Birthdays(commands.Cog):
     def __init__(self, bot):
@@ -53,8 +58,7 @@ class Birthdays(commands.Cog):
         msg = "We've got a birthday! Make sure to wish the following people a happy birthday:\n\n"
         for id in birthday_ids:
             msg = msg + "<@" + str(id) + ">\n"
-        channel_id = 613469111682334762 
-        #channel_id = 471397293229342781
+        channel_id = BROADCAST_CHANNEL 
         if not len(birthday_ids) == 0:
             channel = self.bot.get_channel(channel_id)
             await channel.send(msg)

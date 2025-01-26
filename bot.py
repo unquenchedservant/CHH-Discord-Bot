@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 from discord.utils import get
 from utilities import get_env, database
+import utilities
 import sys
 
 intents = discord.Intents.all()
@@ -35,16 +36,18 @@ async def on_member_remove(member):
             if not role.name == "@everyone":
                 database.addRole(member.id, role.id)
 
-if __name__ == '__main__':
-    for extension in extensions:
-        bot.load_extension(extension)
-
 if __name__ == "__main__":
+    
     if "--dev" in sys.argv:
+        print("Running Developer Bot")
+        utilities.set_is_dev(True)
+        for extension in extensions:
+            bot.load_extension(extension)
         token = get_env.discord_dev()
         bot.run(token)
     else:
-        print("Running Developer Bot")
+        for extension in extensions:
+            bot.load_extension(extension)
         token = get_env.discord_token()
         bot.run(token)
     #token = get_env.discord_token()
