@@ -1,15 +1,84 @@
 import sqlite3
 #birthday functions
 
-def checkBirthday(current_month, current_day):
+"""
+=========
+Holiday Table
+=========
+"""
+def checkHolidayTable(conn):
+    conn.execute('''CREATE TABLE IF NOT EXISTS holidays
+                     (MONTH INT NOT NULL,
+                     DAY INT NOT NULL,
+                     MSG VARCHAR(500) NOT NULL)''')
+    conn.commit()
+
+def addHoliday(month, day, msg):
+    print("DEBUG - MONTH {}".format(month))
+    print("")
     conn = sqlite3.connect("chh.db")
+    checkHolidayTable(conn)
+    cursor = conn.execute("SELECT * FROM holidays WHERE MONTH={} AND DAY={}".format(month,day))
+    data = cursor.fetchall()
+    if len(data) == 0:
+        sql = "INSERT INTO holidays (MONTH, DAY, MSG) VALUES ({},{},\"{}\")".format(month,day,msg)
+    else:
+        sql = "UPDATE holidays SET MSG={}, WHERE MONTH={} AND DAY={}".format(msg, month, day)
+    conn.execute(sql)
+    conn.commit()
+    conn.close()
+
+def checkHoliday(month,day):
+    conn = sqlite3.connect("chh.db")
+    checkHolidayTable(conn)
+    cursor = conn.execute("SELECT MSG FROM holidays WHERE MONTH={} AND DAY={}".format(month,day))
+    data = cursor.fetchall()
+    conn.close()
+    if len(data) == 0:
+        return 0
+    else:
+        return data[0][0]
+
+def checkHolidays():
+    conn = sqlite3.connect("chh.db")
+    checkHolidayTable(conn)
+    cursor = conn.execute("SELECT * FROM holidays")
+    data = cursor.fetchall()
+    conn.close()
+    return data
+
+def removeHoliday(month,day):
+    conn =sqlite3.connect("chh.db")
+    checkHolidayTable(conn)
+    cursor = conn.execute("SELECT * FROM holidays WHERE MONTH={} AND DAY={}".format(month,day))
+    data = cursor.fetchall()
+    if len(data) == 0:
+        conn.close()
+        return 0
+    else:
+        conn.execute("DELETE FROM holidays WHERE MONTH={} AND DAY={}".format(month,day))
+        conn.commit()
+        conn.close()
+        return 1
+
+"""
+=========
+Birthday Table
+=========
+"""
+def checkBirthdayTable(conn):
     conn.execute('''CREATE TABLE IF NOT EXISTS birthdays
                     (USERID INT NOT NULL,
                     MONTH INT NOT NULL,
                     DAY INT NOT NULL)''')
     conn.commit()
+
+def checkBirthday(current_month, current_day):
+    conn = sqlite3.connect("chh.db")
+    checkBirthdayTable(conn)
     cursor = conn.execute("SELECT USERID FROM birthdays WHERE MONTH={} AND DAY={}".format(current_month, current_day))
     data = cursor.fetchall()
+    conn.close()
     if len(data) == 0:
         return []
     else:
@@ -17,15 +86,10 @@ def checkBirthday(current_month, current_day):
         for item in data:
             birthday_ids.append(item[0])
         return birthday_ids
-        
 
 def setBirthday(userid, month, day):
     conn = sqlite3.connect("chh.db")
-    conn.execute('''CREATE TABLE IF NOT EXISTS birthdays
-                    (USERID INT NOT NULL,
-                    MONTH INT NOT NULL,
-                    DAY INT NOT NULL)''')
-    conn.commit()
+    checkBirthdayTable(conn)
     cursor = conn.execute("SELECT * FROM birthdays WHERE USERID={}".format(userid))
     data = cursor.fetchall()
     if len(data) == 0:
@@ -38,22 +102,14 @@ def setBirthday(userid, month, day):
 
 def removeBirthday(userid):
     conn = sqlite3.connect("chh.db")
-    conn.execute('''CREATE TABLE IF NOT EXISTS birthdays
-                    (USERID INT NOT NULL,
-                    MONTH INT NOT NULL,
-                    DAY INT NOT NULL)''')
-    conn.commit()
+    checkBirthdayTable(conn)
     conn.execute('''DELETE FROM birthdays WHERE USERID={}'''.format(userid))
     conn.commit()
     conn.close()
 
 def getBirthday(userid):
     conn = sqlite3.connect("chh.db")
-    conn.execute('''CREATE TABLE IF NOT EXISTS birthdays
-                    (USERID INT NOT NULL,
-                    MONTH INT NOT NULL,
-                    DAY INT NOT NULL)''')
-    conn.commit()
+    checkBirthdayTable(conn)
     cursor = conn.execute ("SELECT * FROM birthdays WHERE USERID={}".format(userid))
     data = cursor.fetchall()
     conn.close()
@@ -63,16 +119,26 @@ def getBirthday(userid):
         month=data[0][1]
         day=data[0][2]
         return [month, day]
-#role memory functions
-def checkRoleMemory(guildid):
-    conn = sqlite3.connect("chh.db")
+
+"""
+=========
+Role Memory Table
+=========
+"""
+def checkRoleMemoryTable(conn):
     conn.execute('''CREATE TABLE IF NOT EXISTS roleMemoryEnabled
                     (GUILDID INT NOT NULL,
                     ENABLED INT NOT NULL)''')
     conn.commit()
+
+#role memory functions
+def checkRoleMemory(guildid):
+    conn = sqlite3.connect("chh.db")
+    checkRoleMemoryTable(conn)
     cursor = conn.execute("SELECT * FROM roleMemoryEnabled WHERE GUILDID={}".format(guildid))
     data = cursor.fetchall()
     status = 1
+    conn.close()
     if not len(data) == 0:
         return data[0][1]
     else:
@@ -80,10 +146,7 @@ def checkRoleMemory(guildid):
         
 def toggleRoleMemory(guildid):
     conn = sqlite3.connect("chh.db")
-    conn.execute('''CREATE TABLE IF NOT EXISTS roleMemoryEnabled
-                    (GUILDID INT NOT NULL,
-                    ENABLED INT NOT NULL)''')
-    conn.commit()
+    checkRoleMemoryTable(conn)
     cursor = conn.execute("SELECT * FROM roleMemoryEnabled WHERE GUILDID={}".format(guildid))
     data = cursor.fetchall()
     newEnabled = 1
@@ -101,12 +164,10 @@ def toggleRoleMemory(guildid):
 
 def getRoleMemoryState(guildid):
     conn = sqlite3.connect("chh.db")
-    conn.execute('''CREATE TABLE IF NOT EXISTS roleMemoryEnabled
-                    (GUILDID INT NOT NULL,
-                    ENABLED INT NOT NULL)''')
-    conn.commit()
+    checkRoleMemoryTable(conn)
     cursor = conn.execute("SELECT * FROM roleMemoryEnabled WHERE GUILDID={}".format(guildid))
     data = cursor.fetchall()
+    conn.close()
     if len(data) == 0:
         return False
     else:
@@ -115,33 +176,36 @@ def getRoleMemoryState(guildid):
         else:
             return False
 
-def addRole(uid, rid):
-    #uid = user id
-    #rid = role id
-    conn = sqlite3.connect("chh.db")
+"""
+=========
+Role Table
+=========
+"""
+def checkRoleTable(conn):
     conn.execute('''CREATE TABLE IF NOT EXISTS roles
                     (UID INT NOT NULL,
                     RID INT NOT NULL)''')
     conn.commit()
+
+def addRole(uid, rid):
+    #uid = user id
+    #rid = role id
+    conn = sqlite3.connect("chh.db")
+    checkRoleTable(conn)
     conn.execute("INSERT INTO roles (UID, RID) VALUES ({},{})".format(uid, rid))
     conn.commit()
     conn.close()
 
 def removeRoles(uid):
     conn = sqlite3.connect("chh.db")
-    conn.execute('''CREATE TABLE IF NOT EXISTS roles
-                    (UID INT NOT NULL,
-                    RID INT NOT NULL)''')
-    conn.commit()
+    checkRoleTable(conn)
     conn.execute('''DELETE FROM roles WHERE UID={}'''.format(uid))
     conn.commit()
     conn.close()
 
 def getRoles(uid):
     conn = sqlite3.connect("chh.db")
-    conn.execute('''CREATE TABLE IF NOT EXISTS roles
-                    (UID INT NOT NULL,
-                    RID INT NOT NULL)''')
+    checkRoleTable(conn)
     cursor = conn.execute("SELECT * FROM roles WHERE UID={}".format(uid))
     data = cursor.fetchall()
     conn.close()
@@ -150,7 +214,7 @@ def getRoles(uid):
         roles.append(item[1])
     return roles
 
-#report based functions
+#report based functions (I have no idea if these are still used?)
 def lookUpGuildReport(guildid):
     conn = sqlite3.connect("chh.db")
     conn.execute('''CREATE TABLE IF NOT EXISTS reportchannel
