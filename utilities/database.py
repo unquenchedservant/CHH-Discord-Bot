@@ -14,8 +14,6 @@ def checkHolidayTable(conn):
     conn.commit()
 
 def addHoliday(month, day, msg):
-    print("DEBUG - MONTH {}".format(month))
-    print("")
     conn = sqlite3.connect("chh.db")
     checkHolidayTable(conn)
     cursor = conn.execute("SELECT * FROM holidays WHERE MONTH={} AND DAY={}".format(month,day))
