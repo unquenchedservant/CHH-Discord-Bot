@@ -20,7 +20,8 @@ class Birthdays(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.daily_birthday_task.start()
-        self.special_events.start()
+        self.daily_holiday_task.start()
+        self.one_one_six.start()
 
     @slash_command(guild_ids=GUILD_ID, description="Set your birthday on the server to get a shout-out!")    
     async def setbirthday(
@@ -60,31 +61,28 @@ class Birthdays(commands.Cog):
             msg = msg + "<@" + str(id) + ">\n"
         channel_id = BROADCAST_CHANNEL 
         if not len(birthday_ids) == 0:
-            channel = self.bot.get_channel(channel_id)
+            channel = self.bot.get_channel(BROADCAST_CHANNEL)
             await channel.send(msg)
 
     @tasks.loop(time=time(5,0,tzinfo=timezone.utc))
-    async def special_events(self):
+    async def daily_holiday_task(self):
         current_month = datetime.now().month
         current_day = datetime.now().day
-        msg = ""
-        send = False
-        if current_month == 3 and current_day == 14:
-            msg = "Happy Pi Day! Make sure to eat some pie today!"
-            send = True
-        elif current_month == 12 and current_day == 25:
-            msg = "Merry Christmas, CHH Fam! Make sure you blast The Gift today, or else!"
-            send = True
-        elif current_month == 1 and current_day == 1:
-            msg = "Happy New Year, CHH Fam! Who do you think will come out with the AOTY this year?"
-            send = True
-        elif current_month == 4 and current_day == 20:
-            msg = "He is Risen indeed! Happy Easter, CHH Fam!"
-            send = True
-        channel_id = 613469111682334762 
-        #channel_id = 471397293229342781
-        channel = self.bot.get_channel(channel_id)
-        if send:
+        holiday_message = database.checkHoliday(current_month, current_day)
+        if holiday_message and not (current_month == 1 and current_day == 16):
+            channel = self.bot.get_channel(BROADCAST_CHANNEL)
+            await channel.send(holiday_message)
+
+    @tasks.loop(time=time(18,16,tzinfo=timezone.utc))
+    async def one_one_six(self):
+        current_month = datetime.now().month
+        current_day = datetime.now().day
+        if current_month == 1 and current_day == 16:
+            channel = self.bot.get_channel(BROADCAST_CHANNEL)
+            msg = database.checkHoliday(1,16)
+            if not msg:
+                msg = "LET ME HEAR YOU SHOUT 1 1 6!\n\n Happy 116 day, everyone!"
             await channel.send(msg)
+        
 def setup(bot):
     bot.add_cog(Birthdays(bot))
