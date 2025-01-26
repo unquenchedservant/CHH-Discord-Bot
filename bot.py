@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 from discord.utils import get
 from utilities import get_env, database
+import sys
 
 intents = discord.Intents.all()
 intents.members = True
@@ -38,6 +39,14 @@ if __name__ == '__main__':
     for extension in extensions:
         bot.load_extension(extension)
 
-token = get_env.discord_token()
-#token = get_env.discord_dev()
-bot.run(token)
+if __name__ == "__main__":
+    if "--dev" in sys.argv:
+        token = get_env.discord_dev()
+        bot.run(token)
+    else:
+        print("Running Developer Bot")
+        token = get_env.discord_token()
+        bot.run(token)
+    #token = get_env.discord_token()
+    #token = get_env.discord_dev()
+    #bot.run(token)
