@@ -55,8 +55,9 @@ class Birthdays(commands.Cog):
             msg = msg + "<@" + str(id) + ">\n"
         channel_id = 613469111682334762 
         #channel_id = 471397293229342781
-        channel = self.bot.get_channel(channel_id)
-        await channel.send(msg)
+        if not len(birthday_ids) == 0:
+            channel = self.bot.get_channel(channel_id)
+            await channel.send(msg)
 
     @tasks.loop(time=time(5,0,tzinfo=timezone.utc))
     async def special_events(self):
@@ -69,6 +70,9 @@ class Birthdays(commands.Cog):
             send = True
         elif current_month == 12 and current_day == 25:
             msg = "Merry Christmas, CHH Fam! Make sure you blast The Gift today, or else!"
+            send = True
+        elif current_month == 1 and current_day == 1:
+            msg = "Happy New Year, CHH Fam! Who do you think will come out with the AOTY this year?"
             send = True
         elif current_month == 4 and current_day == 20:
             msg = "He is Risen indeed! Happy Easter, CHH Fam!"
