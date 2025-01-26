@@ -14,7 +14,7 @@ class Admin(commands.Cog):
     
     @slash_command(guild_ids=GUILD_ID, default_permission=False)
     async def togglerolememory(self, ctx: discord.ApplicationContext):
-        if ctx.author.guild_permissions.administrator:
+        if ctx.author.guild_permissions.kick_members:
             status = database.checkRoleMemory(ctx.guild.id)
             msg = ""
             if status == 1:
@@ -28,7 +28,7 @@ class Admin(commands.Cog):
     
     @slash_command(guild_ids=GUILD_ID, default_permission=False)
     async def checkrolememory(self, ctx: discord.ApplicationContext):
-        if ctx.author.guild_permissions.administrator:
+        if ctx.author.guild_permissions.kick_members:
             status = database.checkRoleMemory(ctx.guild.id)
             msg = ""
             if status == 1:
