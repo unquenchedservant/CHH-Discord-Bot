@@ -18,13 +18,16 @@ def addHoliday(month, day, msg):
     checkHolidayTable(conn)
     cursor = conn.execute("SELECT * FROM holidays WHERE MONTH={} AND DAY={}".format(month,day))
     data = cursor.fetchall()
+    updated = False
     if len(data) == 0:
         sql = "INSERT INTO holidays (MONTH, DAY, MSG) VALUES ({},{},\"{}\")".format(month,day,msg)
     else:
-        sql = "UPDATE holidays SET MSG={}, WHERE MONTH={} AND DAY={}".format(msg, month, day)
+        updated = True
+        sql = "UPDATE holidays SET MSG='{}' WHERE MONTH={} AND DAY={}".format(msg, month, day)
     conn.execute(sql)
     conn.commit()
     conn.close()
+    return updated
 
 def checkHoliday(month,day):
     conn = sqlite3.connect("chh.db")
