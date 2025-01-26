@@ -16,7 +16,7 @@ class Admin(commands.Cog):
     Holiday Management
     =========
     '''
-    @slash_command(guild_ids=GUILD_ID, default_permission=False)
+    @slash_command(guild_ids=GUILD_ID, default_permission=False, description="Used to add/update an automated holiday message")
     async def addholiday(self, 
         ctx: discord.ApplicationContext,
         month: Option(int, "Enter the Month (1-12) this holiday occurs", min_value=1, max_value=12, required=True),
@@ -35,7 +35,7 @@ class Admin(commands.Cog):
         else:
             await ctx.respond(ERROR_MSG, ephemeral=True)
 
-    @slash_command(guild_ids=GUILD_ID, default_permission=False) 
+    @slash_command(guild_ids=GUILD_ID, default_permission=False, description="Check if a given holiday exists") 
     async def checkholiday(self,
         ctx:discord.ApplicationContext,
         month: Option(int, "Enter the month (1-12) you'd like to check", min_value=1, max_value=12, required=True),
@@ -55,7 +55,7 @@ class Admin(commands.Cog):
         else:
             await ctx.respond(ERROR_MSG, ephemeral=True)
 
-    @slash_command(guild_ids=GUILD_ID, default_permission=False)
+    @slash_command(guild_ids=GUILD_ID, default_permission=False, description="Returns a list of all holidays and their message")
     async def checkholidays(self, ctx: discord.ApplicationContext):
         if ctx.author.guild_permissions.kick_members:
             msg = ""
@@ -74,7 +74,7 @@ class Admin(commands.Cog):
         else:
             await ctx.respond(ERROR_MSG, ephemeral=True)
 
-    @slash_command(guild_ids=GUILD_ID, default_permission=False)
+    @slash_command(guild_ids=GUILD_ID, default_permission=False, description="Removes a given holiday from the automation")
     async def removeholiday(self,
         ctx: discord.ApplicationContext,
         month: Option(int, "Enter the month (1-12) this holiday occurs", min_value=1, max_value=12, required=True),
