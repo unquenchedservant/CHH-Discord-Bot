@@ -3,6 +3,7 @@ import utilities
 from datetime import time, timezone, datetime
 from discord.ext import tasks
 from utilities import database
+import random
 
 if utilities.get_is_dev():
     BROADCAST_CHANNEL = 471397276468903936
@@ -21,11 +22,14 @@ class Events(commands.Cog):
         current_month = datetime.now().month
         current_day = datetime.now().day
         birthday_ids = database.checkBirthday(current_month, current_day)
+        extra_int = random.randint(1,4)
         msg = "We've got a birthday! Make sure to wish the following people a happy birthday:\n\n"
         for id in birthday_ids:
             msg = msg + "<@" + str(id) + ">\n"
         channel_id = BROADCAST_CHANNEL 
         if not len(birthday_ids) == 0:
+            if extra_int == 2:
+                msg = msg + "\n\n Want a message for your birthday? Use /setbirthday" 
             channel = self.bot.get_channel(BROADCAST_CHANNEL)
             await channel.send(msg)
 
