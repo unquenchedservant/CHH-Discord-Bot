@@ -24,6 +24,7 @@ async def on_ready():
 async def on_member_join(member):
     if database.getRoleMemoryState(member.guild.id):
         rolesToAdd = database.getRoles(member.id)
+        database.setBirthdayActive(True,member.id)
         for roleID in rolesToAdd:
             role = get(member.guild.roles, id=roleID)
             await member.add_roles(role, atomic=True)
@@ -31,6 +32,7 @@ async def on_member_join(member):
     
 @bot.event
 async def on_member_remove(member):
+    database.setBirthdayActive(False,member.id)
     if database.getRoleMemoryState(member.guild.id):
         for role in member.roles:
             if not role.name == "@everyone":

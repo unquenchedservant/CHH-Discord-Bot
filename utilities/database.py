@@ -1,6 +1,7 @@
 import sqlite3
 #birthday functions
 
+
 """
 =========
 Holiday Table
@@ -71,13 +72,23 @@ def checkBirthdayTable(conn):
     conn.execute('''CREATE TABLE IF NOT EXISTS birthdays
                     (USERID INT NOT NULL,
                     MONTH INT NOT NULL,
-                    DAY INT NOT NULL)''')
+                    DAY INT NOT NULL,
+                    ACTIVE INT NOT NULL)''')
     conn.commit()
+
+def getBirthdays():
+    conn = sqlite3.connect("chh.db")
+    cursor = conn.execute("SELECT USERID FROM birthdays")
+    data = cursor.fetchall()
+    rpkg = []
+    for item in data:
+        rpkg.append(item[0])
+    return rpkg
 
 def checkBirthday(current_month, current_day):
     conn = sqlite3.connect("chh.db")
     checkBirthdayTable(conn)
-    cursor = conn.execute("SELECT USERID FROM birthdays WHERE MONTH={} AND DAY={}".format(current_month, current_day))
+    cursor = conn.execute("SELECT USERID, ACTIVE FROM birthdays WHERE MONTH={} AND DAY={}".format(current_month, current_day))
     data = cursor.fetchall()
     conn.close()
     if len(data) == 0:
@@ -85,8 +96,21 @@ def checkBirthday(current_month, current_day):
     else:
         birthday_ids = []
         for item in data:
-            birthday_ids.append(item[0])
+            if item[1] == 1:
+                birthday_ids.append(item[0])
         return birthday_ids
+
+def setBirthdayActive(is_active, user_id):
+    conn = sqlite3.connect("chh.db")
+    checkBirthdayTable(conn)
+    isactive_int = 0
+    if is_active:
+        isactive_int = 1
+    else:
+        isactive_int = 0
+    conn.execute("UPDATE birthdays SET ACTIVE={} WHERE USERID={}".format(isactive_int, user_id))
+    conn.commit()
+    conn.close()
 
 def setBirthday(userid, month, day):
     conn = sqlite3.connect("chh.db")
@@ -94,7 +118,7 @@ def setBirthday(userid, month, day):
     cursor = conn.execute("SELECT * FROM birthdays WHERE USERID={}".format(userid))
     data = cursor.fetchall()
     if len(data) == 0:
-        sql = "INSERT INTO birthdays (USERID, MONTH, DAY) VALUES ({},{},{})".format(userid, month, day)
+        sql = "INSERT INTO birthdays (USERID, MONTH, DAY, ACTIVE) VALUES ({},{},{}, 1)".format(userid, month, day)
     else:
         sql = "UPDATE birthdays SET MONTH={}, DAY={} WHERE USERID={}".format(month, day, userid) 
     conn.execute(sql)
@@ -230,6 +254,7 @@ def lookUpGuildReport(guildid):
     else:
         conn.close()
         return True
+
 def removeGuildReport(guildid):
     conn = sqlite3.connect("chh.db")
     conn.execute("DELETE FROM reportchannel WHERE GUILDID={}".format(guildid))
@@ -250,3 +275,8 @@ def getGuildReport(guildid):
     cursor = conn.execute("SELECT CHANNELID FROM reportchannel WHERE GUILDID={}".format(guildid))
     data = cursor.fetchone()
     return data[0]
+
+def updateDB():
+    conn = sqlite3.connect("chh.db")
+    conn.execute("ALTER TABLE birthdays ADD COLUMN ACTIVE INT")
+    conn.commit()

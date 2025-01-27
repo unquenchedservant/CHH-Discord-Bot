@@ -10,7 +10,37 @@ GUILD_ID=utilities.get_guild_ids(utilities.get_is_dev())
 class Admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        
+
+    '''
+    =========
+    Database Management
+    =========
+    
+    @slash_command(guild_ids=GUILD_ID, default_permission=False, description="Updates a database, assumes function modified")
+    async def updatedb(self, ctx: discord.ApplicationContext):
+        database.updateDB()
+        await ctx.respond("Updated DB", ephemeral=True)
+    '''
+    '''
+    =========
+    Birthday Management
+    =========
+    @slash_command(guild_ids=GUILD_ID, default_permission=False, description="To run through the database once and clear any inactive users")
+    async def clearbirthdays(self, ctx: discord.ApplicationContext):
+        active_ids = []
+        updated_ids = []
+        response = ""
+        for guild in self.bot.guilds:
+            if guild.id == GUILD_ID[0]:
+                for member in guild.members:
+                    active_ids.append(member.id)
+        all_ids = database.getBirthdays()
+        for ind_id in all_ids:
+            if not ind_id in active_ids:
+                database.setBirthdayActive(False, ind_id)
+                response = response + ind_id + "\n"
+        ctx.respond("Set the following IDs to inactive:\n\n" + response, ephemeral=True)
+    '''
     '''
     =========
     Holiday Management
