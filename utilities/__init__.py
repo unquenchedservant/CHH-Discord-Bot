@@ -15,6 +15,12 @@ def get_role_menu_id():
         return 1342571477865730089
     else:
         return 975067933673914388
+
+def get_rule_id():
+    if is_dev:
+        return 1342581100123258952
+    else:
+        return 844989137551228978
 def set_is_dev(dev):
     global is_dev
     is_dev = True
