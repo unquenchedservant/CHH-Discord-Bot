@@ -1,4 +1,5 @@
 from ctypes import util
+from time import sleep
 
 import discord
 import utilities
@@ -10,6 +11,7 @@ GUILD_ID = utilities.get_guild_ids()
 SELF_PROMO_CHANNEL = utilities.get_self_promo_id()
 ROLE_MENU_CHANNEL = utilities.get_role_menu_id()
 RULE_CHANNEL = utilities.get_rules_id()
+ADMIN_CHANNEL = utilities.get_admin_id()
 
 class SelfPromo(commands.Cog):
     def __init__(self, bot):
@@ -30,6 +32,9 @@ class SelfPromo(commands.Cog):
         #embed.set_image(url="https://i.imgur.com/MQMdhiE.jpeg")
         await ctx.send(embed=embed)
         await ctx.respond("Thanks, we let the user know about our self promotion rule!", ephemeral=True)
+        report_channel = self.bot.get_channel(ADMIN_CHANNEL)
+        report_msg = "The following message was tagged for self-promotion by <@" + str(ctx.author.id) + ">:\n" + message.jump_url + "\n"
+        await report_channel.send(report_msg)
     @slash_command(
         guild_ids=GUILD_ID,
         default_permissions=True,
@@ -46,8 +51,12 @@ class SelfPromo(commands.Cog):
         msg = msg + "If we don't know who you are, we likely won't care about your music."
         embed = discord.Embed(title="Please don't self promo", description=msg)
         #embed.set_image(url="https://i.imgur.com/MQMdhiE.jpeg")
-        await ctx.send(embed=embed)
+        embedMsg = await ctx.send(embed=embed)
         await ctx.respond("Thanks, we let the user know about our self promotion rule!", ephemeral=True)
+        report_channel = self.bot.get_channel(ADMIN_CHANNEL)
+        sleep(5)
+        report_msg = "<@" + str(user.id) + "> was tagged for self-promotion by <@" + str(ctx.author.id) + ">. \n\n Jump to message: " + embedMsg.jump_url + "\n"
+        await report_channel.send(report_msg)
 
 
 def setup(bot):

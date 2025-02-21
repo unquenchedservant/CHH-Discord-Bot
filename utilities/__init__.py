@@ -21,6 +21,12 @@ def get_rules_id():
         return 1342581100123258952
     else:
         return 844989137551228978
+
+def get_admin_id():
+    if is_dev:
+        return 957645821531258930
+    else:
+        return 705532389744705616
 def set_is_dev(dev):
     global is_dev
     is_dev = True
