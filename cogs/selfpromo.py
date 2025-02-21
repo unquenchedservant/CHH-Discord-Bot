@@ -22,11 +22,15 @@ class SelfPromo(commands.Cog):
         user = message.author
         if user:
             msg = "Woah there, <@" + str(user.id) + ">,"
+            if "verified artist" in [y.name.lower() for y in user.roles]:
+                await ctx.respond("Thank you for the report, but this is a verified artist", ephemeral=True)
+                return 0
         else:
             msg = "Woah there,"
         msg = msg + " it looks like you're sharing self-promotion outside of <#" + str(SELF_PROMO_CHANNEL) + ">!\n\n"
         msg = msg + "If you don't have access to that channel, please stick around and get to know us a bit. Shortly after you join you will gain access. \n\n"
         msg = msg + "In the meantime, check out <#" + str(ROLE_MENU_CHANNEL) + "> and assign yourself the Artist/Producer tag to unlock some extra channels. Please take a minute to check out our <#" + str(RULE_CHANNEL) + ">\n\n"
+        msg = msg + "If you feel you should be a verified artist (who can self promo anywhere) feel free to reach out to the mods. Requirements: 50,000 streams on a single song *or* 10,000 monthly streams.\n\n"
         msg = msg + "If we don't know who you are, we likely won't care about your music."
         embed = discord.Embed(title="Please don't self promo", description=msg)
         #embed.set_image(url="https://i.imgur.com/MQMdhiE.jpeg")
@@ -43,19 +47,23 @@ class SelfPromo(commands.Cog):
     async def selfpromoalert(self, ctx: discord.ApplicationContext, user: Option(discord.Member, "optional: Tag the user", required=False, default=None)):
         if user:
             msg = "Woah there, <@" + str(user.id) + ">,"
+            if "verified artist" in [y.name.lower() for y in user.roles]:
+                await ctx.respond("Thank you for the report, but this is a verified artist", ephemeral=True)
+                return 0
         else:
             msg = "Woah there,"
         msg = msg + " it looks like you're sharing self-promotion outside of <#" + str(SELF_PROMO_CHANNEL) + ">!\n\n"
         msg = msg + "If you don't have access to that channel, please stick around and get to know us a bit. Shortly after you join you will gain access. \n\n"
         msg = msg + "In the meantime, check out <#" + str(ROLE_MENU_CHANNEL) + "> and assign yourself the Artist/Producer tag to unlock some extra channels. Please take a minute to check out our <#" + str(RULE_CHANNEL) + ">\n\n"
+        msg = msg + "If you feel you should be a verified artist (who can self promo anywhere) feel free to reach out to the mods. Requirements: 50,000 streams on a single song *or* 10,000 monthly streams.\n\n"
         msg = msg + "If we don't know who you are, we likely won't care about your music."
         embed = discord.Embed(title="Please don't self promo", description=msg)
         #embed.set_image(url="https://i.imgur.com/MQMdhiE.jpeg")
-        embedMsg = await ctx.send(embed=embed)
+        embed_msg = await ctx.send(embed=embed)
         await ctx.respond("Thanks, we let the user know about our self promotion rule!", ephemeral=True)
         report_channel = self.bot.get_channel(ADMIN_CHANNEL)
         sleep(5)
-        report_msg = "<@" + str(user.id) + "> was tagged for self-promotion by <@" + str(ctx.author.id) + ">. \n\n Jump to message: " + embedMsg.jump_url + "\n"
+        report_msg = "<@" + str(user.id) + "> was tagged for self-promotion by <@" + str(ctx.author.id) + ">. \n\n Jump to message: " + embed_msg.jump_url + "\n"
         await report_channel.send(report_msg)
 
 
