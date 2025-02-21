@@ -25,6 +25,11 @@ class SelfPromo(commands.Cog):
             if "verified artist" in [y.name.lower() for y in user.roles]:
                 await ctx.respond("Thank you for the report, but this is a verified artist", ephemeral=True)
                 return 0
+            if "mod" in [y.name.lower() for y in user.roles]:
+                await ctx.respond("Thank you for the report, but this is a mod.", ephemeral=True)
+                return 0
+            if "admin" in [y.name.lower() for y in user.roles]:
+                await ctx.respond("Thank you for the report, but this is an admin.", ephemeral=True)
         else:
             msg = "Woah there,"
         msg = msg + " it looks like you're sharing self-promotion outside of <#" + str(SELF_PROMO_CHANNEL) + ">!\n\n"
@@ -50,6 +55,11 @@ class SelfPromo(commands.Cog):
             if "verified artist" in [y.name.lower() for y in user.roles]:
                 await ctx.respond("Thank you for the report, but this is a verified artist", ephemeral=True)
                 return 0
+            if "mod" in [y.name.lower() for y in user.roles]:
+                await ctx.respond("Thank you for the report, but this is a mod.", ephemeral=True)
+                return 0
+            if "admin" in [y.name.lower() for y in user.roles]:
+                await ctx.respond("Thank you for the report, but this is an admin.", ephemeral=True)
         else:
             msg = "Woah there,"
         msg = msg + " it looks like you're sharing self-promotion outside of <#" + str(SELF_PROMO_CHANNEL) + ">!\n\n"
