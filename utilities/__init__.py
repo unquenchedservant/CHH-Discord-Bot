@@ -16,7 +16,7 @@ def get_role_menu_id():
     else:
         return 975067933673914388
 
-def get_rule_id():
+def get_rules_id():
     if is_dev:
         return 1342581100123258952
     else:
