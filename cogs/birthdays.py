@@ -8,7 +8,7 @@ import utilities
 from datetime import time, timezone, datetime
 from discord.ext import tasks
 
-GUILD_ID=utilities.get_guild_ids(utilities.get_is_dev())
+GUILD_ID=utilities.get_guild_ids()
 
 class Birthdays(commands.Cog):
     def __init__(self, bot):

@@ -5,7 +5,7 @@ from discord.ext import tasks
 from utilities import database
 import random
 
-if utilities.get_is_dev():
+if utilities.is_dev:
     BROADCAST_CHANNEL = 471397276468903936
 else:
     BROADCAST_CHANNEL = 613469111682334762

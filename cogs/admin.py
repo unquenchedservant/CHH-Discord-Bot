@@ -1,17 +1,36 @@
 from ctypes import util
+
 import discord
-from discord.commands import (slash_command)
-from discord.commands import Option
+import utilities
+from discord.commands import Option, slash_command
 from discord.ext import commands
 from utilities import database
-import utilities
+
 ERROR_MSG = "You need to be a mod or admin to use this command"
-GUILD_ID=utilities.get_guild_ids(utilities.get_is_dev())
+GUILD_ID = utilities.get_guild_ids()
+
+EXTENSIONS = [
+    "cogs.admin",
+    "cogs.aprilfools",
+    "cogs.birthdays",
+    "cogs.events",
+    "cogs.selfpromo",
+]
+
+
 class Admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    '''
+    @slash_command(
+        guild_ids=GUILD_ID,
+        default_permission=False,
+        description="Used for reloading cogs during development")
+    async def reload(self, ctx: discord.ApplicationContext):
+        for extension in EXTENSIONS:
+            self.bot.reload_extension(extension)
+        await ctx.respond("Cogs have been reloaded!", ephemeral=True)
+    """
     =========
     Database Management
     =========
@@ -20,8 +39,8 @@ class Admin(commands.Cog):
     async def updatedb(self, ctx: discord.ApplicationContext):
         database.updateDB()
         await ctx.respond("Updated DB", ephemeral=True)
-    '''
-    '''
+    """
+    """
     =========
     Birthday Management
     =========
@@ -40,45 +59,92 @@ class Admin(commands.Cog):
                 database.setBirthdayActive(False, ind_id)
                 response = response + ind_id + "\n"
         ctx.respond("Set the following IDs to inactive:\n\n" + response, ephemeral=True)
-    '''
-    '''
+    """
+    """
     =========
     Holiday Management
     =========
-    '''
-    @slash_command(guild_ids=GUILD_ID, default_permission=False, description="Used to add/update an automated holiday message")
-    async def addholiday(self, 
+    """
+
+    @slash_command(
+        guild_ids=GUILD_ID,
+        default_permission=False,
+        description="Used to add/update an automated holiday message",
+    )
+    async def addholiday(
+        self,
         ctx: discord.ApplicationContext,
-        month: Option(int, "Enter the Month (1-12) this holiday occurs", min_value=1, max_value=12, required=True),
-        day: Option(int, "Enter the day(1-31) this holiday occurs", min_value=1, max_value=31, required=True),
-        msg: Option(str, "What message would you like to send on this day", required=True)):
+        month: Option(
+            int,
+            "Enter the Month (1-12) this holiday occurs",
+            min_value=1,
+            max_value=12,
+            required=True,
+        ),
+        day: Option(
+            int,
+            "Enter the day(1-31) this holiday occurs",
+            min_value=1,
+            max_value=31,
+            required=True,
+        ),
+        msg: Option(
+            str, "What message would you like to send on this day", required=True
+        ),
+    ):
         if ctx.author.guild_permissions.kick_members:
             if not month:
-                await ctx.respond("Please enter the holiday month (1-12)", ephemeral=True)
+                await ctx.respond(
+                    "Please enter the holiday month (1-12)", ephemeral=True
+                )
             elif not day:
                 await ctx.respond("Please enter the holiday day (1-31)", ephemeral=True)
-            elif not msg: 
+            elif not msg:
                 await ctx.respond("Please enter a holiday message", ephemeral=True)
             else:
                 updated = database.addHoliday(month, day, msg)
                 month = utilities.zero_leading(month)
                 day = utilities.zero_leading(day)
                 if updated:
-                    response_msg = "Successfully updated holiday message on {}/{} with the message: {}".format(month,day,msg)
+                    response_msg = "Successfully updated holiday message on {}/{} with the message: {}".format(
+                        month, day, msg
+                    )
                 else:
-                    response_msg = "Successfully saved a new holiday on {}/{} with the message: {}".format(month,day,msg)
+                    response_msg = "Successfully saved a new holiday on {}/{} with the message: {}".format(
+                        month, day, msg
+                    )
                 await ctx.respond(response_msg)
         else:
             await ctx.respond(ERROR_MSG, ephemeral=True)
 
-    @slash_command(guild_ids=GUILD_ID, default_permission=False, description="Check if a given holiday exists") 
-    async def checkholiday(self,
-        ctx:discord.ApplicationContext,
-        month: Option(int, "Enter the month (1-12) you'd like to check", min_value=1, max_value=12, required=True),
-        day: Option(int, "Enter the day (0-31) you'd like to check", min_value=1, max_value=31, required=True)):
+    @slash_command(
+        guild_ids=GUILD_ID,
+        default_permission=False,
+        description="Check if a given holiday exists",
+    )
+    async def checkholiday(
+        self,
+        ctx: discord.ApplicationContext,
+        month: Option(
+            int,
+            "Enter the month (1-12) you'd like to check",
+            min_value=1,
+            max_value=12,
+            required=True,
+        ),
+        day: Option(
+            int,
+            "Enter the day (0-31) you'd like to check",
+            min_value=1,
+            max_value=31,
+            required=True,
+        ),
+    ):
         if ctx.author.guild_permissions.kick_members:
             if not month:
-                await ctx.respond("Please enter the holiday month (1-12)", ephemeral=True)
+                await ctx.respond(
+                    "Please enter the holiday month (1-12)", ephemeral=True
+                )
             elif not day:
                 await ctx.respond("Please enter the holiday day (1-31)", ephemeral=True)
             else:
@@ -88,12 +154,19 @@ class Admin(commands.Cog):
                 else:
                     month = utilities.zero_leading(month)
                     day = utilities.zero_leading(day)
-                    await ctx.respond("The message for {}/{} is : {}".format(month, day, msg), ephemeral=True)
+                    await ctx.respond(
+                        "The message for {}/{} is : {}".format(month, day, msg),
+                        ephemeral=True,
+                    )
             msg = database.checkHoliday(month, day)
         else:
             await ctx.respond(ERROR_MSG, ephemeral=True)
 
-    @slash_command(guild_ids=GUILD_ID, default_permission=False, description="Returns a list of all holidays and their message")
+    @slash_command(
+        guild_ids=GUILD_ID,
+        default_permission=False,
+        description="Returns a list of all holidays and their message",
+    )
     async def checkholidays(self, ctx: discord.ApplicationContext):
         if ctx.author.guild_permissions.kick_members:
             msg = ""
@@ -105,29 +178,53 @@ class Admin(commands.Cog):
                     month, day, message = item
                     month = utilities.zero_leading(month)
                     day = utilities.zero_leading(day)
-                    msg = msg + "{}/{} - {}\n\n".format(month,day,message)
+                    msg = msg + "{}/{} - {}\n\n".format(month, day, message)
             await ctx.respond(msg)
         else:
             await ctx.respond(ERROR_MSG, ephemeral=True)
 
-    @slash_command(guild_ids=GUILD_ID, default_permission=False, description="Removes a given holiday from the automation")
-    async def removeholiday(self,
+    @slash_command(
+        guild_ids=GUILD_ID,
+        default_permission=False,
+        description="Removes a given holiday from the automation",
+    )
+    async def removeholiday(
+        self,
         ctx: discord.ApplicationContext,
-        month: Option(int, "Enter the month (1-12) this holiday occurs", min_value=1, max_value=12, required=True),
-        day: Option(int, "Enter the day (1-31) this holiday occurs", min_value=1, max_value=31, required=True)):
+        month: Option(
+            int,
+            "Enter the month (1-12) this holiday occurs",
+            min_value=1,
+            max_value=12,
+            required=True,
+        ),
+        day: Option(
+            int,
+            "Enter the day (1-31) this holiday occurs",
+            min_value=1,
+            max_value=31,
+            required=True,
+        ),
+    ):
         if ctx.author.guild_permissions.kick_members:
             if not month:
-                await ctx.respond("Please enter the holiday month (1-12)", ephemeral=True)
+                await ctx.respond(
+                    "Please enter the holiday month (1-12)", ephemeral=True
+                )
             elif not day:
                 await ctx.respond("Please enter the holiday day (1-31)", ephemeral=True)
             else:
-                status = database.removeHoliday(month,day)
+                status = database.removeHoliday(month, day)
                 if status == 1:
                     month = utilities.zero_leading(month)
                     day = utilities.zero_leading(day)
-                    await ctx.respond("Holiday on {}/{} removed".format(month, day), ephemeral=True)
+                    await ctx.respond(
+                        "Holiday on {}/{} removed".format(month, day), ephemeral=True
+                    )
                 elif status == 0:
-                    await ctx.respond("Holiday not removed, may not exist", ephemeral=True)
+                    await ctx.respond(
+                        "Holiday not removed, may not exist", ephemeral=True
+                    )
         else:
             await ctx.respond(ERROR_MSG, ephemeral=True)
 
@@ -136,6 +233,7 @@ class Admin(commands.Cog):
     Role Memory Management
     =========
     """
+
     @slash_command(guild_ids=GUILD_ID, default_permission=False)
     async def togglerolememory(self, ctx: discord.ApplicationContext):
         if ctx.author.guild_permissions.kick_members:
@@ -149,7 +247,7 @@ class Admin(commands.Cog):
             await ctx.respond(msg, ephemeral=True)
         else:
             await ctx.respond(ERROR_MSG, ephemeral=True)
-    
+
     @slash_command(guild_ids=GUILD_ID, default_permission=False)
     async def checkrolememory(self, ctx: discord.ApplicationContext):
         if ctx.author.guild_permissions.kick_members:
@@ -162,5 +260,7 @@ class Admin(commands.Cog):
             await ctx.respond(msg, ephemeral=True)
         else:
             await ctx.respond(ERROR_MSG, ephemeral=True)
+
+
 def setup(bot):
     bot.add_cog(Admin(bot))
