@@ -17,7 +17,7 @@ class SelfPromo(commands.Cog):
 
     @slash_command(
         guild_ids=GUILD_ID,
-        default_permissions=False,
+        default_permissions=True,
         description="Use this when someone posts self promotion",
     )
     async def selfpromoalert(self, ctx: discord.ApplicationContext, user: Option(discord.Member, "optional: Tag the user", required=False, default=None)):
