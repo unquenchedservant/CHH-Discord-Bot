@@ -14,7 +14,8 @@ RULE_CHANNEL = utilities.get_rules_id()
 class SelfPromo(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-    @message_command(name="Mark Self-Promo")
+
+    @message_command(name="Mark Self-Promo", guild_ids=GUILD_ID)
     async def selfpromo(self,ctx, message: discord.Message):
         user = message.author
         if user:
