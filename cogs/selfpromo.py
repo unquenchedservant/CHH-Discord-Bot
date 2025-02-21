@@ -30,26 +30,6 @@ class SelfPromo(commands.Cog):
         msg = msg + "In the meantime, check out <#" + str(ROLE_MENU_CHANNEL) + "> and assign yourself the Artist/Producer tag to unlock some extra channels. Please take a minute to check out our <#" + str(RULE_CHANNEL) + ">\n\n"
         msg = msg + "If we don't know who you are, we likely won't care about your music."
         embed = discord.Embed(title="Please don't self promo", description=msg)
-        embed.set_image(url="https://i.imgur.com/MQMdhiE.jpeg")
-        await ctx.send(embed=embed)
-        await ctx.respond("Thanks, we let the user know about our self promotion rule!", ephemeral=True)
-
-    @slash_command(
-        guild_ids=GUILD_ID,
-        default_permissions=False,
-        description="Use this when someone posts self promotion",
-    )
-    async def selfpromoalert2(self, ctx: discord.ApplicationContext,
-                             user: Option(discord.Member, "optional: Tag the user", required=False, default=None)):
-        if user:
-            msg = "Woah there, <@" + str(user.id) + ">,"
-        else:
-            msg = "Woah there,"
-        msg = msg + " it looks like you're sharing self-promotion outside of <#" + str(SELF_PROMO_CHANNEL) + ">!\n\n"
-        msg = msg + "If you don't have access to that channel, please stick around and get to know us a bit. Shortly after you join you will gain access. \n\n"
-        msg = msg + "In the meantime, check out <#" + str(ROLE_MENU_CHANNEL) + "> and assign yourself the Artist/Producer tag to unlock some extra channels. Please take a minute to check out our <#" + str(RULE_CHANNEL) + ">\n\n"
-        msg = msg + "If we don't know who you are, we likely won't care about your music."
-        embed = discord.Embed(title="Please don't self promo", description=msg)
         #embed.set_image(url="https://i.imgur.com/MQMdhiE.jpeg")
         await ctx.send(embed=embed)
         await ctx.respond("Thanks, we let the user know about our self promotion rule!", ephemeral=True)
