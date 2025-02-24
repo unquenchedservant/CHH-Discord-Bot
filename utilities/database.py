@@ -1,7 +1,35 @@
 import sqlite3
 #birthday functions
 
+"""
+=========
+Self-Promo MSG Table
+=========
+"""
 
+def checkSelfPromoMsgTable(conn):
+    conn.execute('''CREATE TABLE IF NOT EXISTS selfpromomsg
+                    (msgID INT NOT NULL)''')
+    conn.commit()
+
+def addSelfPromoMsg(msgID):
+    conn = sqlite3.connect("chh.db")
+    checkSelfPromoMsgTable(conn)
+    sql = "INSERT INTO selfpromomsg (msgID) VALUES ({})".format(msgID)
+    conn.execute(sql)
+    conn.commit()
+    conn.close()
+
+def checkSelfPromoMsg(msgID):
+    conn = sqlite3.connect("chh.db")
+    checkSelfPromoMsgTable(conn)
+    cursor = conn.execute("SELECT * FROM selfpromomsg WHERE msgID={}".format(msgID))
+    data = cursor.fetchall()
+    conn.close()
+    if len(data) == 0:
+        return False
+    else:
+        return True
 """
 =========
 Holiday Table
