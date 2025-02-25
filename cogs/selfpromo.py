@@ -54,8 +54,11 @@ class SelfPromo(commands.Cog):
                     )
                     return 0
                 if user.bot:
-                    await ctx.respond("Thank you, but this is a bot", ephemeral=True)
-                    return 0
+                     if user.id==701044392378499152:
+                          await ctx.respond("You thought.", ephemeral=True)
+                     else:
+                         await ctx.respond("Thank you, but this is a bot", ephemeral=True)
+                   return 0
             else:
                 msg = "Woah there,"
             msg = (
