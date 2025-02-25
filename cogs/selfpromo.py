@@ -198,7 +198,7 @@ class SelfPromo(commands.Cog):
                 msg
                 + "If we don't know who you are, we likely won't care about your music."
             )
-            embed = discord.Embed(title="Please don't self promote", description=msg)
+            embed = discord.Embed(title="A Reminder About Our Self Promotion Rule", description=msg)
             # embed.set_image(url="https://i.imgur.com/MQMdhiE.jpeg")
             await ctx.send(embed=embed)
             await ctx.respond(
