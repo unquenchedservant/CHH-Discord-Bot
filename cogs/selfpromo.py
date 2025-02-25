@@ -135,6 +135,12 @@ class SelfPromo(commands.Cog):
                     "Thank you for the report, but this is an admin.", ephemeral=True
                 )
                 return 0
+            if user.bot:
+                if user.id == 701044392378499152:
+                    await ctx.respond("You thought.", ephemeral=True)
+                else:
+                    await ctx.respond("Thank you, but this is a bot", ephemeral=True)
+                return 0
             msg = (
                 msg
                 + "it looks like you're sharing self-promotion outside of <#"
