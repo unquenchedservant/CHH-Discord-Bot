@@ -102,7 +102,7 @@ class SelfPromo(commands.Cog):
     @slash_command(
         guild_ids=GUILD_ID,
         default_permissions=True,
-        description="Use this when someone posts self promotion, or if someone asks about self promotion (don't tag the user)",
+        description="Use this when someone posts self promotion, or if someone asks about self promotion",
     )
     async def selfpromoalert(
         self,
