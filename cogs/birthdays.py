@@ -21,6 +21,7 @@ class Birthdays(commands.Cog):
         month: Option(int, "Enter your birth month", min_value=1, max_value=12, required=True), 
         day: Option(int, "Enter your birth date", min_value=1, max_value=31, required=True)
     ):
+        print("[CHH BOT] setbirthday - User: {}".format(ctx.author.name))
         if not month:
             await ctx.respond("Please enter your birth month (1-12)")
         elif not day:
@@ -31,6 +32,7 @@ class Birthdays(commands.Cog):
 
     @slash_command(guild_ids=GUILD_ID, description="Check to make sure you have your birthday set correctly")
     async def getbirthday(self, ctx: discord.ApplicationContext):
+        print("[CHH BOT] getbirthday - User: {}".format(ctx.author.name))
         birthday = database.getBirthday(ctx.author.id)
         if birthday == [0, 0]:
             await ctx.respond("You do not have a birthday set, use `/setbirthday` to do so", ephemeral=True)
@@ -39,6 +41,7 @@ class Birthdays(commands.Cog):
 
     @slash_command(guild_ids=GUILD_ID, description="Removes you from our birthday list")
     async def removebirthday(self, ctx: discord.ApplicationContext):
+        print("[CHH BOT] removebirthday - User: {}".format(ctx.author.name))
         database.removeBirthday(ctx.author.id)
         await ctx.respond("Your birthday has been removed successfully", ephemeral=True)
         
