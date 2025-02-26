@@ -30,7 +30,8 @@ class SelfPromo(commands.Cog):
                 print("[CHH BOT] Self-Promo report (App) - Reporter: {} | Reportee: {}".format(ctx.author.name, user.name))
                 msg = "Woah there, <@" + str(user.id) + ">,"
                 try:
-                    print(user.roles)
+                    if user.roles:
+                        pass
                 except AttributeError:
                     print("[CHH BOT] Self-Promo report (App) - Automated Message | No Action")
                     await ctx.respond(
