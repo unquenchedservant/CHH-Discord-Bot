@@ -8,6 +8,7 @@ from discord.ext import commands
 from discord.utils import get
 from utilities import database, get_env
 from utilities.logging import logger
+import sqlite3
 
 intents = discord.Intents.all()
 intents.members = True
@@ -30,6 +31,9 @@ extensions = [
 @bot.event
 async def on_ready():
     logger.info("We have logged in as {0.user}".format(bot))
+    conn = sqlite3.connect("chh.db")
+    if not database.checkStarboardSettings(utilities.get_guild_id()):
+        database.addStarboardSettings(utilities.get_guild_id(), utilities.get_starboard_channel(), 5)
 
 @bot.event
 async def on_member_join(member):

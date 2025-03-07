@@ -5,6 +5,12 @@ def get_guild_ids():
     else:
         return [613464665661636648, 365879579887534080]
     
+def get_guild_id():
+    if is_dev:
+        return 365879579887534080
+    else:
+        return 613464665661636648
+    
 def get_starboard_channel():
     if is_dev:
         return 1347392583050985612

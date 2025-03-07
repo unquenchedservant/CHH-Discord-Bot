@@ -88,7 +88,7 @@ def checkStarboardSettings(guildID):
 def updateStarboardChannel(guildID, starboardChannel):
     conn = sqlite3.connect("chh.db")
     checkStarboardSettingsTable(conn)
-    conn.execute("UPDATE starboardsettings SET STARBOARDCHANNEL={}, STARBOARDTHRESHOLD={} WHERE GUILDID={}".format(starboardChannel, starboardThreshold, guildID))
+    conn.execute("UPDATE starboardsettings SET STARBOARDCHANNEL={} WHERE GUILDID={}".format(starboardChannel, guildID))
     conn.commit()
     conn.close()
 
