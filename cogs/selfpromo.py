@@ -6,6 +6,7 @@ import utilities
 from discord.commands import Option, message_command, slash_command
 from discord.ext import commands
 from utilities import database
+from utilities.logging import logger
 
 GUILD_ID = utilities.get_guild_ids()
 SELF_PROMO_CHANNEL = utilities.get_self_promo_id()
@@ -27,33 +28,33 @@ class SelfPromo(commands.Cog):
             )
         else:
             if user:
-                print("[CHH BOT] Self-Promo report (App) - Reporter: {} | Reportee: {}".format(ctx.author.name, user.name))
+                logger.info("Self-Promo report (App) - Reporter: {} | Reportee: {}".format(ctx.author.name, user.name))
                 msg = "Woah there, <@" + str(user.id) + ">,"
                 try:
                     if user.roles:
                         pass
                 except AttributeError:
-                    print("[CHH BOT] Self-Promo report (App) - Automated Message | No Action")
+                    logger.info("Self-Promo report (App) - Automated Message | No Action")
                     await ctx.respond(
                         "This appears to be an automated message, thanks though! (Please reach out to Chill if you think this was an error)",
                         ephemeral=True,
                     )
                     return 0
                 if "verified artist" in [y.name.lower() for y in user.roles]:
-                    print("[CHH BOT] Self-Promo report (App) - Verified Artist | No Action")
+                    logger.info("Self-Promo report (App) - Verified Artist | No Action")
                     await ctx.respond(
                         "Thank you for the report, but this is a verified artist",
                         ephemeral=True,
                     )
                     return 0
                 if "mod" in [y.name.lower() for y in user.roles]:
-                    print("[CHH BOT] Self-Promo report (App) - Mod | No Action")
+                    logger.info("Self-Promo report (App) - Mod | No Action")
                     await ctx.respond(
                         "Thank you for the report, but this is a mod.", ephemeral=True
                     )
                     return 0
                 if "admin" in [y.name.lower() for y in user.roles]:
-                    print("[CHH BOT] Self-Promo report (App) - Admin | No Action")
+                    logger.info("Self-Promo report (App) - Admin | No Action")
                     await ctx.respond(
                         "Thank you for the report, but this is an admin.",
                         ephemeral=True,
@@ -61,14 +62,14 @@ class SelfPromo(commands.Cog):
                     return 0
                 if user.bot:
                     if user.id==701044392378499152:
-                        print("[CHH BOT] Self-Promo report (App) - CHH Bot | Put on blast")
+                        logger.info("Self-Promo report (App) - CHH Bot | Put on blast")
                         await ctx.respond("You thought.", ephemeral=False)
                     else:
-                        print("[CHH BOT] Self-Promo report (App) - Bot | No Action")
+                        logger.info("Self-Promo report (App) - Bot | No Action")
                         await ctx.respond("Thank you, but this is a bot", ephemeral=True)
                     return 0
             else:
-                print("[CHH BOT] Self-Promo report (App) - Reporter: {} | Reportee: N/A (HOW DID YOU DO THIS?!)".format(ctx.author.name))
+                logger.info("Self-Promo report (App) - Reporter: {} | Reportee: N/A (HOW DID YOU DO THIS?!)".format(ctx.author.name))
                 msg = "Woah there,"
             msg = (
                 msg
@@ -127,33 +128,33 @@ class SelfPromo(commands.Cog):
         ),
     ):
         if user:
-            print("[CHH BOT] Self-Promo report (slash) - Reporter: {} | Reportee: {}".format(ctx.author.name, user.name))
+            logger.info("Self-Promo report (slash) - Reporter: {} | Reportee: {}".format(ctx.author.name, user.name))
             msg = "Woah there, <@" + str(user.id) + ">,"
             if "verified artist" in [y.name.lower() for y in user.roles]:
-                print("[CHH BOT] Self-Promo report (slash) - Verified Artist | No Action")
+                logger.info("Self-Promo report (slash) - Verified Artist | No Action")
                 await ctx.respond(
                     "Thank you for the report, but this is a verified artist",
                     ephemeral=True,
                 )
                 return 0
             if "mod" in [y.name.lower() for y in user.roles]:
-                print("[CHH BOT] Self-Promo report (slash) - Mod | No Action")
+                logger.info("Self-Promo report (slash) - Mod | No Action")
                 await ctx.respond(
                     "Thank you for the report, but this is a mod.", ephemeral=True
                 )
                 return 0
             if "admin" in [y.name.lower() for y in user.roles]:
-                print("[CHH BOT] Self-Promo report (slash) - Admin | No Action")
+                logger.info("Self-Promo report (slash) - Admin | No Action")
                 await ctx.respond(
                     "Thank you for the report, but this is an admin.", ephemeral=True
                 )
                 return 0
             if user.bot:
                 if user.id == 701044392378499152:
-                    print("[CHH BOT] Self-Promo report (slash) - CHH BOT | Put on Blast")
+                    logger.info("Self-Promo report (slash) - CHH BOT | Put on Blast")
                     await ctx.respond("You thought.", ephemeral=False)
                 else:
-                    print("[CHH BOT] Self-Promo report (slash) - Verified Bot | No Action")
+                    logger.info("Self-Promo report (slash) - Verified Bot | No Action")
                     await ctx.respond("Thank you, but this is a bot", ephemeral=True)
                 return 0
             msg = (
@@ -200,7 +201,7 @@ class SelfPromo(commands.Cog):
             )
             await report_channel.send(report_msg)
         else:
-            print("[CHH BOT] Self-Promo report (slash) - Reporter: {} | Reportee: N/A".format(ctx.author.name))
+            logger.info("Self-Promo report (slash) - Reporter: {} | Reportee: N/A".format(ctx.author.name))
             msg = (
                 "Please only self-promote in <#"
                 + str(SELF_PROMO_CHANNEL)
