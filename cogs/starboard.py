@@ -1,5 +1,6 @@
 from discord.ext import commands
 import utilities
+from utilities.logging import logger
 
 class Starboard(commands.Cog):
     def __init__(self, bot):
@@ -13,17 +14,17 @@ class Starboard(commands.Cog):
             for reaction in msg.reactions:
                 if reaction.emoji == "⭐":
                     if reaction.count >= 1:
-                        print("Potentially Starboard")
-                        users = [user async for user in reaction.users()]
-                        for user in users:
-                            if user.bot:
-                                print("Bot reacts don't count")
-                                return
-                            if not user.id == msg.author.id:
-                                if reaction.emoji == "⭐":
-                                    true_count += 1
+                        true_count = reaction.count
+                        #users = [user async for user in reaction.users()]
+                        #for user in users:
+                            # if user.bot:
+                            #     print("Bot reacts don't count")
+                            #     return
+                            # if not user.id == msg.author.id:
+                            #     if reaction.emoji == "⭐":
+                            #         true_count += 1
                         if true_count >= 1:
-                            print("Starboard")
+                            logger.debug("Starboard")
                             starboard = self.bot.get_channel(utilities.get_starboard_channel())
                             await starboard.send(
                                 f"**{msg.author.display_name}** in **{msg.channel.name}**\n{msg.content}"

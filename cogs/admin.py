@@ -5,6 +5,7 @@ import utilities
 from discord.commands import Option, slash_command
 from discord.ext import commands
 from utilities import database
+from utilities.logging import logger
 
 ERROR_MSG = "You need to be a mod or admin to use this command"
 GUILD_ID = utilities.get_guild_ids()
@@ -27,7 +28,7 @@ class Admin(commands.Cog):
         default_permission=False,
         description="Used for reloading cogs during development")
     async def reload(self, ctx: discord.ApplicationContext):
-        print("[CHH BOT] reload - User: {}".format(ctx.author.name))
+        logger.info("reload - User: {}".format(ctx.author.name))
         for extension in EXTENSIONS:
             self.bot.reload_extension(extension)
         await ctx.respond("Cogs have been reloaded!", ephemeral=True)
@@ -93,7 +94,7 @@ class Admin(commands.Cog):
             str, "What message would you like to send on this day", required=True
         ),
     ):
-        print("[CHH BOT] addholiday - User: {}".format(ctx.author.name))
+        logger.info("addholiday - User: {}".format(ctx.author.name))
         if ctx.author.guild_permissions.kick_members:
             if not month:
                 await ctx.respond(
@@ -142,7 +143,7 @@ class Admin(commands.Cog):
             required=True,
         ),
     ):
-        print("[CHH BOT] checkholiday - User: {}".format(ctx.author.name))
+        logger.info("checkholiday - User: {}".format(ctx.author.name))
         if ctx.author.guild_permissions.kick_members:
             if not month:
                 await ctx.respond(
@@ -171,7 +172,7 @@ class Admin(commands.Cog):
         description="Returns a list of all holidays and their message",
     )
     async def checkholidays(self, ctx: discord.ApplicationContext):
-        print("[CHH BOT] checkholidays - User: {}".format(ctx.author.name))
+        logger.info("checkholidays - User: {}".format(ctx.author.name))
         if ctx.author.guild_permissions.kick_members:
             msg = ""
             holidays = database.checkHolidays()
@@ -210,7 +211,7 @@ class Admin(commands.Cog):
             required=True,
         ),
     ):
-        print("[CHH BOT] removeholiday - User: {}".format(ctx.author.name))
+        logger.info("removeholiday - User: {}".format(ctx.author.name))
         if ctx.author.guild_permissions.kick_members:
             if not month:
                 await ctx.respond(
@@ -241,7 +242,7 @@ class Admin(commands.Cog):
 
     @slash_command(guild_ids=GUILD_ID, default_permission=False)
     async def togglerolememory(self, ctx: discord.ApplicationContext):
-        print("[CHH BOT] togglerolememory - User: {}".format(ctx.author.name))
+        logger.info("togglerolememory - User: {}".format(ctx.author.name))
         if ctx.author.guild_permissions.kick_members:
             status = database.checkRoleMemory(ctx.guild.id)
             msg = ""
@@ -256,7 +257,7 @@ class Admin(commands.Cog):
 
     @slash_command(guild_ids=GUILD_ID, default_permission=False)
     async def checkrolememory(self, ctx: discord.ApplicationContext):
-        print("[CHH BOT] checkrolememory - User: {}".format(ctx.author.name))
+        logger.info("checkrolememory - User: {}".format(ctx.author.name))
         if ctx.author.guild_permissions.kick_members:
             status = database.checkRoleMemory(ctx.guild.id)
             msg = ""
