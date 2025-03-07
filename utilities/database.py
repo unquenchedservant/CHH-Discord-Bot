@@ -1,5 +1,118 @@
 import sqlite3
-#birthday functions
+
+"""
+=========
+Starboard Table
+=========
+"""
+
+def checkStarboardTable(conn):
+    conn.execute('''CREATE TABLE IF NOT EXISTS starboard
+                    (MSGID INT NOT NULL,
+                    STARBOARDMSGID INT NOT NULL,
+                    STARCOUNT INT NOT NULL)''')
+    conn.commit()
+
+def addStarboard(msgID, starboardMsgID, starcount):
+    conn = sqlite3.connect("chh.db")
+    checkStarboardTable(conn)
+    sql = "INSERT INTO starboard (MSGID, STARBOARDMSGID, STARCOUNT) VALUES ({},{},{})".format(msgID, starboardMsgID, starcount)
+    conn.execute(sql)
+    conn.commit()
+    conn.close()
+
+def checkStarboard(msgID):
+    conn = sqlite3.connect("chh.db")
+    checkStarboardTable(conn)
+    cursor = conn.execute("SELECT * FROM starboard WHERE MSGID={}".format(msgID))
+    data = cursor.fetchall()
+    conn.close()
+    if len(data) == 0:
+        return False
+    else:
+        return True
+
+def updateStarboard(msgID, starboardMsgID, starcount):
+    conn = sqlite3.connect("chh.db")
+    checkStarboardTable(conn)
+    conn.execute("UPDATE starboard SET STARBOARDMSGID={}, STARCOUNT={} WHERE MSGID={}".format(starboardMsgID, starcount, msgID))
+    conn.commit()
+    conn.close()
+
+def getStarboard(msgID):
+    conn = sqlite3.connect("chh.db")
+    checkStarboardTable(conn)
+    cursor = conn.execute("SELECT STARBOARDMSGID, STARCOUNT FROM starboard WHERE MSGID={}".format(msgID))
+    data = cursor.fetchall()
+    conn.close()
+    return data[0]
+
+def removeStarboard(msgID):
+    conn = sqlite3.connect("chh.db")
+    checkStarboardTable(conn)
+    conn.execute("DELETE FROM starboard WHERE MSGID={}".format(msgID))
+    conn.commit()
+    conn.close()
+
+"""
+=========
+Starboard Settings Table
+=========
+"""
+def checkStarboardSettingsTable(conn):
+    conn.execute('''CREATE TABLE IF NOT EXISTS starboardsettings
+                    (GUILDID INT NOT NULL,
+                    STARBOARDCHANNEL INT NOT NULL,
+                    STARBOARDTHRESHOLD INT NOT NULL)''')
+    conn.commit()
+
+def addStarboardSettings(guildID, starboardChannel, starboardThreshold):
+    conn = sqlite3.connect("chh.db")
+    checkStarboardSettingsTable(conn)
+    sql = "INSERT INTO starboardsettings (GUILDID, STARBOARDCHANNEL, STARBOARDTHRESHOLD) VALUES ({},{},{})".format(guildID, starboardChannel, starboardThreshold)
+    conn.execute(sql)
+    conn.commit()
+    conn.close()
+
+def checkStarboardSettings(guildID):
+    conn = sqlite3.connect("chh.db")
+    checkStarboardSettingsTable(conn)
+    cursor = conn.execute("SELECT * FROM starboardsettings WHERE GUILDID={}".format(guildID))
+    data = cursor.fetchall()
+    conn.close()
+    if len(data) == 0:
+        return False
+    else:
+        return True
+
+def updateStarboardChannel(guildID, starboardChannel):
+    conn = sqlite3.connect("chh.db")
+    checkStarboardSettingsTable(conn)
+    conn.execute("UPDATE starboardsettings SET STARBOARDCHANNEL={}, STARBOARDTHRESHOLD={} WHERE GUILDID={}".format(starboardChannel, starboardThreshold, guildID))
+    conn.commit()
+    conn.close()
+
+def updateStarboardThreshold(guildID, starboardThreshold):
+    conn = sqlite3.connect("chh.db")
+    checkStarboardSettingsTable(conn)
+    conn.execute("UPDATE starboardsettings SET STARBOARDTHRESHOLD={} WHERE GUILDID={}".format(starboardThreshold, guildID))
+    conn.commit()
+    conn.close()
+
+def getStarboardSettings(guildID):
+    conn = sqlite3.connect("chh.db")
+    checkStarboardSettingsTable(conn)
+    cursor = conn.execute("SELECT STARBOARDCHANNEL, STARBOARDTHRESHOLD FROM starboardsettings WHERE GUILDID={}".format(guildID))
+    data = cursor.fetchall()
+    conn.close()
+    return data[0]
+
+def removeStarboardSettings(guildID):
+    conn = sqlite3.connect("chh.db")
+    checkStarboardSettingsTable(conn)
+    conn.execute("DELETE FROM starboardsettings WHERE GUILDID={}".format(guildID))
+    conn.commit()
+    conn.close()
 
 """
 =========
