@@ -8,6 +8,8 @@ from discord.ext import commands
 from discord.utils import get
 from utilities import database, get_env
 from utilities.logging import logger
+from utilities import logging
+import sqlite3
 
 intents = discord.Intents.all()
 intents.members = True
@@ -24,11 +26,15 @@ extensions = [
     "cogs.birthdays",
     "cogs.events",
     "cogs.selfpromo",
+    "cogs.starboard",
 ]
 
 @bot.event
 async def on_ready():
     logger.info("We have logged in as {0.user}".format(bot))
+    conn = sqlite3.connect("chh.db")
+    if not database.checkStarboardSettings(utilities.get_guild_id()):
+        database.addStarboardSettings(utilities.get_guild_id(), utilities.get_starboard_channel(), 5)
 
 @bot.event
 async def on_member_join(member):
@@ -51,6 +57,7 @@ async def on_member_remove(member):
 if __name__ == "__main__":
 
     if "--dev" in sys.argv:
+        logging.setLoggerLevel(True)
         logger.info("Running Developer Bot")
         utilities.set_is_dev(True)
         for extension in extensions:
@@ -58,6 +65,7 @@ if __name__ == "__main__":
         token = get_env.discord_dev()
         bot.run(token)
     else:
+        logging.setLoggerLevel(False)
         for extension in extensions:
             bot.load_extension(extension)
         token = get_env.discord_token()

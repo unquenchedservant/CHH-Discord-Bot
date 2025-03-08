@@ -4,11 +4,14 @@ import discord
 import utilities
 from discord.commands import Option, slash_command
 from discord.ext import commands
+from discord import SlashCommandGroup
 from utilities import database
 from utilities.logging import logger
 
 ERROR_MSG = "You need to be a mod or admin to use this command"
 GUILD_ID = utilities.get_guild_ids()
+
+
 
 EXTENSIONS = [
     "cogs.admin",
@@ -20,6 +23,9 @@ EXTENSIONS = [
 
 
 class Admin(commands.Cog):
+
+    starboardgrp = SlashCommandGroup(name="starboard", description="Starboard commands")
+
     def __init__(self, bot):
         self.bot = bot
 
@@ -32,6 +38,30 @@ class Admin(commands.Cog):
         for extension in EXTENSIONS:
             self.bot.reload_extension(extension)
         await ctx.respond("Cogs have been reloaded!", ephemeral=True)
+
+    """
+    =========
+    Starboad Management
+    =========
+    """
+    @starboardgrp.command(name="threshold", defualt_permission=False,description="Set the threshold for the starboard")
+    async def setthreshold(self, ctx: discord.ApplicationContext, threshold: int):
+        logger.info("starboard - threshold - User: {}".format(ctx.author.name))
+        if ctx.author.guild_permissions.kick_members:
+            database.updateStarboardThreshold(ctx.guild.id, threshold)
+            await ctx.respond("Starboard threshold set to {}".format(threshold), ephemeral=True)
+        else:
+            await ctx.respond(ERROR_MSG, ephemeral=True)
+
+    @starboardgrp.command(name="channel", defualt_permission=False, description="Set the channel for the starboard")
+    async def setchannel(self, ctx: discord.ApplicationContext, channel: discord.TextChannel):
+        logger.info("starboard - setchannel - User: {}".format(ctx.author.name))
+        if ctx.author.guild_permissions.kick_members:
+            database.updateStarboardChannel(ctx.guild.id, channel.id)
+            await ctx.respond("Starboard channel set to {}".format(channel.name), ephemeral=True)
+        else:
+            await ctx.respond(ERROR_MSG, ephemeral=True)
+
     """
     =========
     Database Management
