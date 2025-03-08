@@ -61,6 +61,7 @@ class Admin(commands.Cog):
             await ctx.respond("Starboard channel set to {}".format(channel.name), ephemeral=True)
         else:
             await ctx.respond(ERROR_MSG, ephemeral=True)
+
     """
     =========
     Database Management

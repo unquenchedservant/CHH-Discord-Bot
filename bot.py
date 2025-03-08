@@ -8,6 +8,7 @@ from discord.ext import commands
 from discord.utils import get
 from utilities import database, get_env
 from utilities.logging import logger
+from utilities import logging
 import sqlite3
 
 intents = discord.Intents.all()
@@ -56,6 +57,7 @@ async def on_member_remove(member):
 if __name__ == "__main__":
 
     if "--dev" in sys.argv:
+        logging.setLoggerLevel(True)
         logger.info("Running Developer Bot")
         utilities.set_is_dev(True)
         for extension in extensions:
@@ -63,6 +65,7 @@ if __name__ == "__main__":
         token = get_env.discord_dev()
         bot.run(token)
     else:
+        logging.setLoggerLevel(False)
         for extension in extensions:
             bot.load_extension(extension)
         token = get_env.discord_token()
