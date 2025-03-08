@@ -34,6 +34,7 @@ extensions = [
 async def on_ready():
     logger.info("We have logged in as {0.user}".format(bot))
     conn = sqlite3.connect("chh.db")
+    await bot.sync_commands()
     if not database.checkStarboardSettings(utilities.get_guild_id()):
         database.addStarboardSettings(utilities.get_guild_id(), utilities.get_starboard_channel(), 5)
 
@@ -59,18 +60,12 @@ async def sync_commands():
     await bot.sync_commands()
 
 if __name__ == "__main__":
-    tasks = set()
-    loop = asyncio.get_event_loop()
-    asyncio.set_event_loop(loop)
     if "--dev" in sys.argv:
         logging.setLoggerLevel(True)
         utilities.set_is_dev(True)
         logger.info("Running Developer Bot")
         for extension in extensions:
             bot.load_extension(extension)
-        task = loop.create_task(sync_commands())
-        tasks.add(task)
-        task.add_done_callback(tasks.discard)
         token = get_env.discord_dev()
         bot.run(token)
     else:
@@ -78,8 +73,5 @@ if __name__ == "__main__":
         logging.setLoggerLevel(False)
         for extension in extensions:
             bot.load_extension(extension)
-        task = loop.create_task(sync_commands())
-        tasks.add(task)
-        task.add_done_callback(tasks.discard)
         token = get_env.discord_token()
         bot.run(token)
