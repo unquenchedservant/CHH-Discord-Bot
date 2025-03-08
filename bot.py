@@ -70,6 +70,3 @@ if __name__ == "__main__":
             bot.load_extension(extension)
         token = get_env.discord_token()
         bot.run(token)
-    # token = get_env.discord_token()
-    # token = get_env.discord_dev()
-    # bot.run(token)
