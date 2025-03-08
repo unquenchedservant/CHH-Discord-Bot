@@ -64,8 +64,8 @@ if __name__ == "__main__":
     asyncio.set_event_loop(loop)
     if "--dev" in sys.argv:
         logging.setLoggerLevel(True)
-        logger.info("Running Developer Bot")
         utilities.set_is_dev(True)
+        logger.info("Running Developer Bot")
         for extension in extensions:
             bot.load_extension(extension)
         task = loop.create_task(sync_commands())
