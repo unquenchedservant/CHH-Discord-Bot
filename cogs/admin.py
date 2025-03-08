@@ -44,11 +44,8 @@ class Admin(commands.Cog):
     Starboad Management
     =========
     """
-    @slash_command(guild_ids=GUILD_ID, default_permission=False, description="Base starboard command (does nothing)")
-    async def starboard(self, ctx: discord.ApplicationContext):
-        logger.info("starboard - User: {}".format(ctx.author.name))
-        await ctx.respond("Starboard command", ephemeral=True)
-    @starboardgrp.command(name="threshold", default_permission=False,description="Set the threshold for the starboard")
+
+    @starboardgrp.command(guild_ids=GUILD_ID, name="threshold", default_permission=False,description="Set the threshold for the starboard")
     async def setthreshold(self, ctx: discord.ApplicationContext, threshold: int):
         logger.info("starboard - threshold - User: {}".format(ctx.author.name))
         if ctx.author.guild_permissions.kick_members:
@@ -57,7 +54,7 @@ class Admin(commands.Cog):
         else:
             await ctx.respond(ERROR_MSG, ephemeral=True)
 
-    @starboardgrp.command(name="channel", default_permission=False, description="Set the channel for the starboard")
+    @starboardgrp.command(guild_ids=GUILD_ID, name="channel", default_permission=False, description="Set the channel for the starboard")
     async def setchannel(self, ctx: discord.ApplicationContext, channel: discord.TextChannel):
         logger.info("starboard - setchannel - User: {}".format(ctx.author.name))
         if ctx.author.guild_permissions.kick_members:
