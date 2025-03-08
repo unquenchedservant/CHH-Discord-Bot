@@ -9,14 +9,19 @@ Starboard Table
 def checkStarboardTable(conn):
     conn.execute('''CREATE TABLE IF NOT EXISTS starboard
                     (MSGID INT NOT NULL,
-                    STARBOARDMSGID INT NOT NULL,
-                    STARCOUNT INT NOT NULL)''')
+                    STARBOARDMSGID INT NOT NULL)''')
     conn.commit()
+    
+def removeStarboardTable():
+    conn = sqlite3.connect("chh.db")
+    conn.execute("DROP TABLE starboard")
+    conn.commit()
+    conn.close()
 
-def addStarboard(msgID, starboardMsgID, starcount):
+def addStarboard(msgID, starboardMsgID):
     conn = sqlite3.connect("chh.db")
     checkStarboardTable(conn)
-    sql = "INSERT INTO starboard (MSGID, STARBOARDMSGID, STARCOUNT) VALUES ({},{},{})".format(msgID, starboardMsgID, starcount)
+    sql = "INSERT INTO starboard (MSGID, STARBOARDMSGID) VALUES ({},{})".format(msgID, starboardMsgID)
     conn.execute(sql)
     conn.commit()
     conn.close()
@@ -31,21 +36,29 @@ def checkStarboard(msgID):
         return False
     else:
         return True
-
-def updateStarboard(msgID, starboardMsgID, starcount):
+    
+def getStarboardMessage(msgID):
     conn = sqlite3.connect("chh.db")
     checkStarboardTable(conn)
-    conn.execute("UPDATE starboard SET STARBOARDMSGID={}, STARCOUNT={} WHERE MSGID={}".format(starboardMsgID, starcount, msgID))
-    conn.commit()
-    conn.close()
-
-def getStarboard(msgID):
-    conn = sqlite3.connect("chh.db")
-    checkStarboardTable(conn)
-    cursor = conn.execute("SELECT STARBOARDMSGID, STARCOUNT FROM starboard WHERE MSGID={}".format(msgID))
+    cursor = conn.execute("SELECT STARBOARDMSGID FROM starboard WHERE MSGID={}".format(msgID))
     data = cursor.fetchall()
     conn.close()
-    return data[0]
+    return data[0][0]
+
+def getStarboardThreshold(guildID):
+    conn = sqlite3.connect("chh.db")
+    checkStarboardSettingsTable(conn)
+    cursor = conn.execute("SELECT STARBOARDTHRESHOLD FROM starboardsettings WHERE GUILDID={}".format(guildID))
+    data = cursor.fetchall()
+    conn.close()
+    return data[0][0]
+
+def updateStarboard(msgID, starboardMsgID):
+    conn = sqlite3.connect("chh.db")
+    checkStarboardTable(conn)
+    conn.execute("UPDATE starboard SET STARBOARDMSGID={} WHERE MSGID={}".format(starboardMsgID, msgID))
+    conn.commit()
+    conn.close()
 
 def removeStarboard(msgID):
     conn = sqlite3.connect("chh.db")
