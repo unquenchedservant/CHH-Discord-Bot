@@ -65,6 +65,7 @@ if __name__ == "__main__":
         token = get_env.discord_dev()
         bot.run(token)
     else:
+        utilities.set_is_dev(False)
         logging.setLoggerLevel(False)
         for extension in extensions:
             bot.load_extension(extension)

@@ -44,6 +44,10 @@ class Admin(commands.Cog):
     Starboad Management
     =========
     """
+    @slash_command(guild_ids=GUILD_ID, default_permission=False, description="Base starboard command (does nothing)")
+    async def starboard(self, ctx: discord.ApplicationContext):
+        logger.info("starboard - User: {}".format(ctx.author.name))
+        await ctx.respond("Starboard command", ephemeral=True)
     @starboardgrp.command(name="threshold", default_permission=False,description="Set the threshold for the starboard")
     async def setthreshold(self, ctx: discord.ApplicationContext, threshold: int):
         logger.info("starboard - threshold - User: {}".format(ctx.author.name))
