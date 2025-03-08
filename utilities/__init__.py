@@ -3,7 +3,7 @@ def get_guild_ids():
     if is_dev:
         return [365879579887534080]
     else:
-        return [613464665661636648, 365879579887534080]
+        return [613464665661636648]
     
 def get_guild_id():
     if is_dev:
