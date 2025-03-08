@@ -8,11 +8,21 @@ import asyncio
 
 DEBUG=utilities.is_dev
 
+"""
+==========
+Starboard
+==========
+
+Starboard cog mimicks functionality of starboard in other popular apps, while greatly copying, this is reverse engineered, and not a direct copy of any code.
+"""
+
 class Starboard(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.lock = asyncio.Lock()
 
+    
+    # Get the true count of stars on a message (ignores bot reactions and the user who posted the message)
     async def get_true_count(self, msg):
         true_count = 0
         for reaction in msg.reactions:
@@ -30,6 +40,7 @@ class Starboard(commands.Cog):
                     true_count = reaction.count
         return true_count
 
+    # Listens for reactions on messages, checks if it's a star, and if it is, verifies if it has enough stars to be posted to the starboad
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
         async with self.lock:
@@ -49,6 +60,7 @@ class Starboard(commands.Cog):
                         starboard_msg = await self.bot.get_channel(utilities.get_starboard_channel()).fetch_message(starboard_msg_id)
                         await starboard_msg.edit(embed=embed)
 
+    # Listens for reactions being removed from messages, checks if it's a star, and if it is, verifies if it has enough stars to be posted to the starboad
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
         logger.debug("Starboard - Reaction removed start")        
@@ -82,15 +94,16 @@ class Starboard(commands.Cog):
                 database.removeStarboard(payload.message_id)
                 logger.info("Starboard - Starboard entry removed")
 
+    # Creates the embed for the starboard message based on most up to date information. 
     def create_embed(self, message, count):
         author = message.author
         authorName = author.display_name
         authorUser = author.name
         msg = message.content
         msg = msg + "\n\n[⤴️ Go to message]({})".format(message.jump_url)
-        utcdate = message.created_at
-        localDatetime = utcdate.astimezone(pytz.timezone('America/New_York'))
-        footer = "⭐ {} in #{} • {}".format(count,message.channel.name, localDatetime.strftime("%-m/%-d/%y, %-I:%M %p"))
+        utcdate = message.created_at.timestamp()
+        utcdate = int(str(utcdate).split(".")[0])
+        footer = "⭐ {} in #{}".format(count,message.channel.name, utcdate)
         embed = discord.Embed(description=msg)
         title = ""
         if authorName == authorUser:
@@ -99,7 +112,7 @@ class Starboard(commands.Cog):
             title = "{} ~ {}".format(authorUser, authorName)
         embed.set_author(name=title, icon_url=message.author.display_avatar.url)
         embed.set_footer(text=footer)
-
+        embed.timestamp = message.created_at
         if message.attachments:
             if message.attachments[0].content_type.startswith("image"):
                 embed.set_image(url=message.attachments[0].url)
