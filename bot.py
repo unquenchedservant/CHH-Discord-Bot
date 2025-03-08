@@ -10,6 +10,7 @@ from utilities import database, get_env
 from utilities.logging import logger
 from utilities import logging
 import sqlite3
+import asyncio
 
 intents = discord.Intents.all()
 intents.members = True
@@ -54,15 +55,22 @@ async def on_member_remove(member):
             if not role.name == "@everyone":
                 database.addRole(member.id, role.id)
 
-if __name__ == "__main__":
+async def sync_commands():
+    await bot.sync_commands()
 
+if __name__ == "__main__":
+    tasks = set()
+    loop = asyncio.get_event_loop()
+    asyncio.set_event_loop(loop)
     if "--dev" in sys.argv:
         logging.setLoggerLevel(True)
         logger.info("Running Developer Bot")
         utilities.set_is_dev(True)
         for extension in extensions:
             bot.load_extension(extension)
-        bot.tree.sync()
+        task = loop.create_task(sync_commands())
+        tasks.add(task)
+        task.add_done_callback(tasks.discard)
         token = get_env.discord_dev()
         bot.run(token)
     else:
@@ -70,6 +78,8 @@ if __name__ == "__main__":
         logging.setLoggerLevel(False)
         for extension in extensions:
             bot.load_extension(extension)
-        bot.tree.sync()
+        task = loop.create_task(sync_commands())
+        tasks.add(task)
+        task.add_done_callback(tasks.discard)
         token = get_env.discord_token()
         bot.run(token)
