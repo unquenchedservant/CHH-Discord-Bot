@@ -62,6 +62,7 @@ if __name__ == "__main__":
         utilities.set_is_dev(True)
         for extension in extensions:
             bot.load_extension(extension)
+        bot.tree.sync()
         token = get_env.discord_dev()
         bot.run(token)
     else:
@@ -69,5 +70,6 @@ if __name__ == "__main__":
         logging.setLoggerLevel(False)
         for extension in extensions:
             bot.load_extension(extension)
+        bot.tree.sync()
         token = get_env.discord_token()
         bot.run(token)
