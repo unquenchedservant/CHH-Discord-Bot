@@ -24,7 +24,7 @@ EXTENSIONS = [
 
 class Admin(commands.Cog):
 
-    starboardgrp = SlashCommandGroup(name="starboard", description="Starboard commands")
+    starboardgrp = SlashCommandGroup(guild_ids=GUILD_ID, name="starboard", description="Starboard commands")
 
     def __init__(self, bot):
         self.bot = bot
