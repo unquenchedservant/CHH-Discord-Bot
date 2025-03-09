@@ -34,7 +34,6 @@ extensions = [
 async def on_ready():
     logger.info("We have logged in as {0.user}".format(bot))
     conn = sqlite3.connect("chh.db")
-    await bot.sync_commands()
     if not database.checkStarboardSettings(utilities.get_guild_id()):
         database.addStarboardSettings(utilities.get_guild_id(), utilities.get_starboard_channel(), 5)
 

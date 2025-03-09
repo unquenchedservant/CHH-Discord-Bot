@@ -27,11 +27,10 @@ class Events(commands.Cog):
         for id in birthday_ids:
             msg = msg + "<@" + str(id) + ">\n"
         channel_id = BROADCAST_CHANNEL 
-        if not len(birthday_ids) == 0:
-            if extra_int == 2:
-                msg = msg + "\n\n Want a message for your birthday? Use /setbirthday" 
-            channel = self.bot.get_channel(BROADCAST_CHANNEL)
-            await channel.send(msg)
+        
+        msg = msg + "\n\n Want a message for your birthday? Use `/birthday set`" 
+        channel = self.bot.get_channel(BROADCAST_CHANNEL)
+        await channel.send(msg)
 
     @tasks.loop(time=time(5,0,tzinfo=timezone.utc))
     async def daily_holiday_task(self):

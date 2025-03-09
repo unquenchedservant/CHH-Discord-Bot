@@ -26,6 +26,8 @@ EXTENSIONS = [
 class Admin(commands.Cog):
 
     starboardgrp = SlashCommandGroup(guild_ids=GUILD_ID, name="starboard", description="Starboard commands")
+    holidaygrp = SlashCommandGroup(guild_ids=GUILD_ID, name="holiday", description="Holiday commands")
+    rolememgrp = SlashCommandGroup(guild_ids=GUILD_ID, name="rolememory", description="Role Memory commands")
 
     def __init__(self, bot):
         self.bot = bot
@@ -100,12 +102,12 @@ class Admin(commands.Cog):
     =========
     """
 
-    @slash_command(
+    @holidaygrp.command(
         guild_ids=GUILD_ID,
         default_permission=False,
         description="Used to add/update an automated holiday message",
     )
-    async def addholiday(
+    async def add(
         self,
         ctx: discord.ApplicationContext,
         month: Option(
@@ -152,12 +154,12 @@ class Admin(commands.Cog):
         else:
             await ctx.respond(ERROR_MSG, ephemeral=True)
 
-    @slash_command(
+    @holidaygrp.command(
         guild_ids=GUILD_ID,
         default_permission=False,
         description="Check if a given holiday exists",
     )
-    async def checkholiday(
+    async def check(
         self,
         ctx: discord.ApplicationContext,
         month: Option(
@@ -165,19 +167,35 @@ class Admin(commands.Cog):
             "Enter the month (1-12) you'd like to check",
             min_value=1,
             max_value=12,
-            required=True,
+            required=False,
         ),
         day: Option(
             int,
             "Enter the day (0-31) you'd like to check",
             min_value=1,
             max_value=31,
-            required=True,
+            required=False,
         ),
     ):
         logger.info("checkholiday - User: {}".format(ctx.author.name))
         if ctx.author.guild_permissions.kick_members:
-            if not month:
+            if not month and not day:
+                logger.info("checkholidays - User: {}".format(ctx.author.name))
+                if ctx.author.guild_permissions.kick_members:
+                    msg = ""
+                    holidays = database.checkHolidays()
+                    if len(holidays) == 0:
+                        msg = "No holidays set"
+                    else:
+                        for item in holidays:
+                            month, day, message = item
+                            month = utilities.zero_leading(month)
+                            day = utilities.zero_leading(day)
+                            msg = msg + "{}/{} - {}\n\n".format(month, day, message)
+                    await ctx.respond(msg)
+                else:
+                    await ctx.respond(ERROR_MSG, ephemeral=True)
+            elif not month:
                 await ctx.respond(
                     "Please enter the holiday month (1-12)", ephemeral=True
                 )
@@ -198,34 +216,12 @@ class Admin(commands.Cog):
         else:
             await ctx.respond(ERROR_MSG, ephemeral=True)
 
-    @slash_command(
-        guild_ids=GUILD_ID,
-        default_permission=False,
-        description="Returns a list of all holidays and their message",
-    )
-    async def checkholidays(self, ctx: discord.ApplicationContext):
-        logger.info("checkholidays - User: {}".format(ctx.author.name))
-        if ctx.author.guild_permissions.kick_members:
-            msg = ""
-            holidays = database.checkHolidays()
-            if len(holidays) == 0:
-                msg = "No holidays set"
-            else:
-                for item in holidays:
-                    month, day, message = item
-                    month = utilities.zero_leading(month)
-                    day = utilities.zero_leading(day)
-                    msg = msg + "{}/{} - {}\n\n".format(month, day, message)
-            await ctx.respond(msg)
-        else:
-            await ctx.respond(ERROR_MSG, ephemeral=True)
-
-    @slash_command(
+    @holidaygrp.command(
         guild_ids=GUILD_ID,
         default_permission=False,
         description="Removes a given holiday from the automation",
     )
-    async def removeholiday(
+    async def remove(
         self,
         ctx: discord.ApplicationContext,
         month: Option(
@@ -272,8 +268,8 @@ class Admin(commands.Cog):
     =========
     """
 
-    @slash_command(guild_ids=GUILD_ID, default_permission=False)
-    async def togglerolememory(self, ctx: discord.ApplicationContext):
+    @rolememgrp.command(guild_ids=GUILD_ID, default_permission=False)
+    async def toggle(self, ctx: discord.ApplicationContext):
         logger.info("togglerolememory - User: {}".format(ctx.author.name))
         if ctx.author.guild_permissions.kick_members:
             status = database.checkRoleMemory(ctx.guild.id)
@@ -287,8 +283,8 @@ class Admin(commands.Cog):
         else:
             await ctx.respond(ERROR_MSG, ephemeral=True)
 
-    @slash_command(guild_ids=GUILD_ID, default_permission=False)
-    async def checkrolememory(self, ctx: discord.ApplicationContext):
+    @rolememgrp.command(guild_ids=GUILD_ID, default_permission=False)
+    async def check(self, ctx: discord.ApplicationContext):
         logger.info("checkrolememory - User: {}".format(ctx.author.name))
         if ctx.author.guild_permissions.kick_members:
             status = database.checkRoleMemory(ctx.guild.id)
