@@ -45,8 +45,7 @@ def get_admin_id():
         return 705532389744705616
 def set_is_dev(dev):
     global is_dev
-    is_dev = True
-
+    is_dev = dev
 def zero_leading(number):
     if number < 10:
         return "0{}".format(number)
