@@ -1,8 +1,11 @@
 is_dev = False
+from utilities.logging import logger
 def get_guild_ids():
     if is_dev:
+        logger.info("Development")
         return [365879579887534080]
     else:
+        logger.info("Production")
         return [613464665661636648, 365879579887534080]
     
 def get_guild_id():

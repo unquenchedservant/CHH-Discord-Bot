@@ -19,6 +19,7 @@ EXTENSIONS = [
     "cogs.birthdays",
     "cogs.events",
     "cogs.selfpromo",
+    "cogs.starboard",
 ]
 
 
