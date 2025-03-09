@@ -25,7 +25,7 @@ EXTENSIONS = [
 
 class Admin(commands.Cog):
 
-    #starboardgrp = SlashCommandGroup(guild_ids=GUILD_ID, name="starboard", description="Starboard commands")
+    starboardgrp = SlashCommandGroup(guild_ids=GUILD_ID, name="starboard", description="Starboard commands")
 
     def __init__(self, bot):
         self.bot = bot
@@ -46,23 +46,23 @@ class Admin(commands.Cog):
     =========
     """
 
-    # @starboardgrp.command(guild_ids=GUILD_ID, name="threshold", default_permission=False,description="Set the threshold for the starboard")
-    # async def setthreshold(self, ctx: discord.ApplicationContext, threshold: int):
-    #     logger.info("starboard - threshold - User: {}".format(ctx.author.name))
-    #     if ctx.author.guild_permissions.kick_members:
-    #         database.updateStarboardThreshold(ctx.guild.id, threshold)
-    #         await ctx.respond("Starboard threshold set to {}".format(threshold), ephemeral=True)
-    #     else:
-    #         await ctx.respond(ERROR_MSG, ephemeral=True)
+    @starboardgrp.command(guild_ids=GUILD_ID, name="threshold", default_permission=False,description="Set the threshold for the starboard")
+    async def setthreshold(self, ctx: discord.ApplicationContext, threshold: int):
+        logger.info("starboard - threshold - User: {}".format(ctx.author.name))
+        if ctx.author.guild_permissions.kick_members:
+            database.updateStarboardThreshold(ctx.guild.id, threshold)
+            await ctx.respond("Starboard threshold set to {}".format(threshold), ephemeral=True)
+        else:
+            await ctx.respond(ERROR_MSG, ephemeral=True)
 
-    # @starboardgrp.command(guild_ids=GUILD_ID, name="channel", default_permission=False, description="Set the channel for the starboard")
-    # async def setchannel(self, ctx: discord.ApplicationContext, channel: discord.TextChannel):
-    #     logger.info("starboard - setchannel - User: {}".format(ctx.author.name))
-    #     if ctx.author.guild_permissions.kick_members:
-    #         database.updateStarboardChannel(ctx.guild.id, channel.id)
-    #         await ctx.respond("Starboard channel set to {}".format(channel.name), ephemeral=True)
-    #     else:
-    #         await ctx.respond(ERROR_MSG, ephemeral=True)
+    @starboardgrp.command(guild_ids=GUILD_ID, name="channel", default_permission=False, description="Set the channel for the starboard")
+    async def setchannel(self, ctx: discord.ApplicationContext, channel: discord.TextChannel):
+        logger.info("starboard - setchannel - User: {}".format(ctx.author.name))
+        if ctx.author.guild_permissions.kick_members:
+            database.updateStarboardChannel(ctx.guild.id, channel.id)
+            await ctx.respond("Starboard channel set to {}".format(channel.name), ephemeral=True)
+        else:
+            await ctx.respond(ERROR_MSG, ephemeral=True)
 
     """
     =========
