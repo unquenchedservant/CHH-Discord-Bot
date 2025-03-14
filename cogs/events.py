@@ -3,11 +3,14 @@ import utilities
 from datetime import time, timezone, datetime
 from discord.ext import tasks
 from utilities import database
+from utilities.logging import logger
 import random
 
 if utilities.is_dev:
+    logger.info("is dev")
     BROADCAST_CHANNEL = 471397276468903936
 else:
+    logger.info("Is prod")
     BROADCAST_CHANNEL = 613469111682334762
 
 class Events(commands.Cog):
@@ -22,13 +25,13 @@ class Events(commands.Cog):
         current_month = datetime.now().month
         current_day = datetime.now().day
         birthday_ids = database.checkBirthday(current_month, current_day)
+        logger.info(birthday_ids)
         extra_int = random.randint(1,4)
-        msg = "We've got a birthday! Make sure to wish the following people a happy birthday:\n\n"
+        msg = "We've got a birthday! Make sure to wish the following people a happy birthday:\n"
         for id in birthday_ids:
             msg = msg + "<@" + str(id) + ">\n"
         channel_id = BROADCAST_CHANNEL 
-        
-        msg = msg + "\n\n Want a message for your birthday? Use `/birthday set`" 
+        msg = msg + "\nWant a message for your birthday? Use `/birthday set`" 
         channel = self.bot.get_channel(BROADCAST_CHANNEL)
         await channel.send(msg)
 
@@ -43,6 +46,7 @@ class Events(commands.Cog):
 
     @tasks.loop(time=time(18,16,tzinfo=timezone.utc))
     async def one_one_six(self):
+        logger.info("")
         current_month = datetime.now().month
         current_day = datetime.now().day
         if current_month == 1 and current_day == 16:

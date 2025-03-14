@@ -1,5 +1,5 @@
 import sqlite3
-
+from utilities.logging import logger
 """
 =========
 Starboard Table
@@ -272,9 +272,9 @@ def setBirthday(userid, month, day):
     cursor = conn.execute("SELECT * FROM birthdays WHERE USERID={}".format(userid))
     data = cursor.fetchall()
     if len(data) == 0:
-        sql = "INSERT INTO birthdays (USERID, MONTH, DAY, ACTIVE) VALUES ({},{},{}, 1)".format(userid, month, day)
+        sql = "INSERT INTO birthdays (USERID, MONTH, DAY, ACTIVE) VALUES ({},{},{},{})".format(userid, month, day, 1)
     else:
-        sql = "UPDATE birthdays SET MONTH={}, DAY={} WHERE USERID={}".format(month, day, userid) 
+        sql = "UPDATE birthdays SET MONTH={}, DAY={}, ACTIVE={} WHERE USERID={}".format(month, day, userid, 1) 
     conn.execute(sql)
     conn.commit()
     conn.close()
