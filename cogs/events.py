@@ -25,15 +25,14 @@ class Events(commands.Cog):
         current_month = datetime.now().month
         current_day = datetime.now().day
         birthday_ids = database.checkBirthday(current_month, current_day)
-        logger.info(birthday_ids)
-        extra_int = random.randint(1,4)
-        msg = "We've got a birthday! Make sure to wish the following people a happy birthday:\n"
-        for id in birthday_ids:
-            msg = msg + "<@" + str(id) + ">\n"
-        channel_id = BROADCAST_CHANNEL 
-        msg = msg + "\nWant a message for your birthday? Use `/birthday set`" 
-        channel = self.bot.get_channel(BROADCAST_CHANNEL)
-        await channel.send(msg)
+        logger.info("birthday check 2: {}".format(birthday_ids))
+        if not len(birthday_ids) == 0:
+            msg = "We've got a birthday! Make sure to wish the following people a happy birthday:\n"
+            for id in birthday_ids:
+                msg = msg + "<@" + str(id) + ">\n"
+            msg = msg + "\nWant a message for your birthday? Use `/birthday set`" 
+            channel = self.bot.get_channel(BROADCAST_CHANNEL)
+            await channel.send(msg)
 
     @tasks.loop(time=time(5,0,tzinfo=timezone.utc))
     async def daily_holiday_task(self):

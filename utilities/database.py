@@ -245,6 +245,7 @@ def checkBirthday(current_month, current_day):
     cursor = conn.execute("SELECT USERID, ACTIVE FROM birthdays WHERE MONTH={} AND DAY={}".format(current_month, current_day))
     data = cursor.fetchall()
     conn.close()
+    logger.info("Birthday check: {}".format(data))
     if len(data) == 0:
         return []
     else:
