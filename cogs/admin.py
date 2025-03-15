@@ -116,17 +116,17 @@ class Admin(commands.Cog):
             min_value=1,
             max_value=12,
             required=True,
-        ),
+        ), # type: ignore
         day: Option(
             int,
             "Enter the day(1-31) this holiday occurs",
             min_value=1,
             max_value=31,
             required=True,
-        ),
+        ), # type: ignore
         msg: Option(
             str, "What message would you like to send on this day", required=True
-        ),
+        ), # type: ignore
     ):
         logger.info("addholiday - User: {}".format(ctx.author.name))
         if ctx.author.guild_permissions.kick_members:
@@ -168,14 +168,14 @@ class Admin(commands.Cog):
             min_value=1,
             max_value=12,
             required=False,
-        ),
+        ), # type: ignore
         day: Option(
             int,
             "Enter the day (0-31) you'd like to check",
             min_value=1,
             max_value=31,
             required=False,
-        ),
+        ), # type: ignore
     ):
         logger.info("checkholiday - User: {}".format(ctx.author.name))
         if ctx.author.guild_permissions.kick_members:
@@ -230,14 +230,14 @@ class Admin(commands.Cog):
             min_value=1,
             max_value=12,
             required=True,
-        ),
+        ), # type: ignore
         day: Option(
             int,
             "Enter the day (1-31) this holiday occurs",
             min_value=1,
             max_value=31,
             required=True,
-        ),
+        ), # type: ignore
     ):
         logger.info("removeholiday - User: {}".format(ctx.author.name))
         if ctx.author.guild_permissions.kick_members:

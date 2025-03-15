@@ -250,7 +250,7 @@ def checkBirthday(current_month, current_day):
     else:
         birthday_ids = []
         for item in data:
-            if item[1] == 1:
+            if item[1] == 1 or item[1] == None:
                 birthday_ids.append(item[0])
         return birthday_ids
 
