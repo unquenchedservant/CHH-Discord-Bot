@@ -19,7 +19,7 @@ RULES_CHH_ID = 844989137551228978
 REPORT_DEV_ID = 957645821531258930
 REPORT_CHH_ID = 705532389744705616
 
-STARBOARD_ID = get_starboard_channel()
+STARBOARD_CHANNEL_ID = get_starboard_channel()
 SELF_PROMO_CHANNEL_ID = get_self_promo_id()
 GUILD_IDS = get_guild_ids()
 GUILD_ID = get_guild_id()
@@ -45,7 +45,7 @@ class ChannelIds():
         self.updateIds()
         
     def updateIds(self):
-        global STARBOARD_ID
+        global STARBOARD_CHANNEL_ID
         global SELF_PROMO_CHANNEL_ID
         global GUILD_IDS
         global GUILD_ID
@@ -53,7 +53,7 @@ class ChannelIds():
         global RULE_CHANNEL_ID
         global REPORT_CHANNEL_ID
         global ANNOUNCEMENTS_CHANNEL_ID
-        STARBOARD_ID = get_starboard_channel()
+        STARBOARD_CHANNEL_ID = get_starboard_channel()
         SELF_PROMO_CHANNEL_ID = get_self_promo_id()
         GUILD_IDS = get_guild_ids()
         ROLE_MENU_CHANNEL_ID = get_role_menu_id()

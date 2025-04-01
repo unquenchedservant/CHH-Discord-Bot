@@ -35,7 +35,7 @@ async def on_ready():
     logger.info("We have logged in as {0.user}".format(bot))
     conn = sqlite3.connect("chh.db")
     if not database.checkStarboardSettings(utilities.GUILD_ID):
-        database.addStarboardSettings(utilities.GUILD_ID, utilities.STARBOARD_ID, 5)
+        database.addStarboardSettings(utilities.GUILD_ID, utilities.STARBOARD_CHANNEL_ID, 5)
 
 @bot.event
 async def on_member_join(member):

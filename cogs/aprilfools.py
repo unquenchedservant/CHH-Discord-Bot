@@ -11,7 +11,7 @@ class AprilFools(commands.Cog):
     async def on_message(self, message):
         star = "⭐"
         excludedChannels = [utilities.STAFF_HELP_CHANNEL_ID, utilities.STAFF_CHANNEL_ID, utilities.STAFF_BOT_CHANNEL_ID, 
-        utilities.REPORT_CHANNEL_ID, utilities.STAFF_PARTNER_CHANNEL_ID, utilities.REDDIT_CHANNEL_ID, utilities.STARBOARD_ID, 
+        utilities.REPORT_CHANNEL_ID, utilities.STAFF_PARTNER_CHANNEL_ID, utilities.REDDIT_CHANNEL_ID, utilities.STARBOARD_CHANNEL_ID, 
         902769402573881375, utilities.BOT_COMMANDS_CHANNEL_ID, utilities.MOD_LOG_CHANNEL_ID, 705478446075215893, 
         utilities.ANNOUNCEMENTS_CHANNEL_ID, utilities.PARTNERS_CHANNEL_ID, utilities.ARTIST_ROLE_MENU_CHANNEL_ID, 776157426113970207, 
         utilities.RULE_CHANNEL_ID, utilities.WELCOME_CHANNEL_ID] #all excluded channels for guild in question
