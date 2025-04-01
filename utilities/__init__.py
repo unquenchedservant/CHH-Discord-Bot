@@ -1,6 +1,54 @@
 is_dev = False
 from utilities.logging import logger
 
+def get_announcements_channel_id():
+    if is_dev:
+        return 471397293229342781 
+    else:
+        return 613469111682334762
+        
+def get_guild_ids():
+    if is_dev:
+        return [DEV_GUILD_ID]
+    else:
+        return [CHH_GUILD_ID, DEV_GUILD_ID]
+    
+def get_guild_id():
+    if is_dev:
+        return DEV_GUILD_ID
+    else:
+        return CHH_GUILD_ID
+    
+def get_starboard_channel():
+    if is_dev:
+        return STARBOARD_DEV_ID
+    else:
+        return STARBOARD_CHH_ID
+    
+def get_self_promo_id():
+    if is_dev:
+        return SLFPRMO_DEV_ID
+    else:
+        return SLFPRMO_DEV_ID
+
+def get_role_menu_id():
+    if is_dev:
+        return ROLEMENU_DEV_ID
+    else:
+        return ROLEMENU_CHH_ID
+
+def get_rules_id():
+    if is_dev:
+        return RULES_DEV_ID
+    else:
+        return RULES_CHH_ID
+
+def get_admin_id():
+    if is_dev:
+        return REPORT_DEV_ID
+    else:
+        return REPORT_CHH_ID
+
 DEV_GUILD_ID = 365879579887534080
 CHH_GUILD_ID = 613464665661636648
 
@@ -62,52 +110,7 @@ class ChannelIds():
         ANNOUNCEMENTS_CHANNEL_ID = get_announcements_channel_id()
         GUILD_ID = get_guild_id()
     
-def get_announcements_channel_id():
-    if is_dev:
-        return 471397293229342781
-    else:
-        return 613469111682334762
-def get_guild_ids():
-    if is_dev:
-        return [DEV_GUILD_ID]
-    else:
-        return [CHH_GUILD_ID, DEV_GUILD_ID]
-    
-def get_guild_id():
-    if is_dev:
-        return DEV_GUILD_ID
-    else:
-        return CHH_GUILD_ID
-    
-def get_starboard_channel():
-    if is_dev:
-        return STARBOARD_DEV_ID
-    else:
-        return STARBOARD_CHH_ID
-    
-def get_self_promo_id():
-    if is_dev:
-        return SLFPRMO_DEV_ID
-    else:
-        return SLFPRMO_DEV_ID
 
-def get_role_menu_id():
-    if is_dev:
-        return ROLEMENU_DEV_ID
-    else:
-        return ROLEMENU_CHH_ID
-
-def get_rules_id():
-    if is_dev:
-        return RULES_DEV_ID
-    else:
-        return RULES_CHH_ID
-
-def get_admin_id():
-    if is_dev:
-        return REPORT_DEV_ID
-    else:
-        return REPORT_CHH_ID
 
 def set_is_dev(dev):
     global is_dev

@@ -66,6 +66,7 @@ if __name__ == "__main__":
         for extension in extensions:
             bot.load_extension(extension)
         token = get_env.discord_dev()
+        print(token)
         bot.run(token)
     else:
         utilities.set_is_dev(False)
@@ -73,4 +74,5 @@ if __name__ == "__main__":
         for extension in extensions:
             bot.load_extension(extension)
         token = get_env.discord_token()
+        print(token)
         bot.run(token)
