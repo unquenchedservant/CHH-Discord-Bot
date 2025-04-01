@@ -1,6 +1,7 @@
 from discord.ext import commands
 from datetime import date
-import random 
+import random
+import utilities
 
 class AprilFools(commands.Cog):
     def __init__(self, bot):
@@ -9,8 +10,12 @@ class AprilFools(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         star = "⭐"
-        excludedChannels = [909151861892866158,705463143882686564,685566940122447887, 705532389744705616, 832352549164154900, 700486332979609671, 786775284484669460, 902769402573881375, 702927203360571483, 705478973651419167, 705478446075215893, 613469111682334762, 797240025653051402, 616100468526940195, 776157426113970207, 844989137551228978, 613468039010320415] #all excluded channels for guild in question
-        if message.author != self.bot.user and message.guild.id == 613464665661636648:
+        excludedChannels = [utilities.STAFF_HELP_CHANNEL_ID, utilities.STAFF_CHANNEL_ID, utilities.STAFF_BOT_CHANNEL_ID, 
+        utilities.REPORT_CHANNEL_ID, utilities.STAFF_PARTNER_CHANNEL_ID, utilities.REDDIT_CHANNEL_ID, utilities.STARBOARD_ID, 
+        902769402573881375, utilities.BOT_COMMANDS_CHANNEL_ID, utilities.MOD_LOG_CHANNEL_ID, 705478446075215893, 
+        utilities.ANNOUNCEMENTS_CHANNEL_ID, utilities.PARTNERS_CHANNEL_ID, utilities.ARTIST_ROLE_MENU_CHANNEL_ID, 776157426113970207, 
+        utilities.RULE_CHANNEL_ID, utilities.WELCOME_CHANNEL_ID] #all excluded channels for guild in question
+        if message.author != self.bot.user and message.guild.id == utilities.CHH_GUILD_ID:
             if self.aprilFools(message) and not message.channel.id in excludedChannels:
                 #odds will be 20%. 
                 allowed = [3,8]

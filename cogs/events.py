@@ -6,13 +6,6 @@ from utilities import database
 from utilities.logging import logger
 import random
 
-if utilities.is_dev:
-    logger.info("is dev")
-    BROADCAST_CHANNEL = 471397276468903936
-else:
-    logger.info("Is prod")
-    BROADCAST_CHANNEL = 613469111682334762
-
 class Events(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -31,7 +24,7 @@ class Events(commands.Cog):
             for id in birthday_ids:
                 msg = msg + "<@" + str(id) + ">\n"
             msg = msg + "\nWant a message for your birthday? Use `/birthday set`" 
-            channel = self.bot.get_channel(BROADCAST_CHANNEL)
+            channel = self.bot.get_channel(utilities.ANNOUNCEMENTS_CHANNEL_ID)
             await channel.send(msg)
 
     @tasks.loop(time=time(5,0,tzinfo=timezone.utc))
@@ -40,7 +33,7 @@ class Events(commands.Cog):
         current_day = datetime.now().day
         holiday_message = database.checkHoliday(current_month, current_day)
         if holiday_message and not (current_month == 1 and current_day == 16):
-            channel = self.bot.get_channel(BROADCAST_CHANNEL)
+            channel = self.bot.get_channel(utilities.ANNOUNCEMENTS_CHANNEL_ID)
             await channel.send(holiday_message)
 
     @tasks.loop(time=time(18,16,tzinfo=timezone.utc))
@@ -49,7 +42,7 @@ class Events(commands.Cog):
         current_month = datetime.now().month
         current_day = datetime.now().day
         if current_month == 1 and current_day == 16:
-            channel = self.bot.get_channel(BROADCAST_CHANNEL)
+            channel = self.bot.get_channel(utilities.ANNOUNCEMENTS_CHANNEL_ID)
             msg = database.checkHoliday(1,16)
             if not msg:
                 msg = "LET ME HEAR YOU SHOUT 1 1 6!\n\n Happy 116 day, everyone!"

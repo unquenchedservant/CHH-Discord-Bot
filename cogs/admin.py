@@ -9,7 +9,6 @@ from utilities import database
 from utilities.logging import logger
 
 ERROR_MSG = "You need to be a mod or admin to use this command"
-GUILD_ID = utilities.get_guild_ids()
 
 
 
@@ -25,15 +24,15 @@ EXTENSIONS = [
 
 class Admin(commands.Cog):
 
-    starboardgrp = SlashCommandGroup(guild_ids=GUILD_ID, name="starboard", description="Starboard commands")
-    holidaygrp = SlashCommandGroup(guild_ids=GUILD_ID, name="holiday", description="Holiday commands")
-    rolememgrp = SlashCommandGroup(guild_ids=GUILD_ID, name="rolememory", description="Role Memory commands")
+    starboardgrp = SlashCommandGroup(guild_ids=utilities.GUILD_ID, name="starboard", description="Starboard commands")
+    holidaygrp = SlashCommandGroup(guild_ids=utilities.GUILD_ID, name="holiday", description="Holiday commands")
+    rolememgrp = SlashCommandGroup(guild_ids=utilities.GUILD_ID, name="rolememory", description="Role Memory commands")
 
     def __init__(self, bot):
         self.bot = bot
 
     @slash_command(
-        guild_ids=GUILD_ID,
+        guild_ids=utilities.GUILD_ID,
         default_permission=False,
         description="Used for reloading cogs during development")
     async def reload(self, ctx: discord.ApplicationContext):
@@ -48,7 +47,7 @@ class Admin(commands.Cog):
     =========
     """
 
-    @starboardgrp.command(guild_ids=GUILD_ID, name="threshold", default_permission=False,description="Set the threshold for the starboard")
+    @starboardgrp.command(guild_ids=utilities.GUILD_ID, name="threshold", default_permission=False,description="Set the threshold for the starboard")
     async def setthreshold(self, ctx: discord.ApplicationContext, threshold: int):
         logger.info("starboard - threshold - User: {}".format(ctx.author.name))
         if ctx.author.guild_permissions.kick_members:
@@ -57,7 +56,7 @@ class Admin(commands.Cog):
         else:
             await ctx.respond(ERROR_MSG, ephemeral=True)
 
-    @starboardgrp.command(guild_ids=GUILD_ID, name="channel", default_permission=False, description="Set the channel for the starboard")
+    @starboardgrp.command(guild_ids=utilities.GUILD_ID, name="channel", default_permission=False, description="Set the channel for the starboard")
     async def setchannel(self, ctx: discord.ApplicationContext, channel: discord.TextChannel):
         logger.info("starboard - setchannel - User: {}".format(ctx.author.name))
         if ctx.author.guild_permissions.kick_members:
@@ -71,7 +70,7 @@ class Admin(commands.Cog):
     Database Management
     =========
     
-    @slash_command(guild_ids=GUILD_ID, default_permission=False, description="Updates a database, assumes function modified")
+    @slash_command(guild_ids=utilities.GUILD_ID, default_permission=False, description="Updates a database, assumes function modified")
     async def updatedb(self, ctx: discord.ApplicationContext):
         database.updateDB()
         await ctx.respond("Updated DB", ephemeral=True)
@@ -80,7 +79,7 @@ class Admin(commands.Cog):
     =========
     Birthday Management
     =========
-    @slash_command(guild_ids=GUILD_ID, default_permission=False, description="To run through the database once and clear any inactive users")
+    @slash_command(guild_ids=utilities.GUILD_ID, default_permission=False, description="To run through the database once and clear any inactive users")
     async def clearbirthdays(self, ctx: discord.ApplicationContext):
         active_ids = []
         updated_ids = []
@@ -103,7 +102,7 @@ class Admin(commands.Cog):
     """
 
     @holidaygrp.command(
-        guild_ids=GUILD_ID,
+        guild_ids=utilities.GUILD_ID,
         default_permission=False,
         description="Used to add/update an automated holiday message",
     )
@@ -155,7 +154,7 @@ class Admin(commands.Cog):
             await ctx.respond(ERROR_MSG, ephemeral=True)
 
     @holidaygrp.command(
-        guild_ids=GUILD_ID,
+        guild_ids=utilities.GUILD_ID,
         default_permission=False,
         description="Check if a given holiday exists",
     )
@@ -217,7 +216,7 @@ class Admin(commands.Cog):
             await ctx.respond(ERROR_MSG, ephemeral=True)
 
     @holidaygrp.command(
-        guild_ids=GUILD_ID,
+        guild_ids=utilities.GUILD_ID,
         default_permission=False,
         description="Removes a given holiday from the automation",
     )
@@ -268,7 +267,7 @@ class Admin(commands.Cog):
     =========
     """
 
-    @rolememgrp.command(guild_ids=GUILD_ID, default_permission=False)
+    @rolememgrp.command(guild_ids=utilities.GUILD_ID, default_permission=False)
     async def toggle(self, ctx: discord.ApplicationContext):
         logger.info("togglerolememory - User: {}".format(ctx.author.name))
         if ctx.author.guild_permissions.kick_members:
@@ -283,7 +282,7 @@ class Admin(commands.Cog):
         else:
             await ctx.respond(ERROR_MSG, ephemeral=True)
 
-    @rolememgrp.command(guild_ids=GUILD_ID, default_permission=False)
+    @rolememgrp.command(guild_ids=utilities.GUILD_ID, default_permission=False)
     async def check(self, ctx: discord.ApplicationContext):
         logger.info("checkrolememory - User: {}".format(ctx.author.name))
         if ctx.author.guild_permissions.kick_members:

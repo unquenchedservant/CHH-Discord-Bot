@@ -8,18 +8,11 @@ from discord.ext import commands
 from utilities import database
 from utilities.logging import logger
 
-GUILD_ID = utilities.get_guild_ids()
-SELF_PROMO_CHANNEL = utilities.get_self_promo_id()
-ROLE_MENU_CHANNEL = utilities.get_role_menu_id()
-RULE_CHANNEL = utilities.get_rules_id()
-ADMIN_CHANNEL = utilities.get_admin_id()
-
-
 class SelfPromo(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @message_command(name="Mark Self-Promo", guild_ids=GUILD_ID)
+    @message_command(name="Mark Self-Promo", guild_ids=utilities.GUILD_ID)
     async def selfpromo(self, ctx, message: discord.Message):
         user = message.author
         if database.checkSelfPromoMsg(message.id):
@@ -74,7 +67,7 @@ class SelfPromo(commands.Cog):
             msg = (
                 msg
                 + " it looks like you're sharing self-promotion outside of <#"
-                + str(SELF_PROMO_CHANNEL)
+                + str(utilities.SELF_PROMO_CHANNEL_ID)
                 + ">!\n\n"
             )
             msg = (
@@ -84,9 +77,9 @@ class SelfPromo(commands.Cog):
             msg = (
                 msg
                 + "In the meantime, check out <#"
-                + str(ROLE_MENU_CHANNEL)
+                + str(utilities.ROLE_MENU_CHANNEL_ID)
                 + "> and assign yourself the Artist/Producer tag to unlock some extra channels. Please take a minute to check out our <#"
-                + str(RULE_CHANNEL)
+                + str(utilities.RULE_CHANNEL_ID)
                 + ">\n\n"
             )
             msg = (
@@ -116,7 +109,7 @@ class SelfPromo(commands.Cog):
             await report_channel.send(report_msg)
 
     @slash_command(
-        guild_ids=GUILD_ID,
+        guild_ids=utilities.GUILD_ID,
         default_permissions=True,
         description="Use this when someone posts self promotion, or if someone asks about self promotion",
     )
@@ -160,7 +153,7 @@ class SelfPromo(commands.Cog):
             msg = (
                 msg
                 + "it looks like you're sharing self-promotion outside of <#"
-                + str(SELF_PROMO_CHANNEL)
+                + str(utilities.SELF_PROMO_CHANNEL_ID)
                 + ">!\n\n"
             )
             msg = (
@@ -170,9 +163,9 @@ class SelfPromo(commands.Cog):
             msg = (
                 msg
                 + "In the meantime, check out <#"
-                + str(ROLE_MENU_CHANNEL)
+                + str(utilities.ROLE_MENU_CHANNEL_ID)
                 + "> and assign yourself the Artist/Producer tag to unlock some extra channels. Also, please take a minute to check out our <#"
-                + str(RULE_CHANNEL)
+                + str(utilities.RULE_CHANNEL_ID)
                 + ">\n\n"
             )
             msg = (
@@ -204,7 +197,7 @@ class SelfPromo(commands.Cog):
             logger.info("Self-Promo report (slash) - Reporter: {} | Reportee: N/A".format(ctx.author.name))
             msg = (
                 "Please only self-promote in <#"
-                + str(SELF_PROMO_CHANNEL)
+                + str(utilities.SELF_PROMO_CHANNEL_ID)
                 + ">!\n\n"
             )
             msg = (
@@ -214,9 +207,9 @@ class SelfPromo(commands.Cog):
             msg = (
                 msg
                 + "In the meantime, check out <#"
-                + str(ROLE_MENU_CHANNEL)
+                + str(utilities.ROLE_MENU_CHANNEL_ID)
                 + "> and assign yourself the Artist/Producer tag to unlock some extra channels. Please take a minute to check out our <#"
-                + str(RULE_CHANNEL)
+                + str(utilities.RULE_CHANNEL_ID)
                 + ">\n\n"
             )
             msg = (

@@ -48,8 +48,8 @@ class Starboard(commands.Cog):
             if payload.emoji.name == "⭐":
                 msg = await self.bot.get_channel(payload.channel_id).fetch_message(payload.message_id)
                 true_count = await self.get_true_count(msg)
-                if true_count >= database.getStarboardThreshold(utilities.get_guild_id()):
-                    starboard = self.bot.get_channel(utilities.get_starboard_channel())
+                if true_count >= database.getStarboardThreshold(utilities.GUILD_ID):
+                    starboard = self.bot.get_channel(utilities.STARBOARD_ID)
                     if not database.checkStarboard(payload.message_id):
                         embed = self.create_embed(msg, true_count)
                         strbrdmsg = await starboard.send(embed=embed)
@@ -57,7 +57,7 @@ class Starboard(commands.Cog):
                     else:
                         embed = self.create_embed(msg, true_count)
                         starboard_msg_id = database.getStarboardMessage(payload.message_id)
-                        starboard_msg = await self.bot.get_channel(utilities.get_starboard_channel()).fetch_message(starboard_msg_id)
+                        starboard_msg = await self.bot.get_channel(utilities.STARBOARD_ID).fetch_message(starboard_msg_id)
                         await starboard_msg.edit(embed=embed)
 
     # Listens for reactions being removed from messages, checks if it's a star, and if it is, verifies if it has enough stars to be posted to the starboad
@@ -72,24 +72,24 @@ class Starboard(commands.Cog):
                 logger.debug("Starboard - Reaction removed is a star")
                 msg = await self.bot.get_channel(payload.channel_id).fetch_message(payload.message_id)
                 true_count = await self.get_true_count(msg)
-                if true_count < database.getStarboardThreshold(utilities.get_guild_id()):
+                if true_count < database.getStarboardThreshold(utilities.GUILD_ID):
                     logger.info("Starboard - True count is less than threshold")
                     if database.checkStarboard(payload.message_id):
                         logger.debug("Starboard - Starboard entry exists")
                         starboard_msg_id = database.getStarboardMessage(payload.message_id)
-                        starboard_msg = await self.bot.get_channel(utilities.get_starboard_channel()).fetch_message(starboard_msg_id)
+                        starboard_msg = await self.bot.get_channel(utilities.STARBOARD_ID).fetch_message(starboard_msg_id)
                         await starboard_msg.delete()
                         database.removeStarboard(payload.message_id)
                         logger.info("Starboard - Starboard entry removed")
                 else:
                     embed = self.create_embed(msg, true_count)
                     starboard_msg_id = database.getStarboardMessage(payload.message_id)
-                    starboard_msg = await self.bot.get_channel(utilities.get_starboard_channel()).fetch_message(starboard_msg_id)
+                    starboard_msg = await self.bot.get_channel(utilities.STARBOARD_ID).fetch_message(starboard_msg_id)
                     await starboard_msg.edit(embed=embed)
                     logger.info("Starboard - Starboard message edited")
             if true_count == 0 and database.checkStarboard(payload.message_id):
                 starboard_msg_id = database.getStarboardMessage(payload.message_id)
-                starboard_msg = await self.bot.get_channel(utilities.get_starboard_channel()).fetch_message(starboard_msg_id)
+                starboard_msg = await self.bot.get_channel(utilities.STARBOARD_ID).fetch_message(starboard_msg_id)
                 await starboard_msg.delete()
                 database.removeStarboard(payload.message_id)
                 logger.info("Starboard - Starboard entry removed")

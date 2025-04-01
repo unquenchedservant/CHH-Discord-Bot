@@ -18,7 +18,7 @@ intents.reactions = True
 intents.messages = True
 
 bot = discord.Bot(
-    debug_guilds=[365879579887534080, 613464665661636648], owner_id=236394260553924608, intents=intents
+    debug_guilds=[utilities.DEV_GUILD_ID, utilities.CHH_GUILD_ID], owner_id=utilities.OWNER_ID, intents=intents
 )
 
 extensions = [
