@@ -115,6 +115,10 @@ class Starboard(commands.Cog):
                         await starboard_msg.delete()
                         database.removeStarboard(payload.message_id)
                         logger.info("Starboard - Starboard entry removed")
+                        if len(mod_count) > 0:
+                            modboard_embed = self.create_mod_embed(msg, mod_count[0])
+                            modboardMsg = await modboard.send(embed=modboard_embed)
+                            database.addModboard(payload.message_id, modboardMsg.id)
                 else:
                     embed = self.create_embed(msg, true_count)
                     starboard_msg_id = database.getStarboardMessage(payload.message_id)
