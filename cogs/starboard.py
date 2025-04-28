@@ -81,9 +81,15 @@ class Starboard(commands.Cog):
                     onModBoard = database.checkModboard(payload.message_id)
                     mod_count = await self.get_mod_count(msg)
                     if len(mod_count) > 0:
-                        modboard_embed = self.create_mod_embed(msg, mod_count[0])
-                        modboardMsg = await modboard.send(embed=modboard_embed)
-                        database.addModboard(payload.message_id, modboardMsg.id)
+                        if not onModBoard:
+                            modboard_embed = self.create_mod_embed(msg, len(mod_count))
+                            modboardMsg = await modboard.send(embed=modboard_embed)
+                            database.addModboard(payload.message_id, modboardMsg.id)
+                        else:
+                            modboard_embed = self.create_mod_embed(msg, len(mod_count))
+                            modboard_msg_id = database.getModboardMessage(payload.message_id)
+                            modboard_msg = await self.bot.get_channel(utilities.MODBOARD_CHANNEL_ID).fetch_message(modboard_msg_id)
+                            await modboard_msg.edit(embed=modboard_embed)
 
     # Listens for reactions being removed from messages, checks if it's a star, and if it is, verifies if it has enough stars to be posted to the starboad
     @commands.Cog.listener()
@@ -116,9 +122,15 @@ class Starboard(commands.Cog):
                         database.removeStarboard(payload.message_id)
                         logger.info("Starboard - Starboard entry removed")
                         if len(mod_count) > 0:
-                            modboard_embed = self.create_mod_embed(msg, mod_count[0])
-                            modboardMsg = await modboard.send(embed=modboard_embed)
-                            database.addModboard(payload.message_id, modboardMsg.id)
+                            if not onModBoard:
+                                modboard_embed = self.create_mod_embed(msg, len(mod_count))
+                                modboardMsg = await modboard.send(embed=modboard_embed)
+                                database.addModboard(payload.message_id, modboardMsg.id)
+                            else:
+                                modboard_embed = self.create_mod_embed(msg, len(mod_count))
+                                modboard_msg_id = database.getModboardMessage(payload.message_id)
+                                modboard_msg = await self.bot.get_channel(utilities.MODBOARD_CHANNEL_ID).fetch_message(modboard_msg_id)
+                                await modboard_msg.edit(embed=modboard_embed)
                 else:
                     embed = self.create_embed(msg, true_count)
                     starboard_msg_id = database.getStarboardMessage(payload.message_id)
@@ -165,7 +177,7 @@ class Starboard(commands.Cog):
         msg = msg + "\n\n[⤴️ Go to message]({})".format(message.jump_url)
         utcdate = message.created_at.timestamp()
         utcdate = int(str(utcdate).split(".")[0])
-        footer = "Originally ⭐ by {} in #{}".format(user,message.channel.name, utcdate)
+        footer = "⭐ by {} mods in #{}".format(user,message.channel.name, utcdate)
         embed = discord.Embed(description=msg)
         title = ""
         if authorName == authorUser:
