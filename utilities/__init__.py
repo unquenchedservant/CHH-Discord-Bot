@@ -1,6 +1,8 @@
 is_dev = False
 from utilities.logging import logger
 
+
+
 def get_announcements_channel_id():
     if is_dev:
         return 471397293229342781 
@@ -25,6 +27,14 @@ def get_starboard_channel():
     else:
         return STARBOARD_CHH_ID
     
+def get_modboard_channel():
+    if is_dev:
+        print("IS DEV")
+        return MODBOARD_DEV_ID
+    else:
+        print("IS NOT DEV")
+        return MODBOARD_CHH_ID
+
 def get_self_promo_id():
     if is_dev:
         return SLFPRMO_DEV_ID
@@ -52,6 +62,9 @@ def get_admin_id():
 DEV_GUILD_ID = 365879579887534080
 CHH_GUILD_ID = 613464665661636648
 
+MODBOARD_DEV_ID = 1366483066494914634
+MODBOARD_CHH_ID = 1366482618140459170
+
 STARBOARD_DEV_ID = 1347392583050985612
 STARBOARD_CHH_ID = 786775284484669460
 
@@ -67,6 +80,7 @@ RULES_CHH_ID = 844989137551228978
 REPORT_DEV_ID = 957645821531258930
 REPORT_CHH_ID = 705532389744705616
 
+MODBOARD_CHANNEL_ID = get_modboard_channel()
 STARBOARD_CHANNEL_ID = get_starboard_channel()
 SELF_PROMO_CHANNEL_ID = get_self_promo_id()
 GUILD_IDS = get_guild_ids()
@@ -94,6 +108,7 @@ class ChannelIds():
         
     def updateIds(self):
         global STARBOARD_CHANNEL_ID
+        global MODBOARD_CHANNEL_ID
         global SELF_PROMO_CHANNEL_ID
         global GUILD_IDS
         global GUILD_ID
@@ -101,6 +116,7 @@ class ChannelIds():
         global RULE_CHANNEL_ID
         global REPORT_CHANNEL_ID
         global ANNOUNCEMENTS_CHANNEL_ID
+        MODBOARD_CHANNEL_ID = get_modboard_channel()
         STARBOARD_CHANNEL_ID = get_starboard_channel()
         SELF_PROMO_CHANNEL_ID = get_self_promo_id()
         GUILD_IDS = get_guild_ids()
