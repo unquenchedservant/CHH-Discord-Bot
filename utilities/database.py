@@ -2,6 +2,62 @@ import sqlite3
 from utilities.logging import logger
 """
 =========
+Modboard Table
+=========
+"""
+def checkModboardTable(conn):
+    conn.execute('''CREATE TABLE IF NOT EXISTS modboard
+                    (MSGID INT NOT NULL,
+                    MODBOARDMSGID INT NOT NULL)''')
+    conn.commit()
+
+def removeModboardTable():
+    conn = sqlite3.connect("chh.db")
+    conn.execute("DROP TABLE modboard")
+    conn.commit()
+    conn.close()
+
+def checkModboard(msgID):
+    conn = sqlite3.connect("chh.db")
+    checkModboardTable(conn)
+    cursor = conn.execute("SELECT * FROM modboard WHERE MSGID={}".format(msgID))
+    data = cursor.fetchall()
+    conn.close()
+    if len(data) == 0:
+        return False
+    else:
+        return True
+
+def addModboard(msgId, modboardMsgID):
+    conn = sqlite3.connect("chh.db")
+    checkModboardTable(conn)
+    sql = "INSERT INTO modboard (MSGID, MODBOARDMSGID) VALUES ({},{})".format(msgId, modboardMsgID)
+    conn.execute(sql)
+    conn.close()
+
+def getModboardMessage(msgID):
+    conn = sqlite3.connect("chh.db")
+    checkModboardTable(conn)
+    cursor = conn.execute("SELECT MODBOARDMSGID FROM modboard WHERE MSGID={}".format(msgID))
+    data = cursor.fetchall()
+    conn.close()
+    return data[0][0]
+
+def updateModboard(msgID, modboardMsgID):
+    conn = sqlite3.connect("chh.db")
+    checkModboardTable(conn)
+    conn.execute("UPDATE modboard SET MODBOARDMSGID={} WHERE MSGID={}".format(modboardMsgID, msgID))
+    conn.commit()
+    conn.close()
+
+def removeModboard(msgID):
+    conn = sqlite3.connect("chh.db")
+    checkModboardTable(conn)
+    conn.execute("DELETE FROM modboard WHERE MSGID={}".format(msgID))
+    conn.commit()
+    conn.close()
+"""
+=========
 Starboard Table
 =========
 """
