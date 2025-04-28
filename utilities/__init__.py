@@ -1,6 +1,12 @@
 is_dev = False
 from utilities.logging import logger
 
+def get_modboard_channel():
+    if is_dev:
+        return 1366483066494914634
+    else:
+        return 1366482618140459170
+
 def get_announcements_channel_id():
     if is_dev:
         return 471397293229342781 
@@ -67,6 +73,7 @@ RULES_CHH_ID = 844989137551228978
 REPORT_DEV_ID = 957645821531258930
 REPORT_CHH_ID = 705532389744705616
 
+MODBOARD_CHANNEL_ID = get_modboard_channel()
 STARBOARD_CHANNEL_ID = get_starboard_channel()
 SELF_PROMO_CHANNEL_ID = get_self_promo_id()
 GUILD_IDS = get_guild_ids()
