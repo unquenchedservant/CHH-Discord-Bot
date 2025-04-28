@@ -29,10 +29,8 @@ def get_starboard_channel():
     
 def get_modboard_channel():
     if is_dev:
-        print("IS DEV")
         return MODBOARD_DEV_ID
     else:
-        print("IS NOT DEV")
         return MODBOARD_CHH_ID
 
 def get_self_promo_id():

@@ -22,7 +22,6 @@ def checkModboard(msgID):
     checkModboardTable(conn)
     cursor = conn.execute("SELECT * FROM modboard WHERE MSGID={}".format(msgID))
     data = cursor.fetchall()
-    print(data)
     conn.close()
     if len(data) == 0:
         return False
