@@ -121,6 +121,10 @@ class Starboard(commands.Cog):
                         await starboard_msg.delete()
                         database.removeStarboard(payload.message_id)
                         logger.info("Starboard - Starboard entry removed")
+                        modboard_channel_id = utilities.MODBOARD_CHANNEL_ID
+                        modboard = self.bot.get_channel(modboard_channel_id)
+                        onModBoard = database.checkModboard(payload.message_id)
+                        mod_count = await self.get_mod_count(msg)
                         if len(mod_count) > 0:
                             print(len(mod_count))
                             if not onModBoard:
