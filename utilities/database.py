@@ -34,6 +34,7 @@ def addModboard(msgId, modboardMsgID):
     checkModboardTable(conn)
     sql = "INSERT INTO modboard (MSGID, MODBOARDMSGID) VALUES ({},{})".format(msgId, modboardMsgID)
     conn.execute(sql)
+    conn.commit()
     conn.close()
 
 def getModboardMessage(msgID):
