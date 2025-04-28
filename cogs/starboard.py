@@ -30,6 +30,7 @@ class Starboard(commands.Cog):
                     if user.guild_permissions.manage_channels:
                         if not user.id == msg.author.id:
                             payload.append(user)
+        print(len(payload))
         return payload
 
     # Get the true count of stars on a message (ignores bot reactions and the user who posted the message)
