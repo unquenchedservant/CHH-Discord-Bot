@@ -30,7 +30,6 @@ class Starboard(commands.Cog):
                     if user.guild_permissions.manage_channels:
                         if not user.id == msg.author.id:
                             payload.append(user)
-        print(len(payload))
         return payload
 
     # Get the true count of stars on a message (ignores bot reactions and the user who posted the message)
@@ -179,7 +178,7 @@ class Starboard(commands.Cog):
         msg = msg + "\n\n[⤴️ Go to message]({})".format(message.jump_url)
         utcdate = message.created_at.timestamp()
         utcdate = int(str(utcdate).split(".")[0])
-        footer = "⭐ by {} mods in #{}".format(user,message.channel.name, utcdate)
+        footer = "⭐ by {} mod(s) in #{}".format(user,message.channel.name)
         embed = discord.Embed(description=msg)
         title = ""
         if authorName == authorUser:
