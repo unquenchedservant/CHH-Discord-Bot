@@ -37,7 +37,7 @@ def get_self_promo_id():
     if is_dev:
         return SLFPRMO_DEV_ID
     else:
-        return SLFPRMO_DEV_ID
+        return SLFPRMO_CHH_ID
 
 def get_role_menu_id():
     if is_dev:
