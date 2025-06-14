@@ -1,6 +1,52 @@
 import sqlite3
 from utilities.logging import logger
+
 DB="chh.db"
+"""
+=========
+Archival Table
+=========
+"""
+def checkArchivalTable(conn):
+    conn.execute('''CREATE TABLE IF NOT EXISTS archival
+                 (CHANNELID INT NOT NULL,
+                 MONTH INT NOT NULL,
+                 DAY INT NOT NULL)''')
+    conn.commit()
+
+def removeArchivalTable():
+    conn = sqlite3.connect(DB)
+    conn.execute("DROP TABLE archival")
+    conn.commit()
+    conn.close()
+
+def getArchival(month, day):
+    conn = sqlite3.connect(DB)
+    checkArchivalTable(conn)
+    cursor = conn.execute("SELECT CHANNELID FROM modboard WHERE MONTH={} AND DAY={}".format(month,day))
+    data = cursor.fetchall()
+    conn.close()
+    if len(data) == 0:
+        return False
+    else:
+        return data
+
+def setArchival(channelId,month,day):
+    conn = sqlite3.connect(DB)
+    checkArchivalTable(conn)
+    sql = "INSERT INTO archival (CHANNELID,MONTH,DAY) VALUES ({},{},{})".format(channelId, month, day)
+    conn.execute(sql)
+    conn.commit()
+    conn.close()
+
+def removeArchival(channelId):
+    conn = sqlite3.connect(DB)
+    checkArchivalTable(conn)
+    conn.execute("DELETE FROM archival WHERE CHANNELID={}".format(channelId))
+    conn.commit()
+    conn.close()
+
+
 """
 =========
 Modboard Table
