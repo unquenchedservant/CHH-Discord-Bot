@@ -15,6 +15,31 @@ class Events(commands.Cog):
 
     @tasks.loop(time=time(13, 0, tzinfo=timezone.utc))
     async def daily_birthday_task(self):
+        """
+        A scheduled task that runs daily at 13:00 UTC (08:00 ET) to check for birthdays.
+
+        This task queries the database for users whose birthdays match the current
+        date (month and day). If any birthdays are found, it constructs a message
+        tagging the users and sends it to the announcements channel.
+
+        Steps:
+        1. Retrieve the current month and day.
+        2. Query the database for user IDs with birthdays on the current date.
+        3. If birthdays are found:
+           - Construct a message tagging the users.
+           - Append a note encouraging others to set their birthdays.
+           - Send the message to the announcements channel.
+
+        Notes:
+        - The announcements channel ID is retrieved from the `utilities` module.
+        - The task logs the list of user IDs found for debugging purposes.
+
+        Exceptions:
+        - Any exceptions during the database query or message sending will propagate.
+
+        Returns:
+        None
+        """
         current_month = datetime.now().month
         current_day = datetime.now().day
         birthday_ids = database.checkBirthday(current_month, current_day)
@@ -29,6 +54,29 @@ class Events(commands.Cog):
 
     @tasks.loop(time=time(5,0,tzinfo=timezone.utc))
     async def daily_holiday_task(self):
+        """
+        A scheduled task that runs daily at 05:00 UTC (00:00 ET) to check for holidays.
+
+        This task queries the database for holidays that match the current
+        date (month and day). If a holiday message is found, it sends the
+        message to the announcements channel, except on January 16th.
+
+        Steps:
+        1. Retrieve the current month and day.
+        2. Query the database for a holiday message corresponding to the current date.
+        3. If a holiday message is found and the date is not January 16th:
+           - Send the holiday message to the announcements channel.
+
+        Notes:
+        - The announcements channel ID is retrieved from the `utilities` module.
+        - January 16th is excluded because it is handled by the `one_one_six` task.
+
+        Exceptions:
+        - Any exceptions during the database query or message sending will propagate.
+
+        Returns:
+        None
+        """
         current_month = datetime.now().month
         current_day = datetime.now().day
         holiday_message = database.checkHoliday(current_month, current_day)
@@ -38,6 +86,31 @@ class Events(commands.Cog):
 
     @tasks.loop(time=time(18,16,tzinfo=timezone.utc))
     async def one_one_six(self):
+        """
+        A scheduled task that runs daily at 18:16 UTC (13:16 ET) to celebrate January 16th (1/16).
+
+        This task checks if the current date is January 16th. If it is, it retrieves
+        a holiday message for January 16th from the database. If no message is found,
+        it sends a default celebratory message to the announcements channel.
+
+        Steps:
+        1. Retrieve the current month and day.
+        2. Check if the current date is January 16th.
+        3. If it is January 16th:
+           - Query the database for a holiday message for January 16th.
+           - If no message is found, use a default celebratory message.
+           - Send the message to the announcements channel.
+
+        Notes:
+        - The announcements channel ID is retrieved from the `utilities` module.
+        - This task is specifically designed to handle January 16th celebrations.
+
+        Exceptions:
+        - Any exceptions during the database query or message sending will propagate.
+
+        Returns:
+        None
+        """
         logger.info("")
         current_month = datetime.now().month
         current_day = datetime.now().day
