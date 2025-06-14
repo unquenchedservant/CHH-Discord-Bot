@@ -5,7 +5,7 @@ import utilities
 from discord.commands import Option, slash_command
 from discord.ext import commands
 from discord import SlashCommandGroup
-from utilities import database
+from utilities.database import Holiday, StarboardSettings, RoleMemory
 from utilities.logging import logger
 
 ERROR_MSG = "You need to be a mod or admin to use this command"
@@ -30,6 +30,9 @@ class Admin(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.starboard_settings = StarboardSettings()
+        self.holiday = Holiday()
+        self.rolememory = RoleMemory()
 
     @slash_command(
         guild_ids=utilities.GUILD_ID,
@@ -51,7 +54,7 @@ class Admin(commands.Cog):
     async def setthreshold(self, ctx: discord.ApplicationContext, threshold: int):
         logger.info("starboard - threshold - User: {}".format(ctx.author.name))
         if ctx.author.guild_permissions.kick_members:
-            database.updateStarboardThreshold(ctx.guild.id, threshold)
+            self.starboard_settings.update_threshold(ctx.guild.id, threshold)
             await ctx.respond("Starboard threshold set to {}".format(threshold), ephemeral=True)
         else:
             await ctx.respond(ERROR_MSG, ephemeral=True)
@@ -60,41 +63,11 @@ class Admin(commands.Cog):
     async def setchannel(self, ctx: discord.ApplicationContext, channel: discord.TextChannel):
         logger.info("starboard - setchannel - User: {}".format(ctx.author.name))
         if ctx.author.guild_permissions.kick_members:
-            database.updateStarboardChannel(ctx.guild.id, channel.id)
+            self.starboard_settings.update_channel(ctx.guild.id, channel.id)
             await ctx.respond("Starboard channel set to {}".format(channel.name), ephemeral=True)
         else:
             await ctx.respond(ERROR_MSG, ephemeral=True)
 
-    """
-    =========
-    Database Management
-    =========
-    
-    @slash_command(guild_ids=utilities.GUILD_ID, default_permission=False, description="Updates a database, assumes function modified")
-    async def updatedb(self, ctx: discord.ApplicationContext):
-        database.updateDB()
-        await ctx.respond("Updated DB", ephemeral=True)
-    """
-    """
-    =========
-    Birthday Management
-    =========
-    @slash_command(guild_ids=utilities.GUILD_ID, default_permission=False, description="To run through the database once and clear any inactive users")
-    async def clearbirthdays(self, ctx: discord.ApplicationContext):
-        active_ids = []
-        updated_ids = []
-        response = ""
-        for guild in self.bot.guilds:
-            if guild.id == GUILD_ID[0]:
-                for member in guild.members:
-                    active_ids.append(member.id)
-        all_ids = database.getBirthdays()
-        for ind_id in all_ids:
-            if not ind_id in active_ids:
-                database.setBirthdayActive(False, ind_id)
-                response = response + ind_id + "\n"
-        ctx.respond("Set the following IDs to inactive:\n\n" + response, ephemeral=True)
-    """
     """
     =========
     Holiday Management
@@ -138,7 +111,7 @@ class Admin(commands.Cog):
             elif not msg:
                 await ctx.respond("Please enter a holiday message", ephemeral=True)
             else:
-                updated = database.addHoliday(month, day, msg)
+                updated = self.holiday.add(month, day, msg)
                 month = utilities.zero_leading(month)
                 day = utilities.zero_leading(day)
                 if updated:
@@ -182,7 +155,7 @@ class Admin(commands.Cog):
                 logger.info("checkholidays - User: {}".format(ctx.author.name))
                 if ctx.author.guild_permissions.kick_members:
                     msg = ""
-                    holidays = database.checkHolidays()
+                    holidays = self.holiday.check_multi()
                     if len(holidays) == 0:
                         msg = "No holidays set"
                     else:
@@ -201,7 +174,7 @@ class Admin(commands.Cog):
             elif not day:
                 await ctx.respond("Please enter the holiday day (1-31)", ephemeral=True)
             else:
-                msg = database.checkHoliday(month, day)
+                msg = self.holiday.check(month, day)
                 if msg == 0:
                     await ctx.respond("There is no holiday on that day", ephemeral=True)
                 else:
@@ -211,7 +184,7 @@ class Admin(commands.Cog):
                         "The message for {}/{} is : {}".format(month, day, msg),
                         ephemeral=True,
                     )
-            msg = database.checkHoliday(month, day)
+            msg = self.holiday.checkHoliday(month, day)
         else:
             await ctx.respond(ERROR_MSG, ephemeral=True)
 
@@ -247,7 +220,7 @@ class Admin(commands.Cog):
             elif not day:
                 await ctx.respond("Please enter the holiday day (1-31)", ephemeral=True)
             else:
-                status = database.removeHoliday(month, day)
+                status = self.holiday.remove(month, day)
                 if status == 1:
                     month = utilities.zero_leading(month)
                     day = utilities.zero_leading(day)
@@ -271,13 +244,13 @@ class Admin(commands.Cog):
     async def toggle(self, ctx: discord.ApplicationContext):
         logger.info("togglerolememory - User: {}".format(ctx.author.name))
         if ctx.author.guild_permissions.kick_members:
-            status = database.checkRoleMemory(ctx.guild.id)
+            status = self.rolememory.check(ctx.guild.id)
             msg = ""
             if status == 1:
                 msg = "Role memory has been turned off for this server"
             if status == 0:
                 msg = "Role memory has been turned on for this server"
-            database.toggleRoleMemory(ctx.guild.id)
+            self.rolememory.toggle(ctx.guild.id)
             await ctx.respond(msg, ephemeral=True)
         else:
             await ctx.respond(ERROR_MSG, ephemeral=True)
@@ -286,7 +259,7 @@ class Admin(commands.Cog):
     async def check(self, ctx: discord.ApplicationContext):
         logger.info("checkrolememory - User: {}".format(ctx.author.name))
         if ctx.author.guild_permissions.kick_members:
-            status = database.checkRoleMemory(ctx.guild.id)
+            status = self.rolememory.check(ctx.guild.id)
             msg = ""
             if status == 1:
                 msg = "Role memory is turned on on this server"

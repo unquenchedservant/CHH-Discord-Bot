@@ -25,7 +25,7 @@ class Database:
     def close(self):
         self.connection.close()
 
-class StarboardTable(Database):
+class StarboardDB(Database):
     def __init__(self):
         super().__init__()
         self.create()

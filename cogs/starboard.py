@@ -1,7 +1,7 @@
 from discord.ext import commands
 import utilities
 from utilities.logging import logger
-from utilities import database
+from utilities.database import StarboardDB, Modboard, StarboardSettings
 import discord
 import pytz
 import asyncio
@@ -20,6 +20,9 @@ class Starboard(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.lock = asyncio.Lock()
+        self.starboard_db = StarboardDB()
+        self.modboard = Modboard()
+        self.starboard_settings = StarboardSettings()
 
     async def get_mod_count(self, msg):
         payload = []
@@ -58,36 +61,36 @@ class Starboard(commands.Cog):
             if payload.emoji.name == "⭐":
                 msg = await self.bot.get_channel(payload.channel_id).fetch_message(payload.message_id)
                 true_count = await self.get_true_count(msg)
-                onModBoard = database.checkModboard(payload.message_id)
-                if true_count >= database.getStarboardThreshold(utilities.GUILD_ID):
+                onModBoard = self.modboard.check(payload.message_id)
+                if true_count >= self.starboard_settings.get_threshold(utilities.GUILD_ID):
                     if onModBoard:
-                        modboardID = database.getModboardMessage(payload.message_id)
+                        modboardID = self.modboard.get(payload.message_id)
                         modboardMSG = await self.bot.get_channel(utilities.MODBOARD_CHANNEL_ID).fetch_message(modboardID)
                         await modboardMSG.delete()
-                        database.removeModboard(payload.message_id)
+                        self.modboard.remove(payload.message_id)
                     starboard = self.bot.get_channel(utilities.STARBOARD_CHANNEL_ID)
-                    if not database.checkStarboard(payload.message_id):
+                    if not self.starboard_db.check(payload.message_id):
                         embed = self.create_embed(msg, true_count)
                         strbrdmsg = await starboard.send(embed=embed)
-                        database.addStarboard(payload.message_id, strbrdmsg.id)
+                        self.starboard_db.add(payload.message_id, strbrdmsg.id)
                     else:
                         embed = self.create_embed(msg, true_count)
-                        starboard_msg_id = database.getStarboardMessage(payload.message_id)
+                        starboard_msg_id = self.starboard_db.get(payload.message_id)
                         starboard_msg = await self.bot.get_channel(utilities.STARBOARD_CHANNEL_ID).fetch_message(starboard_msg_id)
                         await starboard_msg.edit(embed=embed)
                 else:
                     modboard_channel_id = utilities.MODBOARD_CHANNEL_ID
                     modboard = self.bot.get_channel(modboard_channel_id)
-                    onModBoard = database.checkModboard(payload.message_id)
+                    onModBoard = self.modboard.check(payload.message_id)
                     mod_count = await self.get_mod_count(msg)
                     if len(mod_count) > 0:
                         if not onModBoard:
                             modboard_embed = self.create_mod_embed(msg, len(mod_count))
                             modboardMsg = await modboard.send(embed=modboard_embed)
-                            database.addModboard(payload.message_id, modboardMsg.id)
+                            self.modboard.add(payload.message_id, modboardMsg.id)
                         else:
                             modboard_embed = self.create_mod_embed(msg, len(mod_count))
-                            modboard_msg_id = database.getModboardMessage(payload.message_id)
+                            modboard_msg_id = self.modboard.get(payload.message_id)
                             modboard_msg = await self.bot.get_channel(utilities.MODBOARD_CHANNEL_ID).fetch_message(modboard_msg_id)
                             await modboard_msg.edit(embed=modboard_embed)
 
@@ -104,48 +107,48 @@ class Starboard(commands.Cog):
                 msg = await self.bot.get_channel(payload.channel_id).fetch_message(payload.message_id)
                 modboard_channel_id = utilities.MODBOARD_CHANNEL_ID
                 modboard = self.bot.get_channel(modboard_channel_id)
-                onModBoard = database.checkModboard(payload.message_id)
+                onModBoard = self.modboard.check(payload.message_id)
                 mod_count = await self.get_mod_count(msg)
                 if len(mod_count) == 0:
-                    modboardID = database.getModboardMessage(payload.message_id)
+                    modboardID = self.modboard.get(payload.message_id)
                     modboardMSG = await self.bot.get_channel(utilities.MODBOARD_CHANNEL_ID).fetch_message(modboardID)
                     await modboardMSG.delete()
-                    database.removeModboard(payload.message_id)
+                    self.modboard.remove(payload.message_id)
                 true_count = await self.get_true_count(msg)
-                if true_count < database.getStarboardThreshold(utilities.GUILD_ID):
+                if true_count < self.starboard_settings.get_threshold(utilities.GUILD_ID):
                     logger.info("Starboard - True count is less than threshold")
-                    if database.checkStarboard(payload.message_id):
+                    if self.starboard_db.check(payload.message_id):
                         logger.debug("Starboard - Starboard entry exists")
-                        starboard_msg_id = database.getStarboardMessage(payload.message_id)
+                        starboard_msg_id = self.starboard_db.get(payload.message_id)
                         starboard_msg = await self.bot.get_channel(utilities.STARBOARD_CHANNEL_ID).fetch_message(starboard_msg_id)
                         await starboard_msg.delete()
-                        database.removeStarboard(payload.message_id)
+                        self.starboard_db.remove(payload.message_id)
                         logger.info("Starboard - Starboard entry removed")
                     modboard_channel_id = utilities.MODBOARD_CHANNEL_ID
                     modboard = self.bot.get_channel(modboard_channel_id)
-                    onModBoard = database.checkModboard(payload.message_id)
+                    onModBoard = self.modboard.check(payload.message_id)
                     mod_count = await self.get_mod_count(msg)
                     if len(mod_count) > 0:
                         if not onModBoard:
                             modboard_embed = self.create_mod_embed(msg, len(mod_count))
                             modboardMsg = await modboard.send(embed=modboard_embed)
-                            database.addModboard(payload.message_id, modboardMsg.id)
+                            self.modboard.add(payload.message_id, modboardMsg.id)
                         else:
                             modboard_embed = self.create_mod_embed(msg, len(mod_count))
-                            modboard_msg_id = database.getModboardMessage(payload.message_id)
+                            modboard_msg_id = self.modboard.get(payload.message_id)
                             modboard_msg = await self.bot.get_channel(utilities.MODBOARD_CHANNEL_ID).fetch_message(modboard_msg_id)
                             await modboard_msg.edit(embed=modboard_embed)
                 else:
                     embed = self.create_embed(msg, true_count)
-                    starboard_msg_id = database.getStarboardMessage(payload.message_id)
+                    starboard_msg_id = self.starboard_db.get(payload.message_id)
                     starboard_msg = await self.bot.get_channel(utilities.STARBOARD_CHANNEL_ID).fetch_message(starboard_msg_id)
                     await starboard_msg.edit(embed=embed)
                     logger.info("Starboard - Starboard message edited")
-            if true_count == 0 and database.checkStarboard(payload.message_id):
-                starboard_msg_id = database.getStarboardMessage(payload.message_id)
+            if true_count == 0 and self.starboard_db.check(payload.message_id):
+                starboard_msg_id = self.starboard_db.get(payload.message_id)
                 starboard_msg = await self.bot.get_channel(utilities.STARBOARD_CHANNEL_ID).fetch_message(starboard_msg_id)
                 await starboard_msg.delete()
-                database.removeStarboard(payload.message_id)
+                self.starboard_db.remove(payload.message_id)
                 logger.info("Starboard - Starboard entry removed")
 
     # Creates the embed for the starboard message based on most up to date information. 

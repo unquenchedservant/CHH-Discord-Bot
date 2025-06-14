@@ -3,13 +3,16 @@ import utilities
 from datetime import time, timezone, datetime
 from dateutil.relativedelta import relativedelta
 from discord.ext import tasks
-from utilities import database
+from utilities.database import Birthday, Holiday, Archival
 from utilities.logging import logger
 import random
 
 class Events(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.birthday = Birthday()
+        self.holiday = Holiday()
+
         self.daily_birthday_task.start()
         self.daily_holiday_task.start()
         self.one_one_six.start()
@@ -49,7 +52,7 @@ class Events(commands.Cog):
         """
         current_month = datetime.now().month
         current_day = datetime.now().day
-        birthday_ids = database.checkBirthday(current_month, current_day)
+        birthday_ids = self.birthday.check(current_month, current_day)
         logger.info("birthday check 2: {}".format(birthday_ids))
         if not len(birthday_ids) == 0:
             msg = "We've got a birthday! Make sure to wish the following people a happy birthday:\n"
@@ -86,7 +89,7 @@ class Events(commands.Cog):
         """
         current_month = datetime.now().month
         current_day = datetime.now().day
-        holiday_message = database.checkHoliday(current_month, current_day)
+        holiday_message = self.holiday.check(current_month, current_day)
         if holiday_message and not (current_month == 1 and current_day == 16):
             channel = self.bot.get_channel(utilities.ANNOUNCEMENTS_CHANNEL_ID)
             await channel.send(holiday_message)
@@ -123,7 +126,7 @@ class Events(commands.Cog):
         current_day = datetime.now().day
         if current_month == 1 and current_day == 16:
             channel = self.bot.get_channel(utilities.ANNOUNCEMENTS_CHANNEL_ID)
-            msg = database.checkHoliday(1,16)
+            msg = self.holiday.check(1,16)
             if not msg:
                 msg = "LET ME HEAR YOU SHOUT 1 1 6!\n\n Happy 116 day, everyone!"
             await channel.send(msg)

@@ -4,7 +4,7 @@ from discord.commands import Option
 from discord import option
 from discord.ext import commands
 from discord import SlashCommandGroup
-from utilities import database
+from utilities.database import Birthday
 import utilities
 from datetime import time, timezone, datetime
 from discord.ext import tasks
@@ -15,6 +15,7 @@ class Birthdays(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.birthday = Birthday()
 
     @birthdaygrp.command(guild_ids=utilities.GUILD_ID, description="Set your birthday on the server to get a shout-out!")    
     async def set(
@@ -29,13 +30,13 @@ class Birthdays(commands.Cog):
         elif not day:
             await ctx.respond("Please enter your birth date (1-31)")
         else:
-            database.setBirthday(ctx.author.id, month, day) 
+            self.birthday.set(ctx.author.id, month, day) 
             await ctx.respond("Your birthday has been set successfully", ephemeral=True)
 
     @birthdaygrp.command(guild_ids=utilities.GUILD_ID, description="Check to make sure you have your birthday set correctly")
     async def check(self, ctx: discord.ApplicationContext):
         logger.info("check birthday - User: {}".format(ctx.author.name))
-        birthday = database.getBirthday(ctx.author.id)
+        birthday = self.birthday.get(ctx.author.id)
         if birthday == [0, 0]:
             await ctx.respond("You do not have a birthday set, use `/setbirthday` to do so", ephemeral=True)
         else:
@@ -44,7 +45,7 @@ class Birthdays(commands.Cog):
     @birthdaygrp.command(guild_ids=utilities.GUILD_ID, description="Removes you from our birthday list")
     async def remove(self, ctx: discord.ApplicationContext):
         logger.info("remove birthday - User: {}".format(ctx.author.name))
-        database.removeBirthday(ctx.author.id)
+        self.birthday.remove(ctx.author.id)
         await ctx.respond("Your birthday has been removed successfully", ephemeral=True)
         
 def setup(bot):

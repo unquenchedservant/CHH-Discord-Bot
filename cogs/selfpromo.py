@@ -5,17 +5,18 @@ import discord
 import utilities
 from discord.commands import Option, message_command, slash_command
 from discord.ext import commands
-from utilities import database
+from utilities.database import SelfPromoMsg
 from utilities.logging import logger
 
 class SelfPromo(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.selfpromomsg = SelfPromoMsg
 
     @message_command(name="Mark Self-Promo", guild_ids=utilities.GUILD_ID)
     async def selfpromo(self, ctx, message: discord.Message):
         user = message.author
-        if database.checkSelfPromoMsg(message.id):
+        if self.selfpromomsg.check(message.id):
             await ctx.respond(
                 "This message has already been reported, thank you!", ephemeral=True
             )
@@ -97,8 +98,8 @@ class SelfPromo(commands.Cog):
                 "Thanks, we let the user know about our self promotion rule!",
                 ephemeral=True,
             )
-            database.addSelfPromoMsg(message.id)
-            report_channel = self.bot.get_channel(ADMIN_CHANNEL)
+            self.selfpromomsg.add(message.id)
+            report_channel = self.bot.get_channel(utilities.REPORT_CHANNEL_ID)
             report_msg = (
                 "The following message was tagged for self-promotion by <@"
                 + str(ctx.author.id)
@@ -181,7 +182,7 @@ class SelfPromo(commands.Cog):
             await ctx.respond(
                 "Thanks, we let the user know about our self promotion rule!"
             )
-            report_channel = self.bot.get_channel(ADMIN_CHANNEL)
+            report_channel = self.bot.get_channel(utilities.REPORT_CHANNEL_ID)
             sleep(5)
             report_msg = (
                 "<@"
