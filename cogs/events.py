@@ -1,6 +1,7 @@
 from discord.ext import commands
 import utilities
 from datetime import time, timezone, datetime
+from dateutil.relativedelta import relativedelta
 from discord.ext import tasks
 from utilities import database
 from utilities.logging import logger
@@ -12,6 +13,12 @@ class Events(commands.Cog):
         self.daily_birthday_task.start()
         self.daily_holiday_task.start()
         self.one_one_six.start()
+        self.archive_check.start()
+
+    @tasks.loop(time=time(0,0, tzinfo=timezone.utc))
+    async def archive_check(self):
+        pass
+
 
     @tasks.loop(time=time(13, 0, tzinfo=timezone.utc))
     async def daily_birthday_task(self):
