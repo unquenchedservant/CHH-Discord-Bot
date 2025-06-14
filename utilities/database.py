@@ -1,5 +1,6 @@
 import sqlite3
 from utilities.logging import logger
+DB="chh.db"
 """
 =========
 Modboard Table
@@ -12,13 +13,13 @@ def checkModboardTable(conn):
     conn.commit()
 
 def removeModboardTable():
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     conn.execute("DROP TABLE modboard")
     conn.commit()
     conn.close()
 
 def checkModboard(msgID):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkModboardTable(conn)
     cursor = conn.execute("SELECT * FROM modboard WHERE MSGID={}".format(msgID))
     data = cursor.fetchall()
@@ -29,7 +30,7 @@ def checkModboard(msgID):
         return True
 
 def addModboard(msgId, modboardMsgID):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkModboardTable(conn)
     sql = "INSERT INTO modboard (MSGID, MODBOARDMSGID) VALUES ({},{})".format(msgId, modboardMsgID)
     conn.execute(sql)
@@ -37,7 +38,7 @@ def addModboard(msgId, modboardMsgID):
     conn.close()
 
 def getModboardMessage(msgID):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkModboardTable(conn)
     cursor = conn.execute("SELECT MODBOARDMSGID FROM modboard WHERE MSGID={}".format(msgID))
     data = cursor.fetchall()
@@ -45,14 +46,14 @@ def getModboardMessage(msgID):
     return data[0][0]
 
 def updateModboard(msgID, modboardMsgID):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkModboardTable(conn)
     conn.execute("UPDATE modboard SET MODBOARDMSGID={} WHERE MSGID={}".format(modboardMsgID, msgID))
     conn.commit()
     conn.close()
 
 def removeModboard(msgID):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkModboardTable(conn)
     conn.execute("DELETE FROM modboard WHERE MSGID={}".format(msgID))
     conn.commit()
@@ -70,13 +71,13 @@ def checkStarboardTable(conn):
     conn.commit()
     
 def removeStarboardTable():
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     conn.execute("DROP TABLE starboard")
     conn.commit()
     conn.close()
 
 def addStarboard(msgID, starboardMsgID):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkStarboardTable(conn)
     sql = "INSERT INTO starboard (MSGID, STARBOARDMSGID) VALUES ({},{})".format(msgID, starboardMsgID)
     conn.execute(sql)
@@ -84,7 +85,7 @@ def addStarboard(msgID, starboardMsgID):
     conn.close()
 
 def checkStarboard(msgID):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkStarboardTable(conn)
     cursor = conn.execute("SELECT * FROM starboard WHERE MSGID={}".format(msgID))
     data = cursor.fetchall()
@@ -95,7 +96,7 @@ def checkStarboard(msgID):
         return True
     
 def getStarboardMessage(msgID):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkStarboardTable(conn)
     cursor = conn.execute("SELECT STARBOARDMSGID FROM starboard WHERE MSGID={}".format(msgID))
     data = cursor.fetchall()
@@ -103,7 +104,7 @@ def getStarboardMessage(msgID):
     return data[0][0]
 
 def getStarboardThreshold(guildID):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkStarboardSettingsTable(conn)
     cursor = conn.execute("SELECT STARBOARDTHRESHOLD FROM starboardsettings WHERE GUILDID={}".format(guildID))
     data = cursor.fetchall()
@@ -111,14 +112,14 @@ def getStarboardThreshold(guildID):
     return data[0][0]
 
 def updateStarboard(msgID, starboardMsgID):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkStarboardTable(conn)
     conn.execute("UPDATE starboard SET STARBOARDMSGID={} WHERE MSGID={}".format(starboardMsgID, msgID))
     conn.commit()
     conn.close()
 
 def removeStarboard(msgID):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkStarboardTable(conn)
     conn.execute("DELETE FROM starboard WHERE MSGID={}".format(msgID))
     conn.commit()
@@ -137,7 +138,7 @@ def checkStarboardSettingsTable(conn):
     conn.commit()
 
 def addStarboardSettings(guildID, starboardChannel, starboardThreshold):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkStarboardSettingsTable(conn)
     sql = "INSERT INTO starboardsettings (GUILDID, STARBOARDCHANNEL, STARBOARDTHRESHOLD) VALUES ({},{},{})".format(guildID, starboardChannel, starboardThreshold)
     conn.execute(sql)
@@ -145,7 +146,7 @@ def addStarboardSettings(guildID, starboardChannel, starboardThreshold):
     conn.close()
 
 def checkStarboardSettings(guildID):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkStarboardSettingsTable(conn)
     cursor = conn.execute("SELECT * FROM starboardsettings WHERE GUILDID={}".format(guildID))
     data = cursor.fetchall()
@@ -156,21 +157,21 @@ def checkStarboardSettings(guildID):
         return True
 
 def updateStarboardChannel(guildID, starboardChannel):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkStarboardSettingsTable(conn)
     conn.execute("UPDATE starboardsettings SET STARBOARDCHANNEL={} WHERE GUILDID={}".format(starboardChannel, guildID))
     conn.commit()
     conn.close()
 
 def updateStarboardThreshold(guildID, starboardThreshold):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkStarboardSettingsTable(conn)
     conn.execute("UPDATE starboardsettings SET STARBOARDTHRESHOLD={} WHERE GUILDID={}".format(starboardThreshold, guildID))
     conn.commit()
     conn.close()
 
 def getStarboardSettings(guildID):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkStarboardSettingsTable(conn)
     cursor = conn.execute("SELECT STARBOARDCHANNEL, STARBOARDTHRESHOLD FROM starboardsettings WHERE GUILDID={}".format(guildID))
     data = cursor.fetchall()
@@ -178,7 +179,7 @@ def getStarboardSettings(guildID):
     return data[0]
 
 def removeStarboardSettings(guildID):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkStarboardSettingsTable(conn)
     conn.execute("DELETE FROM starboardsettings WHERE GUILDID={}".format(guildID))
     conn.commit()
@@ -196,7 +197,7 @@ def checkSelfPromoMsgTable(conn):
     conn.commit()
 
 def addSelfPromoMsg(msgID):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkSelfPromoMsgTable(conn)
     sql = "INSERT INTO selfpromomsg (msgID) VALUES ({})".format(msgID)
     conn.execute(sql)
@@ -204,7 +205,7 @@ def addSelfPromoMsg(msgID):
     conn.close()
 
 def checkSelfPromoMsg(msgID):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkSelfPromoMsgTable(conn)
     cursor = conn.execute("SELECT * FROM selfpromomsg WHERE msgID={}".format(msgID))
     data = cursor.fetchall()
@@ -226,7 +227,7 @@ def checkHolidayTable(conn):
     conn.commit()
 
 def addHoliday(month, day, msg):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkHolidayTable(conn)
     cursor = conn.execute("SELECT * FROM holidays WHERE MONTH={} AND DAY={}".format(month,day))
     data = cursor.fetchall()
@@ -242,7 +243,7 @@ def addHoliday(month, day, msg):
     return updated
 
 def checkHoliday(month,day):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkHolidayTable(conn)
     cursor = conn.execute("SELECT MSG FROM holidays WHERE MONTH={} AND DAY={}".format(month,day))
     data = cursor.fetchall()
@@ -253,7 +254,7 @@ def checkHoliday(month,day):
         return data[0][0]
 
 def checkHolidays():
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkHolidayTable(conn)
     cursor = conn.execute("SELECT * FROM holidays")
     data = cursor.fetchall()
@@ -261,7 +262,7 @@ def checkHolidays():
     return data
 
 def removeHoliday(month,day):
-    conn =sqlite3.connect("chh.db")
+    conn =sqlite3.connect(DB)
     checkHolidayTable(conn)
     cursor = conn.execute("SELECT * FROM holidays WHERE MONTH={} AND DAY={}".format(month,day))
     data = cursor.fetchall()
@@ -288,7 +289,7 @@ def checkBirthdayTable(conn):
     conn.commit()
 
 def getBirthdays():
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     cursor = conn.execute("SELECT USERID FROM birthdays")
     data = cursor.fetchall()
     rpkg = []
@@ -297,7 +298,7 @@ def getBirthdays():
     return rpkg
 
 def checkBirthday(current_month, current_day):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkBirthdayTable(conn)
     cursor = conn.execute("SELECT USERID, ACTIVE FROM birthdays WHERE MONTH={} AND DAY={}".format(current_month, current_day))
     data = cursor.fetchall()
@@ -313,7 +314,7 @@ def checkBirthday(current_month, current_day):
         return birthday_ids
 
 def setBirthdayActive(is_active, user_id):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkBirthdayTable(conn)
     isactive_int = 0
     if is_active:
@@ -325,7 +326,7 @@ def setBirthdayActive(is_active, user_id):
     conn.close()
 
 def setBirthday(userid, month, day):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkBirthdayTable(conn)
     cursor = conn.execute("SELECT * FROM birthdays WHERE USERID={}".format(userid))
     data = cursor.fetchall()
@@ -338,14 +339,14 @@ def setBirthday(userid, month, day):
     conn.close()
 
 def removeBirthday(userid):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkBirthdayTable(conn)
     conn.execute('''DELETE FROM birthdays WHERE USERID={}'''.format(userid))
     conn.commit()
     conn.close()
 
 def getBirthday(userid):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkBirthdayTable(conn)
     cursor = conn.execute ("SELECT * FROM birthdays WHERE USERID={}".format(userid))
     data = cursor.fetchall()
@@ -370,7 +371,7 @@ def checkRoleMemoryTable(conn):
 
 #role memory functions
 def checkRoleMemory(guildid):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkRoleMemoryTable(conn)
     cursor = conn.execute("SELECT * FROM roleMemoryEnabled WHERE GUILDID={}".format(guildid))
     data = cursor.fetchall()
@@ -382,7 +383,7 @@ def checkRoleMemory(guildid):
         return 0
         
 def toggleRoleMemory(guildid):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkRoleMemoryTable(conn)
     cursor = conn.execute("SELECT * FROM roleMemoryEnabled WHERE GUILDID={}".format(guildid))
     data = cursor.fetchall()
@@ -400,7 +401,7 @@ def toggleRoleMemory(guildid):
     conn.close()
 
 def getRoleMemoryState(guildid):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkRoleMemoryTable(conn)
     cursor = conn.execute("SELECT * FROM roleMemoryEnabled WHERE GUILDID={}".format(guildid))
     data = cursor.fetchall()
@@ -427,21 +428,21 @@ def checkRoleTable(conn):
 def addRole(uid, rid):
     #uid = user id
     #rid = role id
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkRoleTable(conn)
     conn.execute("INSERT INTO roles (UID, RID) VALUES ({},{})".format(uid, rid))
     conn.commit()
     conn.close()
 
 def removeRoles(uid):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkRoleTable(conn)
     conn.execute('''DELETE FROM roles WHERE UID={}'''.format(uid))
     conn.commit()
     conn.close()
 
 def getRoles(uid):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     checkRoleTable(conn)
     cursor = conn.execute("SELECT * FROM roles WHERE UID={}".format(uid))
     data = cursor.fetchall()
@@ -453,7 +454,7 @@ def getRoles(uid):
 
 #report based functions (I have no idea if these are still used?)
 def lookUpGuildReport(guildid):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     conn.execute('''CREATE TABLE IF NOT EXISTS reportchannel
                 (GUILDID INT NOT NULL,
                 CHANNELID INT NOT NULL)''')
@@ -468,27 +469,27 @@ def lookUpGuildReport(guildid):
         return True
 
 def removeGuildReport(guildid):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     conn.execute("DELETE FROM reportchannel WHERE GUILDID={}".format(guildid))
     conn.commit()
     conn.close()
 def setGuildReport(guildid, channelid):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     conn.execute("INSERT INTO reportchannel (GUILDID, CHANNELID) VALUES ({},{})".format(guildid, channelid))
     conn.commit()
     conn.close()
 def updateGuildReport(guildid, channelid):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     conn.execute("UPDATE reportchannel SET CHANNELID={} WHERE GUILDID={}".format(channelid, guildid))
     conn.commit()
     conn.close()
 def getGuildReport(guildid):
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     cursor = conn.execute("SELECT CHANNELID FROM reportchannel WHERE GUILDID={}".format(guildid))
     data = cursor.fetchone()
     return data[0]
 
 def updateDB():
-    conn = sqlite3.connect("chh.db")
+    conn = sqlite3.connect(DB)
     conn.execute("ALTER TABLE birthdays ADD COLUMN ACTIVE INT")
     conn.commit()
