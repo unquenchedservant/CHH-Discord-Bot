@@ -5,7 +5,8 @@ import utilities
 from discord.commands import Option, slash_command
 from discord.ext import commands
 from discord import SlashCommandGroup
-from utilities.database import Holiday, StarboardSettings, RoleMemory
+from datetime import datetime
+from utilities.database import Holiday, StarboardSettings, RoleMemory, Archival
 from utilities.logging import logger
 
 ERROR_MSG = "You need to be a mod or admin to use this command"
@@ -33,6 +34,29 @@ class Admin(commands.Cog):
         self.starboard_settings = StarboardSettings()
         self.holiday = Holiday()
         self.rolememory = RoleMemory()
+        self.archival = Archival()
+
+    @slash_command(
+            guild_ids=utilities.GUILD_ID,
+            default_permission=False,
+            description="Starts the archive process on a given channel"
+    )
+    async def archive(self, ctx: discord.ApplicationContext, channel: Option(discord.TextChannel, "Channel to be archived", required=True, default=None), level: Option(int, "Level of archive(1 or 2)", default=1)):
+        if self.archival.check(channel.id):
+            await ctx.respond("That channel has already been set to be archived", ephemeral=True)
+        else:
+            current_month = datetime.now().month
+            current_day = datetime.now().day
+            if level == 1:
+                current_month = datetime.now().month
+                current_day = datetime.n
+            elif level == 2:
+                current_month = datetime.now().month - 3
+                current_month = datetime.now().month
+            self.archival.set(channel.id, current_month, current_day)
+
+
+
 
     @slash_command(
         guild_ids=utilities.GUILD_ID,

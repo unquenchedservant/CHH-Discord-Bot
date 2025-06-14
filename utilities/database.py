@@ -73,8 +73,15 @@ class Archival(Database):
         else:
             return data
         
+    def check(self, channel_id):
+        data = self.execute("SELECT * FROM archival WHERE CHANNELID=?", (channel_id))
+        return self.check_len(data)
+    
     def set(self, channel_id, month, day):
         self.execute("INSERT INTO archival (CHANNELID,MONTH,DAY) VALUES (?,?,?)", (channel_id, month, day))
+
+    def update(self, channel_id, month):
+        self.execute("UPDATE archival SET MONTH=? WHERE CHANNELID=?", (channel_id, month))
 
     def remove(self, channel_id):
         self.execute("DELETE FROM archival WHERE CHANNELID=?", (channel_id))
