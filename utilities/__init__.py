@@ -21,11 +21,50 @@ def check_month(month):
         }
         return mapping.get(month, None)
     
+DEV_ARCH_LVL_1_ID = 745644736341344276
+DEV_ARCH_LVL_2_ID = 1383647619448045659
+
+CHH_ARCH_LVL_1_ID = 615702601354182706
+CHH_ARCH_LVL_2_ID = 845039809402634240
+    
+DEV_GUILD_ID = 365879579887534080
+CHH_GUILD_ID = 613464665661636648
+
+MODBOARD_DEV_ID = 1366483066494914634
+MODBOARD_CHH_ID = 1366482618140459170
+
+STARBOARD_DEV_ID = 1347392583050985612
+STARBOARD_CHH_ID = 786775284484669460
+
+SLFPRMO_DEV_ID = 1342566509524029450
+SLFPRMO_CHH_ID = 705272855159635969
+
+ROLEMENU_DEV_ID = 1342571477865730089
+ROLEMENU_CHH_ID = 975067933673914388
+
+RULES_DEV_ID = 1342581100123258952
+RULES_CHH_ID = 844989137551228978
+
+REPORT_DEV_ID = 957645821531258930
+REPORT_CHH_ID = 705532389744705616
+    
 def get_announcements_channel_id():
     if is_dev:
         return 471397293229342781 
     else:
         return 613469111682334762
+    
+def get_archive_1_id():
+    if is_dev:
+        return DEV_ARCH_LVL_1_ID
+    else:
+        return CHH_ARCH_LVL_1_ID
+
+def get_archive_2_id():
+    if is_dev:
+        return DEV_ARCH_LVL_2_ID
+    else:
+        return CHH_ARCH_LVL_2_ID
         
 def get_guild_ids():
     if is_dev:
@@ -75,26 +114,7 @@ def get_admin_id():
     else:
         return REPORT_CHH_ID
 
-DEV_GUILD_ID = 365879579887534080
-CHH_GUILD_ID = 613464665661636648
 
-MODBOARD_DEV_ID = 1366483066494914634
-MODBOARD_CHH_ID = 1366482618140459170
-
-STARBOARD_DEV_ID = 1347392583050985612
-STARBOARD_CHH_ID = 786775284484669460
-
-SLFPRMO_DEV_ID = 1342566509524029450
-SLFPRMO_CHH_ID = 705272855159635969
-
-ROLEMENU_DEV_ID = 1342571477865730089
-ROLEMENU_CHH_ID = 975067933673914388
-
-RULES_DEV_ID = 1342581100123258952
-RULES_CHH_ID = 844989137551228978
-
-REPORT_DEV_ID = 957645821531258930
-REPORT_CHH_ID = 705532389744705616
 
 MODBOARD_CHANNEL_ID = get_modboard_channel()
 STARBOARD_CHANNEL_ID = get_starboard_channel()
@@ -102,6 +122,8 @@ SELF_PROMO_CHANNEL_ID = get_self_promo_id()
 GUILD_IDS = get_guild_ids()
 GUILD_ID = get_guild_id()
 ROLE_MENU_CHANNEL_ID = get_role_menu_id()
+ARCHIVE_LEVEL_1_ID = get_archive_1_id()
+ARCHIVE_LEVEL_2_ID = get_archive_2_id()
 RULE_CHANNEL_ID = get_rules_id()
 REPORT_CHANNEL_ID = get_admin_id()
 WELCOME_CHANNEL_ID = 613468039010320415
@@ -118,7 +140,7 @@ REDDIT_CHANNEL_ID = 700486332979609671
 OWNER_ID = 236394260553924608
 
 class ChannelIds():
-
+    
     def __init__(self):
         self.updateIds()
         
@@ -132,6 +154,8 @@ class ChannelIds():
         global RULE_CHANNEL_ID
         global REPORT_CHANNEL_ID
         global ANNOUNCEMENTS_CHANNEL_ID
+        global ARCHIVE_LEVEL_1_ID
+        global ARCHIVE_LEVEL_2_ID
         MODBOARD_CHANNEL_ID = get_modboard_channel()
         STARBOARD_CHANNEL_ID = get_starboard_channel()
         SELF_PROMO_CHANNEL_ID = get_self_promo_id()
@@ -141,6 +165,8 @@ class ChannelIds():
         REPORT_CHANNEL_ID = get_admin_id()
         ANNOUNCEMENTS_CHANNEL_ID = get_announcements_channel_id()
         GUILD_ID = get_guild_id()
+        ARCHIVE_LEVEL_1_ID = get_archive_1_id()
+        ARCHIVE_LEVEL_2_ID = get_archive_2_id()
     
 
 
