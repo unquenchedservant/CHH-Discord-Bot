@@ -3,18 +3,19 @@ from utilities.logging import logger
 
 class Database:
     def __init__(self):
-        self.conn = sqlite3.connect("chh.db")
+        self.conn = None
 
     def execute(self, query, params=()):
         try:
-            cursor = self.conn.execute(query.format(params))
+            self.conn = sqlite3.connect("chh.db")
+            cursor = self.conn.execute(query)
             self.conn.commit()
-            return cursor.fetchall()
+            data = cursor.fetchall()
+            self.conn.close()
+            return data
         except sqlite3.Error as e:
             logger.error(f"Database error: {e}")
             raise
-        finally:
-            if cursor is not None: cursor.close()
 
     def check_len(self, data):
         if len(data) == 0:
@@ -82,10 +83,10 @@ class Archival(Database):
         self.execute("INSERT INTO archival (CHANNELID,MONTH,DAY,LEVEL) VALUES ({},{},{},{})".format(channel_id, month, day,level))
 
     def update(self, channel_id, level=None, month=None):
-        if level & month:
-            self.execute("UPDATE archival SET (LEVEL, MONTH) VALUES ({},{}) WHERE CHANNELID={}".format(level, month, channel_id))
+        if level and month:
+            self.execute("UPDATE archival SET LEVEL={}, MONTH={} WHERE CHANNELID={}".format(level, month, channel_id))
         elif level:
-            self.execute("UPDATE archival SET LEVEL={} WHERE CHANNELID={}".format(channel_id, level))
+            self.execute("UPDATE archival SET LEVEL={} WHERE CHANNELID={}".format(level, channel_id))
         elif month:
             self.execute("UPDATE archival SET MONTH={} WHERE CHANNELID={}".format(channel_id, month))
     
