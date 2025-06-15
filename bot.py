@@ -24,7 +24,7 @@ role = Role()
 birthday = Birthday()
 
 bot = discord.Bot(
-    debug_guilds=[utilities.DEV_GUILD_ID, utilities.CHH_GUILD_ID], owner_id=utilities.OWNER_ID, intents=intents
+    debug_guilds=[utilities.DEV_GUILD_ID], owner_id=utilities.OWNER_ID, intents=intents
 )
 
 extensions = [
@@ -33,7 +33,7 @@ extensions = [
     "cogs.birthdays",
     "cogs.events",
     "cogs.selfpromo",
-    "cogs.starboard",
+    "cogs.starboard"
 ]
 
 @bot.event

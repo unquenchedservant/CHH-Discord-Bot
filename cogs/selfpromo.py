@@ -13,7 +13,7 @@ class SelfPromo(commands.Cog):
         self.bot = bot
         self.selfpromomsg = SelfPromoMsg
 
-    @message_command(name="Mark Self-Promo", guild_ids=utilities.GUILD_ID)
+    @message_command(name="Mark Self-Promo")
     async def selfpromo(self, ctx, message: discord.Message):
         user = message.author
         if self.selfpromomsg.check(message.id):
@@ -110,7 +110,7 @@ class SelfPromo(commands.Cog):
             await report_channel.send(report_msg)
 
     @slash_command(
-        guild_ids=utilities.GUILD_ID,
+        
         default_permissions=True,
         description="Use this when someone posts self promotion, or if someone asks about self promotion",
     )
@@ -119,7 +119,7 @@ class SelfPromo(commands.Cog):
         ctx: discord.ApplicationContext,
         user: Option(
             discord.Member, "optional: Tag the user", required=False, default=None
-        ),
+        ), # type: ignore
     ):
         if user:
             logger.info("Self-Promo report (slash) - Reporter: {} | Reportee: {}".format(ctx.author.name, user.name))
