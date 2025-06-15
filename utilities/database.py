@@ -64,10 +64,11 @@ class Archival(Database):
         self.execute('''CREATE TABLE IF NOT EXISTS archival
                  (CHANNELID INT NOT NULL,
                  MONTH INT NOT NULL,
-                 DAY INT NOT NULL)''')
+                 DAY INT NOT NULL,
+                 LEVEL INT NOT NULL)''')
         
     def get(self, month, day):
-        data = self.execute("SELECT CHANNELID FROM archival WHERE MONTH=? AND DAY=?", (month,day))
+        data = self.execute("SELECT CHANNELID,LEVEL FROM archival WHERE MONTH=? AND DAY=?", (month,day))
         if len(data) == 0:
             return False
         else:
@@ -77,12 +78,12 @@ class Archival(Database):
         data = self.execute("SELECT * FROM archival WHERE CHANNELID=?", (channel_id))
         return self.check_len(data)
     
-    def set(self, channel_id, month, day):
-        self.execute("INSERT INTO archival (CHANNELID,MONTH,DAY) VALUES (?,?,?)", (channel_id, month, day))
+    def set(self, channel_id, month, day, level):
+        self.execute("INSERT INTO archival (CHANNELID,MONTH,DAY,LEVEL) VALUES (?,?,?,?)", (channel_id, month, day,level))
 
-    def update(self, channel_id, month):
-        self.execute("UPDATE archival SET MONTH=? WHERE CHANNELID=?", (channel_id, month))
-
+    def update(self, channel_id, level):
+        self.execute("UPDATE archival SET LEVEL=? WHERE CHANNELID=?", (channel_id, level))
+    
     def remove(self, channel_id):
         self.execute("DELETE FROM archival WHERE CHANNELID=?", (channel_id))
     
