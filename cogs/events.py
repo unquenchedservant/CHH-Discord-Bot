@@ -1,5 +1,6 @@
 from discord.ext import commands
 import utilities
+from utilities import Config
 from datetime import time, timezone, datetime
 from dateutil.relativedelta import relativedelta
 from discord.ext import tasks
@@ -10,6 +11,7 @@ import random
 class Events(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.config = Config()
         self.birthday = Birthday()
         self.holiday = Holiday()
 
@@ -59,7 +61,7 @@ class Events(commands.Cog):
             for id in birthday_ids:
                 msg = msg + "<@" + str(id) + ">\n"
             msg = msg + "\nWant a message for your birthday? Use `/birthday set`" 
-            channel = self.bot.get_channel(utilities.ANNOUNCEMENTS_CHANNEL_ID)
+            channel = self.bot.get_channel(self.config.get_announcements_channel_id())
             await channel.send(msg)
 
     @tasks.loop(time=time(5,0,tzinfo=timezone.utc))
@@ -91,7 +93,7 @@ class Events(commands.Cog):
         current_day = datetime.now().day
         holiday_message = self.holiday.check(current_month, current_day)
         if holiday_message and not (current_month == 1 and current_day == 16):
-            channel = self.bot.get_channel(utilities.ANNOUNCEMENTS_CHANNEL_ID)
+            channel = self.bot.get_channel(self.config.get_announcements_channel_id())
             await channel.send(holiday_message)
 
     @tasks.loop(time=time(18,16,tzinfo=timezone.utc))
@@ -125,7 +127,7 @@ class Events(commands.Cog):
         current_month = datetime.now().month
         current_day = datetime.now().day
         if current_month == 1 and current_day == 16:
-            channel = self.bot.get_channel(utilities.ANNOUNCEMENTS_CHANNEL_ID)
+            channel = self.bot.get_channel(self.config.get_announcements_channel_id())
             msg = self.holiday.check(1,16)
             if not msg:
                 msg = "LET ME HEAR YOU SHOUT 1 1 6!\n\n Happy 116 day, everyone!"

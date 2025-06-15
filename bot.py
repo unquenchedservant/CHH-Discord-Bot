@@ -4,15 +4,15 @@ import sys
 
 import discord
 import utilities
+from utilities import Config
 from discord.ext import commands
 from discord.utils import get
 from utilities import get_env
 from utilities.database import StarboardSettings, RoleMemory, Role, Birthday
 from utilities.logging import logger
 from utilities import logging
-import sqlite3
-import asyncio
 
+config = Config()
 intents = discord.Intents.all()
 intents.members = True
 intents.reactions = True
@@ -63,14 +63,14 @@ async def on_member_remove(member):
 if __name__ == "__main__":
     if "--dev" in sys.argv:
         logging.setLoggerLevel(True)
-        utilities.set_is_dev(True)
+        config.is_dev = True
         logger.info("Running Developer Bot")
         for extension in extensions:
             bot.load_extension(extension)
         token = get_env.discord_dev()
         bot.run(token)
     else:
-        utilities.set_is_dev(False)
+        config.is_dev = False
         logging.setLoggerLevel(False)
         for extension in extensions:
             bot.load_extension(extension)

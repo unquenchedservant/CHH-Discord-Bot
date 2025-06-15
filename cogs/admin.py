@@ -2,6 +2,7 @@ from ctypes import util
 
 import discord
 import utilities
+from utilities import Config
 from discord.commands import Option, slash_command
 from discord.ext import commands
 from discord import SlashCommandGroup
@@ -44,6 +45,7 @@ class Admin(commands.Cog):
         self.holiday = Holiday()
         self.rolememory = RoleMemory()
         self.archival = Archival()
+        self.config = Config()
 
     async def handle_existing_archive(self, channel, level, data):
         if data[0][3] == 2 and level == 1:
@@ -63,9 +65,9 @@ class Admin(commands.Cog):
 
     async def channel_move(self, channel: discord.channel, level, guild: discord.guild):
         if level == 1:
-            new_category_id = utilities.ARCHIVE_LEVEL_1_ID
+            new_category_id = self.config.get_archive_1_id()
         elif level == 2:
-            new_category_id = utilities.ARCHIVE_LEVEL_2_ID
+            new_category_id = self.config.get_archive_2_id()
         category = discord.utils.get(guild.categories, id=new_category_id)
         await channel.move(category=category, sync_permissions=True, beginning=True)
     

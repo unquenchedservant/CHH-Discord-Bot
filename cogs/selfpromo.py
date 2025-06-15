@@ -2,7 +2,7 @@ from ctypes import util
 from time import sleep
 
 import discord
-import utilities
+from utilities import Config
 from discord.commands import Option, message_command, slash_command
 from discord.ext import commands
 from utilities.database import SelfPromoMsg
@@ -11,6 +11,7 @@ from utilities.logging import logger
 class SelfPromo(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.config = Config()
         self.selfpromomsg = SelfPromoMsg
 
     @message_command(name="Mark Self-Promo")
@@ -68,7 +69,7 @@ class SelfPromo(commands.Cog):
             msg = (
                 msg
                 + " it looks like you're sharing self-promotion outside of <#"
-                + str(utilities.SELF_PROMO_CHANNEL_ID)
+                + str(self.config.get_self_promo_id())
                 + ">!\n\n"
             )
             msg = (
@@ -78,9 +79,9 @@ class SelfPromo(commands.Cog):
             msg = (
                 msg
                 + "In the meantime, check out <#"
-                + str(utilities.ROLE_MENU_CHANNEL_ID)
+                + str(self.config.get_role_menu_id())
                 + "> and assign yourself the Artist/Producer tag to unlock some extra channels. Please take a minute to check out our <#"
-                + str(utilities.RULE_CHANNEL_ID)
+                + str(self.config.get_rules_id())
                 + ">\n\n"
             )
             msg = (
@@ -99,7 +100,7 @@ class SelfPromo(commands.Cog):
                 ephemeral=True,
             )
             self.selfpromomsg.add(message.id)
-            report_channel = self.bot.get_channel(utilities.REPORT_CHANNEL_ID)
+            report_channel = self.bot.get_channel(self.config.get_report_id())
             report_msg = (
                 "The following message was tagged for self-promotion by <@"
                 + str(ctx.author.id)
@@ -154,7 +155,7 @@ class SelfPromo(commands.Cog):
             msg = (
                 msg
                 + "it looks like you're sharing self-promotion outside of <#"
-                + str(utilities.SELF_PROMO_CHANNEL_ID)
+                + str(self.config.get_self_promo_id())
                 + ">!\n\n"
             )
             msg = (
@@ -164,9 +165,9 @@ class SelfPromo(commands.Cog):
             msg = (
                 msg
                 + "In the meantime, check out <#"
-                + str(utilities.ROLE_MENU_CHANNEL_ID)
+                + str(self.config.get_role_menu_id())
                 + "> and assign yourself the Artist/Producer tag to unlock some extra channels. Also, please take a minute to check out our <#"
-                + str(utilities.RULE_CHANNEL_ID)
+                + str(self.config.get_rules_id())
                 + ">\n\n"
             )
             msg = (
@@ -182,7 +183,7 @@ class SelfPromo(commands.Cog):
             await ctx.respond(
                 "Thanks, we let the user know about our self promotion rule!"
             )
-            report_channel = self.bot.get_channel(utilities.REPORT_CHANNEL_ID)
+            report_channel = self.bot.get_channel(self.config.get_report_id())
             sleep(5)
             report_msg = (
                 "<@"
@@ -198,7 +199,7 @@ class SelfPromo(commands.Cog):
             logger.info("Self-Promo report (slash) - Reporter: {} | Reportee: N/A".format(ctx.author.name))
             msg = (
                 "Please only self-promote in <#"
-                + str(utilities.SELF_PROMO_CHANNEL_ID)
+                + str(self.config.get_self_promo_id())
                 + ">!\n\n"
             )
             msg = (
@@ -208,9 +209,9 @@ class SelfPromo(commands.Cog):
             msg = (
                 msg
                 + "In the meantime, check out <#"
-                + str(utilities.ROLE_MENU_CHANNEL_ID)
+                + str(self.config.get_role_menu_id())
                 + "> and assign yourself the Artist/Producer tag to unlock some extra channels. Please take a minute to check out our <#"
-                + str(utilities.RULE_CHANNEL_ID)
+                + str(self.config.get_rules_id())
                 + ">\n\n"
             )
             msg = (

@@ -5,9 +5,6 @@ from discord import option
 from discord.ext import commands
 from discord import SlashCommandGroup
 from utilities.database import Birthday
-import utilities
-from datetime import time, timezone, datetime
-from discord.ext import tasks
 from utilities.logging import logger
 
 class Birthdays(commands.Cog):
