@@ -18,7 +18,7 @@ class Events(commands.Cog):
         self.one_one_six.start()
         self.archive_check.start()
 
-    @tasks.loop(time=time(0,0, tzinfo=timezone.utc))
+    @tasks.loop(time=time(5,0, tzinfo=timezone.utc))
     async def archive_check(self):
         pass
 
