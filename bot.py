@@ -39,7 +39,6 @@ extensions = [
 @bot.event
 async def on_ready():
     logger.info("We have logged in as {0.user}".format(bot))
-    conn = sqlite3.connect("chh.db")
     if not starboard_settings.check(utilities.GUILD_ID):
         starboard_settings.add(utilities.GUILD_ID, utilities.STARBOARD_CHANNEL_ID, 5)
 
@@ -60,9 +59,6 @@ async def on_member_remove(member):
         for role in member.roles:
             if not role.name == "@everyone":
                 role.add(member.id, role.id)
-
-async def sync_commands():
-    await bot.sync_commands()
 
 if __name__ == "__main__":
     if "--dev" in sys.argv:
