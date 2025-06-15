@@ -11,7 +11,13 @@ def check_month(month):
             -2: 10,
             -3: 9,
             -4: 8,
-            -5: 7
+            -5: 7,
+            13: 1,
+            14: 2,
+            15: 3,
+            16: 4,
+            17: 5,
+            18: 6
         }
         return mapping.get(month, None)
     
