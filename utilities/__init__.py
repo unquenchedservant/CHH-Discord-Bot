@@ -1,31 +1,8 @@
 is_dev = False
 from utilities.logging import logger
 
-'''
-important note:
-0 <= coverage >= -5
 
- 0 = 12
--1 = 11
--2 = 10
--3 =  9
--4 =  8
--5 =  7 
-'''
-def check_month(month):
-    if month > 0:
-        return month
-    else:
-        mapping = {
-            0: 12,
-            -1: 11,
-            -2: 10,
-            -3: 9,
-            -4: 8,
-            -5: 7
-        }
-        return mapping.get(month, None)
-    
+
 def get_announcements_channel_id():
     if is_dev:
         return 471397293229342781 

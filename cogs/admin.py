@@ -8,7 +8,7 @@ from discord import SlashCommandGroup
 from datetime import datetime
 from utilities.database import Holiday, StarboardSettings, RoleMemory, Archival
 from utilities.logging import logger
-from utilities import check_month
+
 ERROR_MSG = "You need to be a mod or admin to use this command"
 
 
@@ -36,33 +36,24 @@ class Admin(commands.Cog):
         self.rolememory = RoleMemory()
         self.archival = Archival()
 
-    '''
-    Archive command
-
-    Given a channel ID is provided, and no level, sort channel to the initial archive (public viewing, no send msg)
-    Given a channel ID is provided, and the level=1, sort channel to the initial archive (public viewing, no send msg)
-    Given a channel ID is provided, and the level=2, sort channel to the hidden archive (mods only)
-    '''
-
     @slash_command(
             guild_ids=utilities.GUILD_ID,
             default_permission=False,
             description="Starts the archive process on a given channel"
     )
     async def archive(self, ctx: discord.ApplicationContext, channel: Option(discord.TextChannel, "Channel to be archived", required=True, default=None), level: Option(int, "Level of archive(1 or 2)", default=1)):
-        data = self.archival.check(channel.id)
-        if data:
-            if data[0][3] == level:
-                await ctx.respond("That channel has already been set to be archived at that level", ephemeral=True)
-            else:
-                self.archival.update(channel.id, level)
-                # method to update the channel goes here, this will be based on level
+        if self.archival.check(channel.id):
+            await ctx.respond("That channel has already been set to be archived", ephemeral=True)
         else:
             current_month = datetime.now().month
             current_day = datetime.now().day
-            if level == 2:
-                current_month = check_month(current_month - 3)
-            self.archival.set(channel.id, current_month, current_day, level)
+            if level == 1:
+                current_month = datetime.now().month
+                current_day = datetime.n
+            elif level == 2:
+                current_month = datetime.now().month - 3
+                current_month = datetime.now().month
+            self.archival.set(channel.id, current_month, current_day)
 
 
 
