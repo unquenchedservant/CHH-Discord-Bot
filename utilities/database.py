@@ -7,14 +7,14 @@ class Database:
 
     def execute(self, query, params=()):
         try:
-            cursor = self.conn.execute(query, params)
+            cursor = self.conn.execute(query.format(params))
             self.conn.commit()
             return cursor.fetchall()
         except sqlite3.Error as e:
             logger.error(f"Database error: {e}")
             raise
         finally:
-            cursor.close()
+            if cursor is not None: cursor.close()
 
     def check_len(self, data):
         if len(data) == 0:
@@ -36,21 +36,21 @@ class StarboardDB(Database):
                                STARBOARDMSGID INT NOT NULL)''')
         
     def add(self, msg_id, starboard_msg_id):
-        self.execute("INSERT INTO starboard (MSGID, STARBOARDMSGID) VALUES (?,?)", (msg_id, starboard_msg_id))
+        self.execute("INSERT INTO starboard (MSGID, STARBOARDMSGID) VALUES ({},{})".format(msg_id, starboard_msg_id))
 
     def get(self, msg_id):
-        data = self.execute("SELECT STARBOARDMSGID FROM starboard WHERE MSGID=?", (msg_id))
+        data = self.execute("SELECT STARBOARDMSGID FROM starboard WHERE MSGID={}".format(msg_id))
         return data[0][0]
     
     def update(self,msg_id,starboard_msg_id):
-        self.execute("UPDATE starboard SET STARBOARDMSGID=? WHERE MSGID=?", (starboard_msg_id, msg_id))
+        self.execute("UPDATE starboard SET STARBOARDMSGID={} WHERE MSGID={}".format(starboard_msg_id, msg_id))
 
     def check(self,msg_id):
-        data = self.execute("SELECT * FROM starboard WHERE MSGID=?", (msg_id))
+        data = self.execute("SELECT * FROM starboard WHERE MSGID={}".format(msg_id))
         return self.check_len(data)
     
     def remove(self,msg_id):
-        self.execute("DELETE FROM starboard WHERE MSGID=?", (msg_id))
+        self.execute("DELETE FROM starboard WHERE MSGID={}".format(msg_id))
     
     def drop(self):
         self.execute("DROP TABLE starboard")
@@ -68,7 +68,7 @@ class Archival(Database):
                  LEVEL INT NOT NULL)''')
         
     def get(self, month, day):
-        data = self.execute("SELECT CHANNELID,LEVEL FROM archival WHERE MONTH=? AND DAY=?", (month,day))
+        data = self.execute("SELECT CHANNELID,LEVEL FROM archival WHERE MONTH={} AND DAY={}".format(month,day))
         if len(data) == 0:
             return False
         else:
@@ -79,13 +79,18 @@ class Archival(Database):
         return data
     
     def set(self, channel_id, month, day, level):
-        self.execute("INSERT INTO archival (CHANNELID,MONTH,DAY,LEVEL) VALUES (?,?,?,?)", (channel_id, month, day,level))
+        self.execute("INSERT INTO archival (CHANNELID,MONTH,DAY,LEVEL) VALUES ({},{},{},{})".format(channel_id, month, day,level))
 
-    def update(self, channel_id, level):
-        self.execute("UPDATE archival SET LEVEL=? WHERE CHANNELID=?", (channel_id, level))
+    def update(self, channel_id, level=None, month=None):
+        if level & month:
+            self.execute("UPDATE archival SET (LEVEL, MONTH) VALUES ({},{}) WHERE CHANNELID={}".format(level, month, channel_id))
+        elif level:
+            self.execute("UPDATE archival SET LEVEL={} WHERE CHANNELID={}".format(channel_id, level))
+        elif month:
+            self.execute("UPDATE archival SET MONTH={} WHERE CHANNELID={}".format(channel_id, month))
     
     def remove(self, channel_id):
-        self.execute("DELETE FROM archival WHERE CHANNELID=?", (channel_id))
+        self.execute("DELETE FROM archival WHERE CHANNELID={}".format(channel_id))
     
     def drop(self):
         self.execute("DROP TABLE archival")
@@ -101,21 +106,21 @@ class Modboard(Database):
                     MODBOARDMSGID INT NOT NULL)''')
         
     def add(self, msg_id, modboard_msg_id):
-        self.execute("INSERT INTO modboard (MSGID, MODBOARDMSGID) VALUES (?,?)", (msg_id, modboard_msg_id))
+        self.execute("INSERT INTO modboard (MSGID, MODBOARDMSGID) VALUES ({},{})".format(msg_id, modboard_msg_id))
         
     def check(self, msg_id):
-        data = self.execute("SELECT * FROM modboard WHERE MSGID=?", (msg_id))
+        data = self.execute("SELECT * FROM modboard WHERE MSGID={}".format(msg_id))
         return self.check_len(data)
     
     def get(self, msg_id):
-        data = self.execute("SELECT MODBOARDMSGID FROM modboard WHERE MSGID=?", (msg_id))
+        data = self.execute("SELECT MODBOARDMSGID FROM modboard WHERE MSGID={}".format(msg_id))
         return data[0][0]
     
     def update(self, msg_id, modboard_msg_id):
-        self.execute("UPDATE modboard SET MODBOARDMSGID=? WHERE MSGID=?", (modboard_msg_id, msg_id))
+        self.execute("UPDATE modboard SET MODBOARDMSGID={} WHERE MSGID={}".format(modboard_msg_id, msg_id))
 
     def remove(self, msg_id):
-        self.execute("DELETE FROM modboard WHERE MSGID=?", (msg_id))
+        self.execute("DELETE FROM modboard WHERE MSGID={}".format(msg_id))
 
     def drop(self):
         self.execute("DROP TABLE modboard")
@@ -132,28 +137,28 @@ class StarboardSettings(Database):
                     STARBOARDTHRESHOLD INT NOT NULL)''')
         
     def add(self, guild_id, starboard_channel, starboard_threshold):
-        self.execute("INSERT INTO starboardsettings (GUILDID, STARBOARDCHANNEL, STARBOARDTHRESHOLD) VALUES (?,?,?)", (guild_id, starboard_channel, starboard_threshold))
+        self.execute("INSERT INTO starboardsettings (GUILDID, STARBOARDCHANNEL, STARBOARDTHRESHOLD) VALUES ({},{},{})".format(guild_id, starboard_channel, starboard_threshold))
 
     def check(self, guild_id):
-        data = self.execute("SELECT * FROM starboardsettings WHERE GUILDID=?", (guild_id))
+        data = self.execute("SELECT * FROM starboardsettings WHERE GUILDID={}".format(guild_id))
         return self.check_len(data)
 
     def update_channel(self, guild_id, starboard_channel):
-        self.execute("UPDATE starboardsettings SET STARBOARDCHANNEL=? WHERE GUILDID=?", (starboard_channel, guild_id))
+        self.execute("UPDATE starboardsettings SET STARBOARDCHANNEL={} WHERE GUILDID={}".format(starboard_channel, guild_id))
     
     def update_threshold(self, guild_id, starboard_threshold):
-        self.execute("UPDATE starboardsettings SET STARBOARDTHRESHOLD=? WHERE GUILDID=?", (starboard_threshold, guild_id))
+        self.execute("UPDATE starboardsettings SET STARBOARDTHRESHOLD={} WHERE GUILDID={}".format(starboard_threshold, guild_id))
 
     def get_settings(self, guild_id):
-        data = self.execute("SELECT STARBOARDCHANNEL, STARBOARDTHRESHOLD FROM starboardsettings WHERE GUILDID=?", (guild_id))
+        data = self.execute("SELECT STARBOARDCHANNEL, STARBOARDTHRESHOLD FROM starboardsettings WHERE GUILDID={}".format(guild_id))
         return data[0]
 
     def get_threshold(self, guild_id):
-        data = self.execute("SELECT STARBOARDTHRESHOLD FROM starboardsettings WHERE GUILDID=?", guild_id)
+        data = self.execute("SELECT STARBOARDTHRESHOLD FROM starboardsettings WHERE GUILDID={}", guild_id)
         return data[0][0]
 
     def remove(self, guild_id):
-        self.execute("DELETE FROM starboardsettings WHERE GUILDID=?", (guild_id))
+        self.execute("DELETE FROM starboardsettings WHERE GUILDID={}".format(guild_id))
 
     def drop(self):
         self.execute("DROP TABLE starboardsettings")
@@ -168,10 +173,10 @@ class SelfPromoMsg(Database):
                     (msgID INT NOT NULL)''')
         
     def add(self, msg_id):
-        self.execute("INSERT INTO selfpromomsg (msgID) VALUES (?)", (msg_id))
+        self.execute("INSERT INTO selfpromomsg (msgID) VALUES ({})".format(msg_id))
     
     def check(self, msg_id):
-        data = self.execute("SELECT * FROM selfpromomsg WHERE msgID=?", (msg_id))
+        data = self.execute("SELECT * FROM selfpromomsg WHERE msgID={}".format(msg_id))
         return self.check_len(data)
 
 class Holiday(Database):
@@ -186,20 +191,20 @@ class Holiday(Database):
                      MSG VARCHAR(2000) NOT NULL)''')
         
     def add(self, month, day, msg):
-        data = self.execute("SELECT * FROM holidays WHERE MONTH=? AND DAY=?", (month,day))
+        data = self.execute("SELECT * FROM holidays WHERE MONTH={} AND DAY={}".format(month,day))
         updated = False
         if len(data) == 0:
-            sql = "INSERT INTO holidays (MONTH, DAY, MSG) VALUES (?,?,\"?\")"
+            sql = "INSERT INTO holidays (MONTH, DAY, MSG) VALUES ({},{},\"{}\")"
             params = (month,day,msg)
         else:
             updated = True
-            sql = "UPDATE holidays SET MSG='?' WHERE MONTH=? AND DAY=?"
+            sql = "UPDATE holidays SET MSG='{}' WHERE MONTH={} AND DAY={}"
             params = (msg, month, day)
         self.execute(sql, params)
         return updated
 
     def check(self, month, day):
-        data = self.execute("SELECT MSG FROM holidays WHERE MONTH=? AND DAY=?", (month,day))
+        data = self.execute("SELECT MSG FROM holidays WHERE MONTH={} AND DAY={}".format(month,day))
         if len(data) == 0:
             return 0
         else:
@@ -209,11 +214,11 @@ class Holiday(Database):
         return self.execute("SELECT * FROM holidays")
 
     def remove(self, month, day):
-        data = self.execute("SELECT * FROM holidays WHERE MONTH=? AND DAY=?", (month,day))
+        data = self.execute("SELECT * FROM holidays WHERE MONTH={} AND DAY={}".format(month,day))
         if len(data) == 0:
             return 0
         else:
-            self.execute("DELETE FROM holidays WHERE MONTH=? AND DAY=?", (month,day))
+            self.execute("DELETE FROM holidays WHERE MONTH={} AND DAY={}".format(month,day))
             return 1
 
 class Birthday(Database):
@@ -229,7 +234,7 @@ class Birthday(Database):
                     ACTIVE INT NOT NULL)''')
     
     def get(self, user_id):
-        data = self.execute("SELECT * FROM birthdays WHERE USERID=?", (user_id))
+        data = self.execute("SELECT * FROM birthdays WHERE USERID={}".format(user_id))
         if len(data) == 0:
             return [0, 0]
         else:
@@ -243,12 +248,12 @@ class Birthday(Database):
         return rpkg
     
     def set(self, user_id, month, day):
-        data = self.execute("SELECT * FROM birthdays WHERE USERID=?", (user_id))
+        data = self.execute("SELECT * FROM birthdays WHERE USERID={}".format(user_id))
         if len(data) == 0:
-            sql = "INSERT INTO birthdays (USERID, MONTH, DAY, ACTIVE) VALUES (?,?,?,?)"
+            sql = "INSERT INTO birthdays (USERID, MONTH, DAY, ACTIVE) VALUES ({},{},{},{})"
             params = (user_id, month, day, 1)
         else:
-            sql = "UPDATE birthdays SET MONTH=?, DAY=?, ACTIVE=? WHERE USERID=?"
+            sql = "UPDATE birthdays SET MONTH={}, DAY={}, ACTIVE={} WHERE USERID={}"
             params = (month, day, user_id, 1) 
         self.execute(sql,params)
 
@@ -257,10 +262,10 @@ class Birthday(Database):
             isactive_int = 1
         else:
             isactive_int = 0
-        self.execute("UPDATE birthdays SET ACTIVE=? WHERE USERID=?", (isactive_int, user_id))
+        self.execute("UPDATE birthdays SET ACTIVE={} WHERE USERID={}".format(isactive_int, user_id))
 
     def check(self, month, day):
-        data = self.execute("SELECT USERID, ACTIVE FROM birthdays WHERE MONTH=? AND DAY=?", (month, day))
+        data = self.execute("SELECT USERID, ACTIVE FROM birthdays WHERE MONTH={} AND DAY={}".format(month, day))
         if len(data) == 0:
             return []
         else:
@@ -271,7 +276,7 @@ class Birthday(Database):
             return birthday_ids
 
     def remove(self, user_id):
-        self.execute("DELETE FROM birthdays WHERE USERID=?", (user_id))
+        self.execute("DELETE FROM birthdays WHERE USERID={}".format(user_id))
 
 class RoleMemory(Database):
     def __init__(self):
@@ -284,26 +289,26 @@ class RoleMemory(Database):
                     ENABLED INT NOT NULL)''')
         
     def check(self, guild_id):
-        data = self.execute("SELECT * FROM roleMemoryEnabled WHERE GUILDID=?", (guild_id))
+        data = self.execute("SELECT * FROM roleMemoryEnabled WHERE GUILDID={}".format(guild_id))
         if not len(data) == 0:
             return data[0][1]
         else:
             return 0
 
     def toggle(self, guild_id):
-        data = self.execute("SELECT * FROM roleMemoryEnabled WHERE GUILDID=?", (guild_id))
+        data = self.execute("SELECT * FROM roleMemoryEnabled WHERE GUILDID={}".format(guild_id))
         newEnabled = 1
         if not len(data) == 0:
             if data[0][1] == 0:
                 newEnabled = 1
             if data[0][1] == 1:
                 newEnabled = 0
-            self.execute("UPDATE roleMemoryEnabled SET ENABLED=? WHERE GUILDID=?", (newEnabled, guild_id))
+            self.execute("UPDATE roleMemoryEnabled SET ENABLED={} WHERE GUILDID={}".format(newEnabled, guild_id))
         else:
-            self.execute("INSERT INTO roleMemoryEnabled (GUILDID, ENABLED) VALUES (?,?)", (guild_id, 1))
+            self.execute("INSERT INTO roleMemoryEnabled (GUILDID, ENABLED) VALUES ({},{})".format(guild_id, 1))
 
     def get(self, guild_id):
-        data = self.execute("SELECT * FROM roleMemoryEnabled WHERE GUILDID=?", (guild_id))
+        data = self.execute("SELECT * FROM roleMemoryEnabled WHERE GUILDID={}".format(guild_id))
         if len(data) == 0:
             return False
         else:
@@ -323,14 +328,14 @@ class Role(Database):
                     RID INT NOT NULL)''')
         
     def add(self, user_id, role_id):
-        self.execute("INSERT INTO roles (UID, RID) VALUES (?,?)", (user_id, role_id))
+        self.execute("INSERT INTO roles (UID, RID) VALUES ({},{})".format(user_id, role_id))
 
     def get(self, user_id):
-        data = self.execute("SELECT * FROM roles WHERE UID=?", (user_id))
+        data = self.execute("SELECT * FROM roles WHERE UID={}".format(user_id))
         roles = []
         for item in data:
             roles.append(item[1])
         return roles
 
     def remove(self, user_id):
-        self.execute("DELETE FROM roles WHERE UID=?", (user_id))
+        self.execute("DELETE FROM roles WHERE UID={}".format(user_id))
