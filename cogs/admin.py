@@ -36,6 +36,14 @@ class Admin(commands.Cog):
         self.rolememory = RoleMemory()
         self.archival = Archival()
 
+    async def channel_move(self, channel: discord.channel, level, guild: discord.guild):
+        if level == 1:
+            new_category_id = utilities.ARCHIVE_LEVEL_1_ID
+        elif level == 2:
+            new_category_id = utilities.ARCHIVE_LEVEL_2_ID
+        category = discord.utils.get(guild.categories, id=new_category_id)
+        await channel.move(category=category, sync_permissions=True, beginning=True)
+    
     '''
     Archive command
 
@@ -48,23 +56,32 @@ class Admin(commands.Cog):
             default_permission=False,
             description="Starts/Updates the archive process on a given channel"
     )
-    async def archive(self, ctx: discord.ApplicationContext, channel: Option(discord.TextChannel, "Channel to be archived", required=True, default=None), level: Option(int, "Level of archive(1 or 2)", default=1)):
+    async def archive(self, ctx: discord.ApplicationContext, channel: Option(discord.TextChannel, "Channel to be archived", required=True, default=None), level: Option(int, "Level of archive(1 or 2)", default=1)): # type: ignore
         data = self.archival.check(channel.id)
-        if data:
+        if len(data) > 0:
             if data[0][3] == level:
                 await ctx.respond("That channel has already been set to be archived at that level", ephemeral=True)
             else:
-                self.archival.update(channel.id, level)
-                # method to update the channel goes here, this will be based on level
+                if data[0][3] == 2 and level == 1:
+                    current_month = datetime.now().month
+                    current_month = check_month(current_month + 3)
+                    self.archival.update(channel.id, level=level, current_month=current_month)
+                else:
+                    self.archival.update(channel.id, level=level)
+                await self.channel_move(channel, level, ctx.guild)
         else:
-            current_month = datetime.now().month
-            current_day = datetime.now().day
-            if level == 2:
-                current_month = check_month(current_month - 3)
-            self.archival.set(channel.id, current_month, current_day, level)
+            if level < 0 or level > 2: # Level should only be 1 or 2
+                await ctx.respond("Please enter a valid level\n 1 - Anyone can view, no messages\n2 - Only mods can view", ephemeral=True)
+            else:
+                current_month = datetime.now().month
+                current_day = datetime.now().day
+                if level == 2:
+                    current_month = check_month(current_month - 3)
+                self.archival.set(channel.id, current_month, current_day, level)
+                await self.channel_move(channel, level, ctx.guild)
+                await ctx.respond("Successfully archived {} at Level {}".format(channel.name, level))
 
-
-
+        
 
     @slash_command(
         
