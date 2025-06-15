@@ -75,8 +75,8 @@ class Archival(Database):
             return data
         
     def check(self, channel_id):
-        data = self.execute("SELECT * FROM archival WHERE CHANNELID=?", (channel_id))
-        return self.check_len(data)
+        data = self.execute("SELECT * FROM archival WHERE CHANNELID={}".format(channel_id))
+        return data
     
     def set(self, channel_id, month, day, level):
         self.execute("INSERT INTO archival (CHANNELID,MONTH,DAY,LEVEL) VALUES (?,?,?,?)", (channel_id, month, day,level))
