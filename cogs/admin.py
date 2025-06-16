@@ -77,6 +77,11 @@ class Admin(commands.Cog):
     Given a channel ID is provided, and the level=1, sort channel to the initial archive (public viewing, no send msg)
     Given a channel ID is provided, and the level=2, sort channel to the hidden archive (mods only)
     '''
+    @slash_command(
+            default_permission=False, description="Remove a channel from archiver(database only)"
+    )
+    async def archive_remove(self, ctx:discord.ApplicationContext, channel: Option(discord.TextChannel, "Channel to be unarchived", required=True, default=None)):
+        self.archival.remove(channel.id)
 
     @slash_command(
             default_permission=False,
