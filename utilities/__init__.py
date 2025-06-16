@@ -1,7 +1,3 @@
-from utilities.logging import logger
-
-
-
 def check_month(month):
     if month > 0:
         return month
