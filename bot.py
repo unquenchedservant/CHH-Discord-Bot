@@ -20,7 +20,7 @@ intents.messages = True
 
 starboard_settings = StarboardSettings()
 role_memory = RoleMemory()
-role = Role()
+role_db = Role()
 birthday = Birthday()
 
 bot = discord.Bot(
@@ -50,7 +50,7 @@ async def on_member_join(member):
         for roleID in rolesToAdd:
             role = get(member.guild.roles, id=roleID)
             await member.add_roles(role, atomic=True)
-    role.remove(member.id)
+        role_db.remove(member.id)
 
 @bot.event
 async def on_member_remove(member):
@@ -58,7 +58,7 @@ async def on_member_remove(member):
     if role_memory.get(member.guild.id):
         for role in member.roles:
             if not role.name == "@everyone":
-                role.add(member.id, role.id)
+                role_db.add(member.id, role.id)
 
 if __name__ == "__main__":
     if "--dev" in sys.argv:
