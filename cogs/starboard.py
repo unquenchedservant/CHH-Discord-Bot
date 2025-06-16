@@ -46,7 +46,7 @@ class Starboard(commands.Cog):
         if on_modboard:
             modboard_msg_id = self.modboard.get(payload.message_id)
             modboard_msg = await modboard.fetch_message(modboard_msg_id)
-            
+
         if len(mod_count) > 0 and true_count < self.starboard_settings.get_threshold():
             if not on_modboard:
                 modboard_embed = self.create_mod_embed(msg, len(mod_count))
@@ -109,13 +109,16 @@ class Starboard(commands.Cog):
                 msg = await self.bot.get_channel(payload.channel_id).fetch_message(payload.message_id)                
                 mod_count = await self.get_mod_count(msg)
                 self.handle_modboard(msg, mod_count, payload)
+
                 true_count = await self.get_true_count(msg)
+                
                 starboard_channel = self.bot.get_channel(self.config.get_starboard_channel())
+                
                 if true_count < self.starboard_settings.get_threshold(self.config.get_guild_id()):
                     if self.starboard_db.check(payload.message_id):
                         await self.remove_from_starboard(msg, starboard_channel)
                 else:
-                    await self.update_starboard(msg, true_count)
+                    await self.update_starboard(msg, true_count, starboard_channel)
 
 
     # Creates the embed for the starboard message based on most up to date information. 
