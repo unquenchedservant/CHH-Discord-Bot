@@ -82,6 +82,7 @@ class Admin(commands.Cog):
     )
     async def archive_remove(self, ctx:discord.ApplicationContext, channel: Option(discord.TextChannel, "Channel to be unarchived", required=True, default=None)):
         self.archival.remove(channel.id)
+        await ctx.respond("Successfully removed the channel from the DB", ephemeral=True)
 
     @slash_command(
             default_permission=False,
