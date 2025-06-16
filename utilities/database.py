@@ -5,7 +5,7 @@ class Database:
     def __init__(self):
         self.conn = None
 
-    def execute(self, query, params=()):
+    def execute(self, query):
         try:
             self.conn = sqlite3.connect("chh.db")
             cursor = self.conn.execute(query)
@@ -161,7 +161,7 @@ class StarboardSettings(Database):
         return data[0]
 
     def get_threshold(self, guild_id):
-        data = self.execute("SELECT STARBOARDTHRESHOLD FROM starboardsettings WHERE GUILDID={}", guild_id)
+        data = self.execute("SELECT STARBOARDTHRESHOLD FROM starboardsettings WHERE GUILDID={}".format(guild_id))
         return data[0][0]
 
     def remove(self, guild_id):
@@ -201,13 +201,11 @@ class Holiday(Database):
         data = self.execute("SELECT * FROM holidays WHERE MONTH={} AND DAY={}".format(month,day))
         updated = False
         if len(data) == 0:
-            sql = "INSERT INTO holidays (MONTH, DAY, MSG) VALUES ({},{},\"{}\")"
-            params = (month,day,msg)
+            sql = "INSERT INTO holidays (MONTH, DAY, MSG) VALUES ({},{},\"{}\")".format(month,day,msg)
         else:
             updated = True
-            sql = "UPDATE holidays SET MSG='{}' WHERE MONTH={} AND DAY={}"
-            params = (msg, month, day)
-        self.execute(sql, params)
+            sql = "UPDATE holidays SET MSG='{}' WHERE MONTH={} AND DAY={}".format(msg, month, day)
+        self.execute(sql)
         return updated
 
     def check(self, month, day):
@@ -257,12 +255,10 @@ class Birthday(Database):
     def set(self, user_id, month, day):
         data = self.execute("SELECT * FROM birthdays WHERE USERID={}".format(user_id))
         if len(data) == 0:
-            sql = "INSERT INTO birthdays (USERID, MONTH, DAY, ACTIVE) VALUES ({},{},{},{})"
-            params = (user_id, month, day, 1)
+            sql = "INSERT INTO birthdays (USERID, MONTH, DAY, ACTIVE) VALUES ({},{},{},{})".format(user_id, month, day, 1)
         else:
-            sql = "UPDATE birthdays SET MONTH={}, DAY={}, ACTIVE={} WHERE USERID={}"
-            params = (month, day, user_id, 1) 
-        self.execute(sql,params)
+            sql = "UPDATE birthdays SET MONTH={}, DAY={}, ACTIVE={} WHERE USERID={}".format(month, day, 1, user_id)
+        self.execute(sql)
 
     def set_active(self, is_active, user_id):
         if is_active:
