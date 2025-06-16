@@ -29,7 +29,6 @@ bot = discord.Bot(
 
 extensions = [
     "cogs.admin",
-    "cogs.aprilfools",
     "cogs.birthdays",
     "cogs.events",
     "cogs.selfpromo",

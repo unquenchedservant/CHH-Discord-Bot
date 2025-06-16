@@ -57,6 +57,9 @@ class Config:
         self.REPORT_DEV_ID = 957645821531258930
         self.REPORT_CHH_ID = 705532389744705616
 
+        self.STICK_DEV_ID = 1384270923196272881
+        self.STICK_CHH_ID = 742919732478607460
+
         self.WELCOME_CHANNEL_ID = 613468039010320415
         self.ARTIST_ROLE_MENU_CHANNEL_ID = 616100468526940195
         self.PARTNERS_CHANNEL_ID = 797240025653051402
@@ -71,6 +74,9 @@ class Config:
         if not hasattr(self, "_initialized"):
             self.is_dev = is_dev
             self._initialized = True
+
+    def get_stick_id(self):
+        return self.STICK_DEV_ID if self.is_dev else self.STICK_CHH_ID
     
     def get_announcements_channel_id(self):
         return 471397293229342781 if self.is_dev else 613469111682334762
