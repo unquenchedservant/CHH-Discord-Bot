@@ -47,7 +47,7 @@ class Starboard(commands.Cog):
             modboard_msg_id = self.modboard.get(payload.message_id)
             modboard_msg = await modboard.fetch_message(modboard_msg_id)
 
-        if len(mod_count) > 0 and true_count < self.starboard_settings.get_threshold():
+        if len(mod_count) > 0 and true_count < self.starboard_settings.get_threshold(payload.guild_id):
             if not on_modboard:
                 modboard_embed = self.create_mod_embed(msg, len(mod_count))
                 modboard_msg = await modboard.send(embed=modboard_embed)
@@ -108,7 +108,7 @@ class Starboard(commands.Cog):
             if payload.emoji.name == "⭐":
                 msg = await self.bot.get_channel(payload.channel_id).fetch_message(payload.message_id)                
                 mod_count = await self.get_mod_count(msg)
-                self.handle_modboard(msg, mod_count, payload)
+                await self.handle_modboard(msg, mod_count, payload)
 
                 true_count = await self.get_true_count(msg)
                 
