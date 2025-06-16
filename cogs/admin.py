@@ -81,6 +81,8 @@ class Admin(commands.Cog):
             default_permission=False, description="Remove a channel from archiver(database only)"
     )
     async def archive_remove(self, ctx:discord.ApplicationContext, channel: Option(discord.TextChannel, "Channel to be unarchived", required=True, default=None)):
+        if not await self.has_permission(ctx):
+            return
         self.archival.remove(channel.id)
         await ctx.respond("Successfully removed {} from the DB, please move it manually and sync permissions if applicable".format(channel.name), ephemeral=True)
 
