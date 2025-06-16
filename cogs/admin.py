@@ -50,7 +50,6 @@ class Admin(commands.Cog):
     async def handle_existing_archive(self, channel, level, data):
         if data[0][3] == 2 and level == 1:
             current_month = check_month(datetime.now().month + 3)
-            print("CURRENT MONTH:",current_month)
             self.archival.update(channel.id, level=level, month=current_month)
         else:
             self.archival.update(channel.id, level=level)
