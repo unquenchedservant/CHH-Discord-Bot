@@ -24,7 +24,7 @@ role = Role()
 birthday = Birthday()
 
 bot = discord.Bot(
-    debug_guilds=[utilities.DEV_GUILD_ID], owner_id=utilities.OWNER_ID, intents=intents
+    debug_guilds=[config.DEV_GUILD_ID], owner_id=config.OWNER_ID, intents=intents
 )
 
 extensions = [
@@ -39,8 +39,8 @@ extensions = [
 @bot.event
 async def on_ready():
     logger.info("We have logged in as {0.user}".format(bot))
-    if not starboard_settings.check(utilities.GUILD_ID):
-        starboard_settings.add(utilities.GUILD_ID, utilities.STARBOARD_CHANNEL_ID, 5)
+    if not starboard_settings.check(config.get_guild_id()):
+        starboard_settings.add(config.get_guild_id(), config.get_starboard_channel(), 5)
 
 @bot.event
 async def on_member_join(member):
