@@ -1,9 +1,9 @@
 from discord.ext import commands
 import utilities
 from utilities import Config
-from datetime import time, timezone, datetime
-from dateutil.relativedelta import relativedelta
+from datetime import time, timezone, datetime, date
 from discord.ext import tasks
+import random
 from utilities.database import Birthday, Holiday, Archival
 from utilities.logging import logger
 import discord
@@ -167,6 +167,46 @@ class Events(commands.Cog):
             if not msg:
                 msg = "LET ME HEAR YOU SHOUT 1 1 6!\n\n Happy 116 day, everyone!"
             await channel.send(msg)
+
+    async def handle_april_fools(self, message: discord.Message):
+        star = "⭐"
+        excludedChannels = [self.config.get_staff_help_id(),self.config.get_staff_id(), self.config.get_staff_bot_id(), 
+                            self.config.get_report_id(), self.config.get_staff_partner_id, self.config.get_reddit_channel_id(), self.config.get_starboard_channel(),
+                            902769402573881375, self.config.get_bot_commands_id, self.config.get_mod_log_id(),705478446075215893,
+                            self.config.get_announcements_channel_id(), self.config.get_partners_id(), self.config.get_artist_role_menu_id(),
+                            776157426113970207, self.config.get_rules_id(), self.config.get_welcome_id()] #all excluded channels for guild in question
+        if message.author != self.bot.user and message.guild.id == self.config.CHH_GUILD_ID and not message.channel.id in excludedChannels:
+                #odds will be 20%. 
+            allowed = [3,8]
+            if random.randint(1,10) in allowed:
+                await message.add_reaction(star)
+
+    async def handle_stick(self, message: discord.Message):
+        allowed_ids = [489532994898362388, 806328902217760818, 613467520640221208, 806563614013915176]
+        allowed_stick = ["<:stick:743597072598433924>", "<:broken_stick:769693076938817577>", 
+                        "stick", "kcits", "st1ck", "st!ck", "$tick", "$t1ck", "$t!ck",
+                        "5t1ck", "5t!ck", "5t1(k", "5t!k", "st1(k", "st!k",
+                        "$t1(k", "$t!k", "$t1c|", "$t!c|", "$t1<k", "$t!<k",
+                        "St1ck", "St!ck", "sT1ck", "sT!ck", "ST1CK", "ST!CK",
+                        "$t1(k", "$t!<k", "$t1c|", "$t!c|", "$t1<|", "$t!<|",
+                        "st1x", "st!x", "$t1x", "$t!x", "stix", "$tix",
+                        "ѕtιcк", "ʂȶɨƈƙ", "ꜱᴛɪᴄᴋ", "₴₮ł₵₭"]
+        role_ids = [role.id for role in message.author.roles]
+    
+        if not (message.content.lower() in allowed_stick) and not any(int(role_id) in allowed_ids for role_id in role_ids):
+            await message.delete()
+
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if self.aprilFools():
+            await self.handle_april_fools(message)
+
+        stick_channel = self.config.get_stick_id()
+        if message.channel.id == stick_channel:
+            await self.handle_stick(message)
+
+    def aprilFools(self):
+        return True if date.today().strftime("%m/%d") == "04/01" else False # April Fools day
 
 def setup(bot):
     bot.add_cog(Events(bot))

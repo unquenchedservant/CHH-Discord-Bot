@@ -16,7 +16,6 @@ ERROR_MSG = "You need to be a mod or admin to use this command"
 
 EXTENSIONS = [
     "cogs.admin",
-    "cogs.aprilfools",
     "cogs.birthdays",
     "cogs.events",
     "cogs.selfpromo",
