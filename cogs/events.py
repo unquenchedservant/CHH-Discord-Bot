@@ -50,7 +50,7 @@ class Events(commands.Cog):
                 self.archive_db.update(channel, 2)
                 real_channel = self.bot.get_channel(channel)
                 await self.channel_move(real_channel, 2, guild)
-        six_channels = await self.get_channels(current_month, check_day, 6)
+        six_channels = await self.get_channels(current_month, check_day, 9)
         if six_channels:
             for channel in six_channels:
                 real_channel = self.bot.get_channel(channel)

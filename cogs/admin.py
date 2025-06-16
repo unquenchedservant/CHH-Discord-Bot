@@ -49,7 +49,7 @@ class Admin(commands.Cog):
 
     async def handle_existing_archive(self, channel, level, data):
         if data[0][3] == 2 and level == 1:
-            current_month = check_month(datetime.now().month + 3)
+            current_month = check_month(datetime.now().month + 6)
             self.archival.update(channel.id, level=level, month=current_month)
         else:
             self.archival.update(channel.id, level=level)
@@ -82,7 +82,7 @@ class Admin(commands.Cog):
     )
     async def archive_remove(self, ctx:discord.ApplicationContext, channel: Option(discord.TextChannel, "Channel to be unarchived", required=True, default=None)):
         self.archival.remove(channel.id)
-        await ctx.respond("Successfully removed the channel from the DB", ephemeral=True)
+        await ctx.respond("Successfully removed {} from the DB, please move it manually and sync permissions if applicable".format(channel.name), ephemeral=True)
 
     @slash_command(
             default_permission=False,
