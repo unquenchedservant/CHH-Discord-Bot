@@ -6,7 +6,7 @@ from dateutil.relativedelta import relativedelta
 from discord.ext import tasks
 from utilities.database import Birthday, Holiday, Archival
 from utilities.logging import logger
-import random
+import discord
 
 class Events(commands.Cog):
     def __init__(self, bot):
@@ -14,16 +14,51 @@ class Events(commands.Cog):
         self.config = Config()
         self.birthday = Birthday()
         self.holiday = Holiday()
+        self.archive_db = Archival()
 
         self.daily_birthday_task.start()
         self.daily_holiday_task.start()
         self.one_one_six.start()
         self.archive_check.start()
 
+    async def channel_move(self, channel: discord.channel, level, guild: discord.guild):
+        if level == 1:
+            new_category_id = self.config.get_archive_1_id()
+        elif level == 2:
+            new_category_id = self.config.get_archive_2_id()
+        category = discord.utils.get(guild.categories, id=new_category_id)
+        await channel.move(category=category, sync_permissions=True, beginning=True)
+
+    async def get_channels(self, current_month, check_day, modifier=0):
+        check_month = utilities.check_month(current_month - modifier)
+        channels = self.archive_db.get_channels(check_month, check_day)
+        if channels:
+            return_channels = []
+            for channel in channels:
+                return_channels.append(channel[0])
+            return return_channels
+        return False
+        
     @tasks.loop(time=time(5,0, tzinfo=timezone.utc))
     async def archive_check(self):
-        pass
-
+        current_month = datetime.now().month
+        check_day = datetime.now().day
+        guild = self.bot.get_guild(self.config.get_guild_id())
+        three_channels = await self.get_channels(current_month, check_day, 3)
+        if three_channels:
+            for channel in three_channels:
+                self.archive_db.update(channel, 2)
+                real_channel = self.bot.get_channel(channel)
+                await self.channel_move(real_channel, 2, guild)
+        six_channels = await self.get_channels(current_month, check_day, 6)
+        if six_channels:
+            for channel in six_channels:
+                real_channel = self.bot.get_channel(channel)
+                self.archive_db.remove(real_channel)
+                if real_channel:
+                    await real_channel.delete()
+                else:
+                    print(channel)
 
     @tasks.loop(time=time(13, 0, tzinfo=timezone.utc))
     async def daily_birthday_task(self):
