@@ -93,14 +93,14 @@ class Admin(commands.Cog):
             else:
                 await self.handle_existing_archive(channel, level, data)
                 await self.channel_move(channel, level, ctx.guild)
-                await ctx.respond("Successfully updated archive level of {} to {}".format(channel.name, level))
+                await ctx.respond("Successfully updated archive level of {} to {}".format(channel.name, level), ephemeral=True)
         else:
             if level < 0 or level > 2: # Level should only be 1 or 2
                 await ctx.respond("Please enter a valid level\n 1 - Anyone can view, no messages\n2 - Only mods can view", ephemeral=True)
             else:
                 await self.handle_new_archive(channel, level)
                 await self.channel_move(channel, level, ctx.guild)
-                await ctx.respond("Successfully archived {} at Level {}".format(channel.name, level))
+                await ctx.respond("Successfully archived {} at Level {}".format(channel.name, level), ephemeral=True)
 
     @slash_command(
         default_permission=False,
