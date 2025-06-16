@@ -102,8 +102,6 @@ class Admin(commands.Cog):
                 await self.channel_move(channel, level, ctx.guild)
                 await ctx.respond("Successfully archived {} at Level {}".format(channel.name, level))
 
-        
-
     @slash_command(
         default_permission=False,
         description="Used for reloading cogs during development")
