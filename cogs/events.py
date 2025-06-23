@@ -60,7 +60,7 @@ class Events(commands.Cog):
                 else:
                     print(channel)
 
-    @tasks.loop(time=time(18, 4, tzinfo=timezone.utc))
+    @tasks.loop(time=time(13, 0, tzinfo=timezone.utc))
     async def daily_birthday_task(self):
         """
         A scheduled task that runs daily at 13:00 UTC (08:00 ET) to check for birthdays.
