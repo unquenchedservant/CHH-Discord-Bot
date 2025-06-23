@@ -60,7 +60,7 @@ class Events(commands.Cog):
                 else:
                     print(channel)
 
-    @tasks.loop(time=time(13, 0, tzinfo=timezone.utc))
+    @tasks.loop(time=time(18, 4, tzinfo=timezone.utc))
     async def daily_birthday_task(self):
         """
         A scheduled task that runs daily at 13:00 UTC (08:00 ET) to check for birthdays.
@@ -198,15 +198,12 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if self.aprilFools():
+        if date.today().strftime("%m/%d") == "04/01":
             await self.handle_april_fools(message)
 
         stick_channel = self.config.get_stick_id()
         if message.channel.id == stick_channel:
             await self.handle_stick(message)
-
-    def aprilFools(self):
-        return True if date.today().strftime("%m/%d") == "04/01" else False # April Fools day
 
 def setup(bot):
     bot.add_cog(Events(bot))
