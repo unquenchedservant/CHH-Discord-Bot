@@ -130,7 +130,7 @@ class Admin(commands.Cog):
         if birthday == [0, 0]:
             await ctx.respond("User does not have a birthday set, use `/setbirthday` to do so", ephemeral=True)
         else:
-            await ctx.respond(f"{user.name} birthday is set to {}/{}".format(birthday[0], birthday[1]), ephemeral=True)
+            await ctx.respond(f"{user.name} birthday is set to {birthday[0]}/{birthday[1]}", ephemeral=True)
 
     """
     =========
