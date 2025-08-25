@@ -7,6 +7,8 @@ import random
 from utilities.database import Birthday, Holiday, Archival
 from utilities.logging import logger
 import discord
+from datetime import datetime, timedelta
+
 
 class Events(commands.Cog):
     def __init__(self, bot):
@@ -195,9 +197,23 @@ class Events(commands.Cog):
     
         if not (message.content.lower() in allowed_stick) and not any(int(role_id) in allowed_ids for role_id in role_ids):
             await message.delete()
+    
+    async def handle_ben(self, message):
+        if message.content == "🥀":
+            print("Wilted")
+            allowed = [4]
+            #if random.randint(1,10) in allowed:
+            await message.channel.send("Yeah yeah just reply with a wilted rose")
+            print("Yeah yeah just reply with a wilted rose")
 
     @commands.Cog.listener()
     async def on_message(self, message):
+        ben_stop_timestamp = datetime.strptime("27.08.2025 12:00:00", "%d.%m.%Y %H:%M:%S").timestamp()
+        now_timestamp = datetime.now().timestamp()
+        if ben_stop_timestamp - now_timestamp > 0:
+            await self.handle_ben(message)
+        
+        
         if date.today().strftime("%m/%d") == "04/01":
             await self.handle_april_fools(message)
 
