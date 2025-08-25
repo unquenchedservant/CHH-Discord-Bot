@@ -206,6 +206,7 @@ class Events(commands.Cog):
                 await message.channel.send("Yeah yeah just reply with a wilted rose")
                 print("Yeah yeah just reply with a wilted rose")
 
+
     @commands.Cog.listener()
     async def on_message(self, message):
         ben_stop_timestamp = datetime.strptime("27.08.2025 12:00:00", "%d.%m.%Y %H:%M:%S").timestamp()
