@@ -7,7 +7,7 @@ from discord.commands import Option, slash_command
 from discord.ext import commands
 from discord import SlashCommandGroup
 from datetime import datetime
-from utilities.database import Holiday, StarboardSettings, RoleMemory, Archival
+from utilities.database import Holiday, StarboardSettings, RoleMemory, Archival, Birthday
 from utilities.logging import logger
 from utilities import check_month
 ERROR_MSG = "You need to be a mod or admin to use this command"
@@ -45,6 +45,7 @@ class Admin(commands.Cog):
         self.rolememory = RoleMemory()
         self.archival = Archival()
         self.config = Config()
+        self.birthday = Birthday()
 
     async def handle_existing_archive(self, channel, level, data):
         if data[0][3] == 2 and level == 1:
