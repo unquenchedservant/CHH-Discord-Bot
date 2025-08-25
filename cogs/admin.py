@@ -123,7 +123,7 @@ class Admin(commands.Cog):
     @slash_command(
         default_permission=False,
         description="Used to check others birthdays")
-    async def check_birthday(self, user: Option(discord.User, "User to check birthday", required=True, default=None), ctx: discord.ApplicationContext):
+    async def checkbirthday(self, user: Option(discord.User, "User to check birthday", required=True, default=None), ctx: discord.ApplicationContext):
         if not await self.has_permission(ctx):
             return
         birthday = self.birthday.get(user.id)
