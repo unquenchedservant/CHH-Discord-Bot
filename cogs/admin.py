@@ -132,6 +132,7 @@ class Admin(commands.Cog):
         else:
             await ctx.respond(f"{user.name} birthday is set to {birthday[0]}/{birthday[1]}", ephemeral=True)
 
+
     """
     =========
     Starboad Management
