@@ -210,7 +210,7 @@ class Events(commands.Cog):
             print("Wilted")
             allowed = [4,6,8,9,10]
             if random.randint(1,10) in allowed:
-                await message.channel.send("Yeah yeah just reply with a wilted rose")
+                await message.channel.send("So, I don't wanna like... Knock anyone's socks off or anything, but I recently became a full time employee at a coffee shop.")
                 print("So, I don't wanna like... Knock anyone's socks off or anything, but I recently became a full time employee at a coffee shop.")
 
     @commands.Cog.listener()
