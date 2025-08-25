@@ -201,14 +201,14 @@ class Events(commands.Cog):
     async def handle_ben(self, message):
         if message.content == "🥀":
             print("Wilted")
-            allowed = [4]
+            allowed = [4,6,8]
             if random.randint(1,10) in allowed:
                 await message.channel.send("Yeah yeah just reply with a wilted rose")
                 print("Yeah yeah just reply with a wilted rose")
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        ben_stop_timestamp = datetime.strptime("27.08.2025 12:00:00", "%d.%m.%Y %H:%M:%S").timestamp()
+        ben_stop_timestamp = datetime.strptime("29.08.2025 12:00:00", "%d.%m.%Y %H:%M:%S").timestamp()
         now_timestamp = datetime.now().timestamp()
         if ben_stop_timestamp - now_timestamp > 0:
             await self.handle_ben(message)
