@@ -201,7 +201,7 @@ class Events(commands.Cog):
     async def handle_ben(self, message):
         if message.content == "🥀":
             print("Wilted")
-            allowed = [4,6,8]
+            allowed = [4,6,8,9,10]
             if random.randint(1,10) in allowed:
                 await message.channel.send("Yeah yeah just reply with a wilted rose")
                 print("Yeah yeah just reply with a wilted rose")
