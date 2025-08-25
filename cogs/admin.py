@@ -120,17 +120,17 @@ class Admin(commands.Cog):
             self.bot.reload_extension(extension)
         await ctx.respond("Cogs have been reloaded!", ephemeral=True)
 
-    @slash_command(
-        default_permission=False,
-        description="Used to check others birthdays")
-    async def checkbirthday(self, user: Option(discord.User, "User to check birthday", required=True, default=None), ctx: discord.ApplicationContext):
-        if not await self.has_permission(ctx):
-            return
-        birthday = self.birthday.get(user.id)
-        if birthday == [0, 0]:
-            await ctx.respond("User does not have a birthday set, use `/setbirthday` to do so", ephemeral=True)
-        else:
-            await ctx.respond(f"{user.name} birthday is set to {birthday[0]}/{birthday[1]}", ephemeral=True)
+    # @slash_command(
+    #     default_permission=False,
+    #     description="Used to check others birthdays")
+    # async def checkbirthday(self, user: Option(discord.User, "User to check birthday", required=True, default=None), ctx: discord.ApplicationContext):
+    #     if not await self.has_permission(ctx):
+    #         return
+    #     birthday = self.birthday.get(user.id)
+    #     if birthday == [0, 0]:
+    #         await ctx.respond("User does not have a birthday set, use `/setbirthday` to do so", ephemeral=True)
+    #     else:
+    #         await ctx.respond(f"{user.name} birthday is set to {birthday[0]}/{birthday[1]}", ephemeral=True)
 
 
     """
