@@ -215,10 +215,8 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        ben_stop_timestamp = datetime.strptime("29.08.2025 12:00:00", "%d.%m.%Y %H:%M:%S").timestamp()
-        now_timestamp = datetime.now().timestamp()
-        if ben_stop_timestamp - now_timestamp > 0:
-            await self.handle_ben(message)
+        await self.handle_ben(message)
+        await self.handle_socks(message)
         
         
         if date.today().strftime("%m/%d") == "04/01":
