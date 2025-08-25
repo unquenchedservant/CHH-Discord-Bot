@@ -24,7 +24,7 @@ role_db = Role()
 birthday = Birthday()
 
 bot = discord.Bot(
-    debug_guilds=[config.DEV_GUILD_ID, config.CHH_GUILD_ID], owner_id=config.OWNER_ID, intents=intents
+    debug_guilds=[config.CHH_GUILD_ID], owner_id=config.OWNER_ID, intents=intents
 )
 
 extensions = [
