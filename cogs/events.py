@@ -199,13 +199,19 @@ class Events(commands.Cog):
             await message.delete()
     
     async def handle_ben(self, message):
-        if message.content == "🥀":
-            print("Wilted")
+        if "🥀" in message.content:
             allowed = [4,6,8,9,10]
             if random.randint(1,10) in allowed:
                 await message.channel.send("Yeah yeah just reply with a wilted rose")
                 print("Yeah yeah just reply with a wilted rose")
 
+    async def handle_socks(self, message):
+        if "socks" in message.content:
+            print("Wilted")
+            allowed = [4,6,8,9,10]
+            if random.randint(1,10) in allowed:
+                await message.channel.send("Yeah yeah just reply with a wilted rose")
+                print("So, I don't wanna like... Knock anyone's socks off or anything, but I recently became a full time employee at a coffee shop.")
 
     @commands.Cog.listener()
     async def on_message(self, message):
