@@ -202,9 +202,9 @@ class Events(commands.Cog):
         if message.content == "🥀":
             print("Wilted")
             allowed = [4]
-            #if random.randint(1,10) in allowed:
-            await message.channel.send("Yeah yeah just reply with a wilted rose")
-            print("Yeah yeah just reply with a wilted rose")
+            if random.randint(1,10) in allowed:
+                await message.channel.send("Yeah yeah just reply with a wilted rose")
+                print("Yeah yeah just reply with a wilted rose")
 
     @commands.Cog.listener()
     async def on_message(self, message):
