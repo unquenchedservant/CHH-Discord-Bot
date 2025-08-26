@@ -8,7 +8,7 @@ from utilities.database import Birthday, Holiday, Archival
 from utilities.logging import logger
 import discord
 from datetime import datetime, timedelta
-
+from collections import defaultdict
 
 class Events(commands.Cog):
     def __init__(self, bot):
@@ -22,6 +22,10 @@ class Events(commands.Cog):
         self.daily_holiday_task.start()
         self.one_one_six.start()
         self.archive_check.start()
+        self.ben_last_sent = defaultdict(lambda: datetime.min)
+        self.socks_last_sent = defaultdict(lambda: datetime.min)
+        self.ben_timeout = timedelta(seconds=30)   # 30 second cooldown
+        self.socks_timeout = timedelta(seconds=30) # 30 second cooldown
 
     async def channel_move(self, channel: discord.channel, level, guild: discord.guild):
         if level == 1:
@@ -199,19 +203,27 @@ class Events(commands.Cog):
             await message.delete()
     
     async def handle_ben(self, message):
+        now = datetime.now()
+        if now - self.ben_last_sent[message.channel.id] < self.ben_timeout:
+            return
         if "🥀" in message.content:
             allowed = [1,3,6,9,10]
             if random.randint(1,10) in allowed:
                 await message.channel.send("Yeah yeah just reply with a wilted rose")
                 print("Yeah yeah just reply with a wilted rose")
+                self.ben_last_sent[message.channel.id] = now
 
     async def handle_socks(self, message):
+        now = datetime.now()
+        if now - self.socks_last_sent[message.channel.id] < self.socks_timeout:
+            return
         if "socks" in message.content.lower():
             allowed = [1,2,5,7,9]
             if random.randint(1,10) in allowed:
                 await message.channel.send("So, I don't wanna like... Knock anyone's socks off or anything, but I recently became a full time employee at a coffee shop.")
                 print("So, I don't wanna like... Knock anyone's socks off or anything, but I recently became a full time employee at a coffee shop.")
-
+                self.socks_last_sent[message.channel.id] = now
+                
     @commands.Cog.listener()
     async def on_message(self, message):
         await self.handle_ben(message)
