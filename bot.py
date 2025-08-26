@@ -3,7 +3,6 @@
 import sys
 
 import discord
-import utilities
 from utilities import Config
 from discord.ext import commands
 from discord.utils import get
@@ -22,10 +21,13 @@ starboard_settings = StarboardSettings()
 role_memory = RoleMemory()
 role_db = Role()
 birthday = Birthday()
-
-bot = discord.Bot(
-    debug_guilds=[config.CHH_GUILD_ID], owner_id=config.OWNER_ID, intents=intents
-)
+token = get_env.discord_token()
+if token.endswith("B2M"):
+    bot = discord.Bot(
+        debug_guilds=[config.DEV_GUILD_ID], owner_id=config.OWNER_ID, intents=intents
+    )
+else:
+    bot = discord.Bot(debug_guilds=[config.CHH_GUILD_ID], owner_id=config.OWNER_ID, intents=intents)
 
 extensions = [
     "cogs.admin",
@@ -60,7 +62,7 @@ async def on_member_remove(member):
                 role_db.add(member.id, role.id)
 
 if __name__ == "__main__":
-    if "--dev" in sys.argv:
+    if token.endswith("B2M"):
         logging.setLoggerLevel(True)
         config.is_dev = True
         logger.info("Running Developer Bot")
@@ -71,6 +73,7 @@ if __name__ == "__main__":
     else:
         config.is_dev = False
         logging.setLoggerLevel(False)
+        logger.info("Running Production Bot")
         for extension in extensions:
             bot.load_extension(extension)
         token = get_env.discord_token()
