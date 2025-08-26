@@ -164,7 +164,6 @@ class Events(commands.Cog):
         Returns:
         None
         """
-        logger.info("")
         current_month = datetime.now().month
         current_day = datetime.now().day
         if current_month == 1 and current_day == 16:
@@ -209,9 +208,10 @@ class Events(commands.Cog):
         if "🥀" in message.content:
             allowed = [1,3,6,9,10]
             if random.randint(1,10) in allowed:
-                await message.channel.send("Yeah yeah just reply with a wilted rose")
-                print("Yeah yeah just reply with a wilted rose")
                 self.ben_last_sent[message.channel.id] = now
+                await message.channel.send("Yeah yeah just reply with a wilted rose")
+                logger.info("Yeah yeah just reply with a wilted rose")
+                
 
     async def handle_socks(self, message):
         now = datetime.now()
@@ -220,9 +220,10 @@ class Events(commands.Cog):
         if "socks" in message.content.lower():
             allowed = [1,2,5,7,9]
             if random.randint(1,10) in allowed:
-                await message.channel.send("So, I don't wanna like... Knock anyone's socks off or anything, but I recently became a full time employee at a coffee shop.")
-                print("So, I don't wanna like... Knock anyone's socks off or anything, but I recently became a full time employee at a coffee shop.")
                 self.socks_last_sent[message.channel.id] = now
+                await message.channel.send("So, I don't wanna like... Knock anyone's socks off or anything, but I recently became a full time employee at a coffee shop.")
+                logger.info("So, I don't wanna like... Knock anyone's socks off or anything, but I recently became a full time employee at a coffee shop.")
+                
                 
     @commands.Cog.listener()
     async def on_message(self, message):
