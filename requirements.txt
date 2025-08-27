@@ -1,3 +1,4 @@
 python-dotenv==1.1.0
 python_dateutil==2.9.0
 pytz==2025.2
+py-cord
