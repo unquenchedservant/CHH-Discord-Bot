@@ -5,7 +5,7 @@ def is_after(target_str):
     target = datetime.strptime(target, "%d.%m.%Y %H:%M:%S")
     if now > target.timestamp():
         return True
-
+      
 def check_month(month):
     if month > 0:
         return month
