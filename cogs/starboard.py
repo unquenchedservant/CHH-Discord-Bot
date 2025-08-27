@@ -76,7 +76,6 @@ class Starboard(commands.Cog):
         for reaction in msg.reactions:
             if reaction.emoji == "⭐" and not self.config.is_dev:
                 if not self.config.is_dev:
-                    logger.info("")
                     users = [user async for user in reaction.users()]
                     true_count = sum(1 for user in users if not user.bot and user.id != msg.author.id)
                 else:
