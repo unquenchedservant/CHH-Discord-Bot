@@ -2,7 +2,7 @@ from datetime import datetime
 
 def is_after(target_str):
     now = datetime.now().timestamp()
-    target = datetime.strptime(target, "%d.%m.%Y %H:%M:%S")
+    target = datetime.strptime(target_str, "%d.%m.%Y %H:%M:%S")
     if now > target.timestamp():
         return True
       
