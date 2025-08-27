@@ -227,10 +227,10 @@ class Events(commands.Cog):
         if "socks" in message.content.lower():
             max_rand = 10
             allowed = [1,2,5,7,9]
-            if utilities.is_after("26.08.2023 22:00:00"):
+            if utilities.is_after("27.08.2023 02:00:00"):
                 max_rand = 100
                 allowed = [1, 5, 9, 13, 17, 21, 25, 29, 33, 37, 41, 45, 49, 53, 57, 61, 65, 69, 73, 77, 81, 85, 89, 93, 97]
-            if utilities.is_after("01.09.2023 00:00:00"):
+            if utilities.is_after("01.09.2023 04:00:00"):
                 max_rand = 100
                 allowed = [1,3,6,9,10]
             if random.randint(1,max_rand) in allowed:
