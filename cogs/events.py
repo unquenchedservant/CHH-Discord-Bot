@@ -237,7 +237,7 @@ class Events(commands.Cog):
                 self.socks_last_sent[message.channel.id] = now
                 await message.channel.send("So, I don't wanna like... Knock anyone's socks off or anything, but I recently became a full time employee at a coffee shop.")
                 logger.info("So, I don't wanna like... Knock anyone's socks off or anything, but I recently became a full time employee at a coffee shop.")
-                
+               
                 
     @commands.Cog.listener()
     async def on_message(self, message):
