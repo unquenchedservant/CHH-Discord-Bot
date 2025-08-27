@@ -207,7 +207,14 @@ class Events(commands.Cog):
             return
         if "🥀" in message.content:
             allowed = [1,3,6,9,10]
-            if random.randint(1,10) in allowed:
+            max_rand = 10
+            if utilities.is_after("26.08.2023 22:00:00"):
+                max_rand = 100
+                allowed = [1, 5, 9, 13, 17, 21, 25, 29, 33, 37, 41, 45, 49, 53, 57, 61, 65, 69, 73, 77, 81, 85, 89, 93, 97]
+            if utilities.is_after("01.09.2023 00:00:00"):
+                max_rand = 100
+                allowed = [1,3,6,9,10]
+            if random.randint(1,max_rand) in allowed:
                 self.ben_last_sent[message.channel.id] = now
                 await message.channel.send("Yeah yeah just reply with a wilted rose")
                 logger.info("Yeah yeah just reply with a wilted rose")
@@ -218,8 +225,15 @@ class Events(commands.Cog):
         if now - self.socks_last_sent[message.channel.id] < self.socks_timeout:
             return
         if "socks" in message.content.lower():
+            max_rand = 10
             allowed = [1,2,5,7,9]
-            if random.randint(1,10) in allowed:
+            if utilities.is_after("26.08.2023 22:00:00"):
+                max_rand = 100
+                allowed = [1, 5, 9, 13, 17, 21, 25, 29, 33, 37, 41, 45, 49, 53, 57, 61, 65, 69, 73, 77, 81, 85, 89, 93, 97]
+            if utilities.is_after("01.09.2023 00:00:00"):
+                max_rand = 100
+                allowed = [1,3,6,9,10]
+            if random.randint(1,max_rand) in allowed:
                 self.socks_last_sent[message.channel.id] = now
                 await message.channel.send("So, I don't wanna like... Knock anyone's socks off or anything, but I recently became a full time employee at a coffee shop.")
                 logger.info("So, I don't wanna like... Knock anyone's socks off or anything, but I recently became a full time employee at a coffee shop.")
