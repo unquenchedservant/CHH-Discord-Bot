@@ -5,7 +5,7 @@ client = OpenAI(
     api_key = os.environ["OPENAI_TOKEN"]
 )
 
-MODEL = "gpt-5-mini"
+MODEL = "gpt-4.1-mini"
 
 def generate_answer(prompt, uname):
     response = client.chat.completions.create(
