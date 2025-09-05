@@ -242,7 +242,7 @@ class Events(commands.Cog):
                 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if self.bot.user.mentioned_in(message):
+        if self.bot.user.mentioned_in(message) and not message.author == self.bot.user:
             if not message.author.global_name == None:
                 uname = message.author.global_name
             elif not message.author.nick == None:
