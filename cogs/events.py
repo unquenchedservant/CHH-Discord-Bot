@@ -252,6 +252,7 @@ class Events(commands.Cog):
             async with message.channel.typing():
                 response = openai.generate_answer(message.content, uname)
                 await message.reply(response)
+
         await self.handle_ben(message)
         await self.handle_socks(message)
         

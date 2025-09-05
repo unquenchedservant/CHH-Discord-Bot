@@ -5,7 +5,7 @@ client = OpenAI(
     api_key = os.environ["OPENAI_TOKEN"]
 )
 
-MODEL = "gpt-4.1-mini"
+MODEL = "gpt-5-mini"
 
 def generate_answer(prompt, uname):
     response = client.chat.completions.create(
@@ -36,8 +36,7 @@ def generate_answer(prompt, uname):
             {"role": "system", "content": f"You are responding to {uname}, use their name to make the message feel a bit more personable (when appropriate, do not over use their name)"},
             {"role": "system", "content": "If you are responding to 'chill', that is your creator, and you should interact with them as such"},
             {"role": "user", "content": prompt}
-        ],
-        temperature=0.9
+        ]
     )
     return response.choices[0].message.content
 
