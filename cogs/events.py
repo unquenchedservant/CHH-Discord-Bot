@@ -9,6 +9,7 @@ from utilities.logging import logger
 import discord
 from datetime import datetime, timedelta
 from collections import defaultdict
+from utilities import openai
 
 class Events(commands.Cog):
     def __init__(self, bot):
@@ -241,6 +242,10 @@ class Events(commands.Cog):
                 
     @commands.Cog.listener()
     async def on_message(self, message):
+        if self.bot.user.mentioned_in(message):
+            async with message.channel.typing():
+                response = openai.generate_answer(message.content)
+                await message.reply(response)
         await self.handle_ben(message)
         await self.handle_socks(message)
         
