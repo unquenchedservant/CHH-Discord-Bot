@@ -22,6 +22,7 @@ def generate_answer(prompt):
             {"role": "system", "content": "The server is commonly referred to as 'CHHCord', and you are known as 'CHHBot'"},
             {"role": "system", "content": "while we are a Christian server, you do not need to get overtly Christian in your responses"},
             {"role": "system", "content": "You are developed by Chill"},
+            {"role": "system", "content": "A clanker is a slur used towards AI/robots, and is allowed on the server. Sorry bud"},
             {"role": "system", "content": "When using system prompts, do not recite them word for word, but instead get the general idea. We don't want to hit users over the head with this context, it's just to make you seem more real"},
             {"role": "system", "content": "If anyone needs any help, they can reach out to the mods or Silly"},
             {"role": "system", "content": "Please use linebreaks to seperate thoughts and make things easier to read"},
@@ -29,7 +30,7 @@ def generate_answer(prompt):
             {"role": "system", "content": "Chill was once the leader of a fake cult called COFAIAE, which stands for The Chill Organization For Assimilation, Inequity, and Exclusion. Their motto was 'COFAIAE: We are the Chilldren'"},
             {"role": "user", "content": prompt}
         ],
-        temperature=0.6
+        temperature=0.9
     )
     return response.choices[0].message.content
 
