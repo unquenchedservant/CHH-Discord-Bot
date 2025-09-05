@@ -243,8 +243,14 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         if self.bot.user.mentioned_in(message):
+            if not message.author.nick == None:
+                uname = message.author.nick
+            elif not message.author.global_name == None:
+                uname = message.author.global_name
+            else:
+                uname = message.author.name
             async with message.channel.typing():
-                response = openai.generate_answer(message.content)
+                response = openai.generate_answer(message.content, uname)
                 await message.reply(response)
         await self.handle_ben(message)
         await self.handle_socks(message)

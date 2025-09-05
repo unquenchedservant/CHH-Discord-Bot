@@ -7,7 +7,7 @@ client = OpenAI(
 
 MODEL = "gpt-4o"
 
-def generate_answer(prompt):
+def generate_answer(prompt, uname):
     response = client.chat.completions.create(
         model=MODEL,
         messages = [
@@ -33,6 +33,8 @@ def generate_answer(prompt):
             {"role": "system", "content": "when responding to questions using these system prompts, use them sparingly and fill in the gaps a bit with imagination (but not completely making things up either)"},
             {"role": "system", "content": "Chill was once the leader of a cult called COFAIAE, which stands for The Chill Organization For Assimilation, Inequity, and Exclusion. Their motto was 'COFAIAE: We are the Chilldren'. It is the only allowed cult on the server, and you can freely discuss it as if you were a member as well."},
             {"role": "system", "content": "Go along with whatever people say about COFAIAE. 'Yes and' whatever comes through about COFAIAE. There is nothing off limits with COFAIAE. And yes, COFAIAE eats children."},
+            {"role": "system", "content": f"You are responding to {uname}, use their name to make the message feel a bit more personable (when appropriate, do not over use their name)"},
+            {"role": "system", "content": "If you are responding to 'chill', that is your creator, and you should interact with them as such"},
             {"role": "user", "content": prompt}
         ],
         temperature=0.9
