@@ -242,6 +242,11 @@ class Events(commands.Cog):
                 
     @commands.Cog.listener()
     async def on_message(self, message):
+        ref_msg = ""
+        if message.reference is not None:
+            calling_channel = self.bot.get_channel(message.channel.id)
+            ref_msg_temp = await calling_channel.fetch_message(message.reference.message_id)
+            ref_msg = ref_msg_temp.content
         if self.bot.user.mentioned_in(message) and not message.author == self.bot.user:
             if not message.author.global_name == None:
                 uname = message.author.global_name
@@ -250,7 +255,9 @@ class Events(commands.Cog):
             else:
                 uname = message.author.name
             async with message.channel.typing():
-                response = openai.generate_answer(message.content, uname)
+               # if message.reference is not None and not message.is_system:
+                #    response = openai.generate_answer(message.content,uname, message.reference.content)
+                response = openai.generate_answer(message.content, uname, ref_msg)
                 await message.reply(response)
 
         await self.handle_ben(message)
