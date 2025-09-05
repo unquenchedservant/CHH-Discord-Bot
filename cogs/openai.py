@@ -15,10 +15,10 @@ class OpenAI(commands.Cog):
     async def ask(self, ctx: discord.ApplicationContext, prompt: Option(str, 'Prompt for CHHBot')):
         async with ctx.channel.typing():
             await ctx.defer()
-            if not ctx.user.nick == None:
-                uname = ctx.user.nick
-            elif not ctx.user.global_name == None:
+            if not ctx.user.global_name == None:
                 uname = ctx.user.global_name
+            elif not ctx.user.nick == None:
+                uname = ctx.user.nick
             else:
                 uname = ctx.user.name
             response = openai.generate_answer(prompt, uname=uname)

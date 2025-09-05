@@ -243,10 +243,10 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         if self.bot.user.mentioned_in(message):
-            if not message.author.nick == None:
-                uname = message.author.nick
-            elif not message.author.global_name == None:
+            if not message.author.global_name == None:
                 uname = message.author.global_name
+            elif not message.author.nick == None:
+                uname = message.author.nick
             else:
                 uname = message.author.name
             async with message.channel.typing():
