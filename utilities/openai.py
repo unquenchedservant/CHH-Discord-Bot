@@ -7,6 +7,18 @@ client = OpenAI(
 
 MODEL = "gpt-4o-mini"
 
+def generate_roast(message,uname):
+    messages = [
+        {"role": "system", "content": f"The following user prompt is a message from the user {uname} on a discord server. You are being asked to roast the message/user and their opinions. You do not need to be nice, but keep it PG-13 and no swearing."},
+        {"role": "user", "content": message}
+    ]
+    response = client.chat.completions.create(
+        model=MODEL,
+        messages = messages,
+        temperature=0.9
+    )
+    return response.choices[0].message.content
+
 def generate_answer(prompt, uname, reply_msg=""):
     messages = [
             {"role": "system", "content": "Always utilize chat history for context"},
