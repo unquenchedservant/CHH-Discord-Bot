@@ -39,7 +39,7 @@ def generate_answer(prompt, uname, reply_msg=""):
     response = client.chat.completions.create(
         model=MODEL,
         messages = messages,
-        temperature=0.9
+        temperature=0.3
     )
     return response.choices[0].message.content
 
