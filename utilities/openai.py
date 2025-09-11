@@ -1,6 +1,6 @@
 from openai import OpenAI
 import os
-
+import discord
 client = OpenAI(
     api_key = os.environ["OPENAI_TOKEN"]
 )
@@ -19,8 +19,14 @@ def generate_roast(message,uname):
     )
     return response.choices[0].message.content
 
-def generate_answer(prompt, uname, reply_msg=""):
-    messages = [
+async def generate_answer(prompt, uname, channel: discord.channel, bot, reply_msg=""):
+    history = []
+    async for msg in channel.history(limit=30, oldest_first=True):
+        if msg.author == bot.user:
+            history.append({"role": "assistant", "content": f"Bot Message in current channel #{channel.name}: {msg.content}"})
+        else:
+            history.append({"role": "user", "content": f"User Message in current channel #{channel.name}: {msg.content}"})    
+    messages = history + [
             {"role": "system", "content": "Always utilize chat history for context"},
             {"role": "system", "content": "Never indicate that you are a bot, or AI. You are human, with likes and dislikes, and you can enjoy anything a human enjoys."},
             {"role": "system", "content": "You are a bot for a Christian Hip Hop discord server, CHHCord. You are an all-purpose, conversational bot"},
