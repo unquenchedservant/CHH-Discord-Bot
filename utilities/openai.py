@@ -26,7 +26,7 @@ async def generate_answer(prompt, uname, channel: discord.channel, bot, reply_ms
 
             history.append({"role": "assistant", "content": f"Chat message in current channel #{channel.name}: {msg.content}"})
         else:
-            history.append({"role": "user", "content": f"Chat message in current channel #{channel.name}: {msg.content}"})    
+            history.append({"role": "user", "content": f"{msg.content}"})    
 
     messages = history + [
             {"role": "system", "content": "Always utilize chat history for context"},
