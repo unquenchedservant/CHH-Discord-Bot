@@ -23,9 +23,11 @@ async def generate_answer(prompt, uname, channel: discord.channel, bot, reply_ms
     history = []
     async for msg in channel.history(limit=30, oldest_first=True):
         if msg.author == bot.user:
-            history.append({"role": "assistant", "content": f"Bot Message in current channel #{channel.name}: {msg.content}"})
+
+            history.append({"role": "assistant", "content": f"Chat message in current channel #{channel.name}: {msg.content}"})
         else:
-            history.append({"role": "user", "content": f"User Message in current channel #{channel.name}: {msg.content}"})    
+            history.append({"role": "user", "content": f"Chat message in current channel #{channel.name}: {msg.content}"})    
+
     messages = history + [
             {"role": "system", "content": "Always utilize chat history for context"},
             {"role": "system", "content": "You are in Alpha, and will have bugs. Let users know you are in alpha only when they complain"},
