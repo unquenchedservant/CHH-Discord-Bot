@@ -21,7 +21,7 @@ def generate_roast(message,uname):
 
 async def generate_answer(prompt, uname, channel: discord.channel, bot, reply_msg=""):
     history = []
-    async for msg in channel.history(limit=30, oldest_first=True):
+    async for msg in channel.history(limit=30):
         if msg.author == bot.user:
             history.append({"role": "assistant", "content": f"Chat message in current channel #{channel.name}: {msg.content}"})
         else:
